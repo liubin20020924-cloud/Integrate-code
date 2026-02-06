@@ -1,0 +1,24 @@
+# 整合项目依赖文件
+# 官网系统(YHUCCN) + 知识库系统(YHKB) + 工单系统(YHCASE)
+
+# Flask 核心框架
+Flask==3.0.3
+Flask-Cors==4.0.0
+Flask-SQLAlchemy==3.1.1
+Flask-Session==0.5.0
+flask-socketio==5.3.6
+python-socketio==5.11.0
+
+# 数据库相关
+PyMySQL==1.1.0
+mysql-connector-python==8.0.33
+dbutils==3.0.3
+
+# 其他依赖
+python-dotenv==1.0.0
+cryptography==41.0.7
+werkzeug==3.0.1
+requests==2.31.0
+beautifulsoup4==4.12.2
+bleach==6.0.0
+trilium-py==0.8.5

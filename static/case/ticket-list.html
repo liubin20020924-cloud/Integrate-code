@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工单列表 - 工单系统</title>
+    <link href="/static/common.css" rel="stylesheet">
+    <style>
+        body {
+            background: var(--gray-50);
+        }
+        .top-nav {
+            background: white;
+            box-shadow: var(--shadow-md);
+            padding: 16px 50px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .main-container {
+            margin-top: 100px;
+            padding: 0 20px 40px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .page-header h1 {
+            margin: 0;
+            color: var(--gray-700);
+        }
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--gray-300);
+            background: white;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div>
+            <img src="/static/home/images/logo.jpg" alt="云户科技" class="logo-img">
+        </div>
+        <div>
+            <span id="welcomeText">欢迎</span>
+            <button onclick="logout()" class="btn btn-outline" style="margin-left: 10px;">退出</button>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <div class="page-header">
+            <h1>我的工单</h1>
+            <a href="/case/submit-ticket.html" class="btn btn-primary">创建新工单</a>
+        </div>
+
+        <!-- 筛选按钮 -->
+        <div class="filter-bar">
+            <button class="filter-btn active" data-status="">全部</button>
+            <button class="filter-btn" data-status="pending">待处理</button>
+            <button class="filter-btn" data-status="processing">处理中</button>
+            <button class="filter-btn" data-status="completed">已完成</button>
+            <button class="filter-btn" data-status="closed">已关闭</button>
+        </div>
+
+        <!-- 工单列表 -->
+        <div id="ticketList">
+            <!-- 动态加载工单列表 -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // 检查登录状态
+        function checkLogin() {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                window.location.href = '/case/login.html';
+                return false;
+            }
+            document.getElementById('welcomeText').textContent = username;
+            return true;
+        }
+
+        // 加载工单列表
+        async function loadTickets(status = '') {
+            try {
+                const response = await axios.get('/case/api/tickets', {
+                    params: { status }
+                });
+                if (response.data.code === 200) {
+                    renderTickets(response.data.data);
+                }
+            } catch (error) {
+                console.error('加载工单列表失败:', error);
+            }
+        }
+
+        // 渲染工单列表
+        function renderTickets(tickets) {
+            const container = document.getElementById('ticketList');
+            if (tickets.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--gray-500);">暂无工单</div>';
+                return;
+            }
+
+            container.innerHTML = tickets.map(ticket => `
+                <div class="ticket-card priority-${ticket.priority}" onclick="viewTicket('${ticket.ticket_id}')">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <h3 style="margin: 0 0 8px 0; color: var(--gray-700);">${ticket.title}</h3>
+                            <p style="margin: 0; color: var(--gray-500); font-size: 14px;">
+                                <strong>工单号:</strong> ${ticket.ticket_id} &nbsp;|&nbsp;
+                                <strong>产品:</strong> ${ticket.product} &nbsp;|&nbsp;
+                                <strong>类型:</strong> ${ticket.issue_type}
+                            </p>
+                            <p style="margin: 8px 0 0 0; color: var(--gray-600);">${ticket.content.substring(0, 100)}...</p>
+                        </div>
+                        <div style="text-align: right; margin-left: 20px;">
+                            <span class="badge badge-${ticket.status}">${getStatusText(ticket.status)}</span>
+                            <p style="margin: 8px 0 0 0; color: var(--gray-400); font-size: 12px;">${ticket.create_time}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '待处理',
+                'processing': '处理中',
+                'completed': '已完成',
+                'closed': '已关闭'
+            };
+            return statusMap[status] || status;
+        }
+
+        // 查看工单详情
+        function viewTicket(ticketId) {
+            window.location.href = `/case/ticket-detail.html?id=${ticketId}`;
+        }
+
+        // 筛选工单
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                loadTickets(this.dataset.status);
+            });
+        });
+
+        // 退出登录
+        async function logout() {
+            try {
+                await axios.post('/case/api/logout');
+                sessionStorage.clear();
+                window.location.href = '/case/login.html';
+            } catch (error) {
+                console.error('退出失败:', error);
+            }
+        }
+
+        // 初始化
+        if (checkLogin()) {
+            loadTickets();
+        }
+    </script>
+</body>
+</html>
