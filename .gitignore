@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 虚拟环境
+venv/
+ENV/
+env/
+
+# 环境变量
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 数据库
+*.db
+*.sqlite
+*.sqlite3
+
+# 临时文件
+*.log
+*.tmp
+.DS_Store
+
+# 上传文件
+uploads/
+
+# 缓存
+.cache/
+*.cache
+
+# Session
+flask_session/

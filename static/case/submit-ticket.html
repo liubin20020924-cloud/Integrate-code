@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建工单</title>
+    <link href="/static/common.css" rel="stylesheet">
+    <link href="/static/case/case.css" rel="stylesheet">
+            height: 80px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 999;
+        }
+        .logo {
+            height: 60px;
+            object-fit: contain;
+        }
+        /* 主容器 - 避开顶部导航，居中留白 */
+        .main-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 100px auto 50px;
+            padding: 0 20px;
+        }
+        /* 表单卡片 - 白色背景、轻微阴影 */
+        .form-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.03);
+            padding: 30px;
+        }
+        /* 步骤导航 - 仅保留描述问题步骤 */
+        .step-nav {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eaecef;
+        }
+        .step-item {
+            display: flex;
+            align-items: center;
+            margin-right: 30px;
+            color: #666;
+        }
+        .step-item.active {
+            color: #409eff;
+            font-weight: 500;
+        }
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #eaecef;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+        .step-item.active .step-number {
+            background-color: #409eff;
+            color: #ffffff;
+        }
+        /* 表单行布局 - 两列自适应 */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        /* 表单标签 - 保留必填星标 */
+        .form-label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .required {
+            color: #f56c6c;
+            margin-left: 4px;
+        }
+        /* 表单控件 - 原有蓝色聚焦、圆角边框 */
+        .form-control, .form-select {
+            height: 40px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            padding: 0 12px;
+            font-size: 14px;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #409eff;
+            box-shadow: 0 0 0 2px rgba(64,158,255,0.2);
+            outline: none;
+        }
+        /* 隐藏类 - 控制手动产品输入框显示/隐藏 */
+        .hidden {
+            display: none;
+            margin-top: 10px;
+        }
+        /* 按钮样式 - 保留原有蓝/灰主辅色 */
+        .btn {
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+        }
+        .btn-primary {
+            background-color: #409eff;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #337ecc;
+        }
+        .btn-secondary {
+            background-color: #f5f7fa;
+            color: #666;
+            border: 1px solid #dcdfe6;
+        }
+        .btn-secondary:hover {
+            background-color: #eef2f7;
+        }
+        /* 底部按钮区域 - 右对齐+分割线 */
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eaecef;
+        }
+        /* 响应式适配 - 小屏单列 */
+        @media (max-width: 992px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 0 20px;
+                height: 70px;
+            }
+            .logo {
+                height: 50px;
+            }
+            .main-container {
+                margin-top: 90px;
+            }
+            .form-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 - logo左对齐 -->
+    <div class="top-nav">
+        <img src="logo.png" alt="企业LOGO" class="logo">
+    </div>
+
+    <!-- 主内容容器 -->
+    <div class="main-container">
+        <div class="form-card">
+            <!-- 步骤导航 - 仅描述问题 -->
+            <div class="step-nav">
+                <div class="step-item active">
+                    <span class="step-number">1</span>
+                    <span>描述您的问题</span>
+                </div>
+            </div>
+
+            <!-- 工单表单 - 核心优化：序列号→邮箱、产品下拉可填 -->
+            <form id="ticketForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">客户名称 <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="customerName" placeholder="输入客户名称" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">客户联系方式 <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="customerContact" placeholder="输入手机号/微信等" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">客户邮箱 <span class="required">*</span></label>
+                        <input type="email" class="form-control" id="customerEmail" placeholder="输入客户邮箱（用于接收开单通知）" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">产品 <span class="required">*</span></label>
+                        <select class="form-select" id="productSelect" required>
+                            <option value="" disabled selected>请选择产品类型</option>
+                            <option value="Nutanix">Nutanix</option>
+                            <option value="VMware">VMware</option>
+                            <option value="Linux">Linux</option>
+                            <option value="备份">备份</option>
+                            <option value="other">其他</option>
+                        </select>
+                        <!-- 其他产品手动输入框 - 默认隐藏 -->
+                        <input type="text" class="form-control hidden" id="productInput" placeholder="请输入具体产品名称">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">问题类型 <span class="required">*</span></label>
+                        <select class="form-select" id="issueType" required>
+                            <option value="" disabled selected>请选择问题类型</option>
+                            <option value="technical">技术问题</option>
+                            <option value="service">服务咨询</option>
+                            <option value="complaint">投诉建议</option>
+                            <option value="other">其他问题</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">优先级 <span class="required">*</span></label>
+                        <select class="form-select" id="priority" required>
+                            <option value="" disabled selected>请选择优先级</option>
+                            <option value="low">低</option>
+                            <option value="medium">中</option>
+                            <option value="high">高</option>
+                            <option value="urgent">紧急</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">问题标题 <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="subject" placeholder="简要描述问题标题" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">问题详情 <span class="required">*</span></label>
+                    <textarea class="form-control" id="issueDescription" rows="5" placeholder="详细描述问题、操作步骤、报错信息等" required></textarea>
+                </div>
+
+                <!-- 底部操作按钮 -->
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back()">取消</button>
+                    <button type="submit" class="btn btn-primary">提交工单</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 后端接口基础地址（改为你的后端实际地址，如局域网IP）
+        const API_BASE = 'http://10.50.3.246:5000/api';
+
+        // 统一的API请求封装
+        async function apiRequest(url, options = {}) {
+            const defaultOptions = {
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            return fetch(url, { ...defaultOptions, ...options });
+        }
+
+        // 页面加载完成后初始化
+        window.onload = async () => {
+            // 检查登录状态
+            const userInfo = localStorage.getItem('userInfo');
+            if (!userInfo) {
+                alert('请先登录！');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 自动填写用户信息
+            const user = JSON.parse(userInfo);
+            if (document.getElementById('customerName')) {
+                document.getElementById('customerName').value = user.real_name || '';
+            }
+            if (document.getElementById('customerEmail')) {
+                document.getElementById('customerEmail').value = user.email || '';
+            }
+        };
+
+        // 核心：产品下拉框联动 - 选「其他」显示手动输入框，否则隐藏
+        const productSelect = document.getElementById('productSelect');
+        const productInput = document.getElementById('productInput');
+        productSelect.addEventListener('change', function() {
+            if (this.value === 'other') {
+                productInput.classList.remove('hidden');
+                productInput.required = true; // 选其他时，手动输入框为必填
+            } else {
+                productInput.classList.add('hidden');
+                productInput.required = false; // 选其他产品时，手动输入框非必填
+                productInput.value = ''; // 清空原有内容
+            }
+        });
+
+        // 工单提交核心逻辑 - 双邮箱发送：客服邮箱（详情）+ 客户邮箱（成功通知）
+        document.getElementById('ticketForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); // 阻止默认提交
+
+            // 获取产品值：选其他取手动输入值，否则取下拉值
+            let productValue = productSelect.value;
+            if (productValue === 'other') {
+                productValue = productInput.value.trim();
+            }
+
+            // 收集所有表单数据（字段名改为下划线格式，和后端完全匹配）
+            const formData = {
+                customer_name: document.getElementById('customerName').value.trim(),
+                customer_contact: document.getElementById('customerContact').value.trim(),
+                customer_email: document.getElementById('customerEmail').value.trim(),
+                product: productValue,
+                issue_type: document.getElementById('issueType').value,
+                priority: document.getElementById('priority').value,
+                title: document.getElementById('subject').value.trim(),
+                content: document.getElementById('issueDescription').value.trim()
+            };
+
+            // 简单必填项校验
+            for (const [key, value] of Object.entries(formData)) {
+                if (!value) {
+                    alert('请填写所有带*的必填项！');
+                    return;
+                }
+            }
+
+            try {
+                // 1. 提交工单到后端，保存到数据库
+                const ticketRes = await apiRequest(`${API_BASE}/ticket`, {
+                    method: 'POST',
+                    body: JSON.stringify(formData) // 直接传递匹配的字段名
+                });
+                const ticketResult = await ticketRes.json();
+
+                if (ticketResult.code === 200) {
+                    const ticketId = ticketResult.data.ticket_id;
+                    // 提交成功提示+跳转到工单列表
+                    alert(`工单提交成功！\n您的工单ID：${ticketId}`);
+                    window.location.href = 'ticket-list.html';
+                } else {
+                    alert(`工单提交失败：${ticketResult.msg}`);
+                }
+            } catch (err) {
+                console.error('提交异常：', err);
+                alert('提交失败，请检查后端服务是否正常运行！');
+            }
+        });
+
+    </script>
+</body>
+</html>
