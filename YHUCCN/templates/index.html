@@ -1,0 +1,505 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <!-- 导航栏 -->
+  {% include 'components/header.html' %}
+
+  <!-- 首页内容 -->
+  {% include 'components/home.html' %}
+
+  <!-- 公司介绍 -->
+  {% include 'components/about.html' %}
+
+  <!-- 业务介绍 -->
+  {% include 'components/services.html' %}
+
+  <!-- 用户案例 -->
+  {% include 'components/cases.html' %}
+
+  <!-- 解决方案 -->
+  {% include 'components/solutions.html' %}
+
+  <!-- 联系我们 -->
+  {% include 'components/contact.html' %}
+
+  <!-- 页脚 -->
+  {% include 'components/footer.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // 联系表单 AJAX 提交
+  const contactForm = document.getElementById('contactForm');
+  const submitContactBtn = document.getElementById('submitContactBtn');
+
+  if (contactForm && submitContactBtn) {
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const originalText = submitContactBtn.textContent;
+      submitContactBtn.textContent = '提交中...';
+      submitContactBtn.disabled = true;
+
+      const formData = new FormData(this);
+
+      fetch('/api/submit-form', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        submitContactBtn.textContent = originalText;
+        submitContactBtn.disabled = false;
+
+        if (data.success) {
+          showMessageModal(
+            '提交成功',
+            '您的留言已成功提交，我们会尽快与您取得联系。感谢您的留言！',
+            'success'
+          );
+          contactForm.reset();
+
+          const contactAnchor = document.getElementById('contact-anchor');
+          if (contactAnchor) {
+            contactAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        } else {
+          showMessageModal('提交失败', data.message, 'error');
+        }
+      })
+      .catch(error => {
+        submitContactBtn.textContent = originalText;
+        submitContactBtn.disabled = false;
+        console.error('Error:', error);
+        showMessageModal(
+          '提交失败',
+          '提交过程中出现错误，请稍后重试。',
+          'error'
+        );
+      });
+    });
+  }
+
+  // 微信二维码弹窗逻辑
+  const wechatIcon = document.getElementById('wechatIcon');
+  const wechatModal = document.getElementById('wechatModal');
+  const closeWechatModalBtn = document.getElementById('closeWechatModalBtn');
+
+  if (wechatIcon) {
+    wechatIcon.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (wechatModal) {
+        wechatModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    });
+  }
+
+  if (closeWechatModalBtn && wechatModal) {
+    closeWechatModalBtn.addEventListener('click', () => {
+      wechatModal.classList.add('hidden');
+      document.body.style.overflow = '';
+    });
+  }
+
+  if (wechatModal) {
+    wechatModal.addEventListener('click', (e) => {
+      if (e.target === wechatModal) {
+        wechatModal.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+    });
+  }
+
+  // 消息弹窗逻辑
+  const messageModal = document.getElementById('messageModal');
+  const closeMessageModalBtn = document.getElementById('closeMessageModalBtn');
+  const confirmMessageBtn = document.getElementById('confirmMessageBtn');
+  const messageModalTitle = document.getElementById('messageModalTitle');
+  const messageModalMessage = document.getElementById('messageModalMessage');
+  const successIcon = document.getElementById('successIcon');
+  const errorIcon = document.getElementById('errorIcon');
+
+  function showMessageModal(title, message, type = 'success') {
+    messageModalTitle.textContent = title;
+    messageModalMessage.innerHTML = message;
+
+    if (type === 'success') {
+      successIcon.classList.remove('hidden');
+      errorIcon.classList.add('hidden');
+    } else {
+      successIcon.classList.add('hidden');
+      errorIcon.classList.remove('hidden');
+    }
+
+    messageModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(() => {
+      messageModal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  }
+
+  function closeMessageModal() {
+    messageModal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  if (closeMessageModalBtn) {
+    closeMessageModalBtn.addEventListener('click', closeMessageModal);
+  }
+
+  if (confirmMessageBtn) {
+    confirmMessageBtn.addEventListener('click', closeMessageModal);
+  }
+
+  if (messageModal) {
+    messageModal.addEventListener('click', (e) => {
+      if (e.target === messageModal) {
+        closeMessageModal();
+      }
+    });
+  }
+
+  // 轮播图功能
+  document.addEventListener('DOMContentLoaded', function() {
+    const warehouseImages = [
+      '/jpg/1.jpg',
+      '/jpg/2.jpg',
+      '/jpg/3.jpg',
+      '/jpg/4.jpg'
+    ];
+
+    const testingImages = [
+      '/jpg/5.jpg',
+      '/jpg/5.jpg'
+    ];
+
+    function initCarousel(carouselContainer, images) {
+      const track = carouselContainer.querySelector('.carousel-track');
+      const dotsContainer = carouselContainer.querySelector('.carousel-dots');
+      const prevBtn = carouselContainer.querySelector('.carousel-prev');
+      const nextBtn = carouselContainer.querySelector('.carousel-next');
+
+      if (!track || !dotsContainer) return;
+
+      let currentIndex = 0;
+      let autoplayTimer = null;
+      const autoplayDelay = 5000;
+      let isPaused = false;
+      let lastManualChange = 0;
+
+      track.innerHTML = '';
+      dotsContainer.innerHTML = '';
+
+      images.forEach((image, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-slide';
+        slide.innerHTML = '<img src="' + image + '" alt="Image ' + (index + 1) + '" loading="lazy">';
+        track.appendChild(slide);
+
+        const dot = document.createElement('span');
+        dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
+        dot.setAttribute('data-index', index);
+        dotsContainer.appendChild(dot);
+
+        dot.addEventListener('click', () => {
+          goToSlide(index);
+          resetAutoplay();
+        });
+      });
+
+      function updateCarousel() {
+        track.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+        const dots = carouselContainer.querySelectorAll('.carousel-dot');
+        dots.forEach((dot, index) => {
+          if (index === currentIndex) {
+            dot.classList.add('active');
+          } else {
+            dot.classList.remove('active');
+          }
+        });
+      }
+
+      function goToSlide(index) {
+        currentIndex = index;
+        if (currentIndex >= images.length) currentIndex = 0;
+        if (currentIndex < 0) currentIndex = images.length - 1;
+        updateCarousel();
+      }
+
+      function nextSlide() {
+        goToSlide(currentIndex + 1);
+      }
+
+      function prevSlide() {
+        goToSlide(currentIndex - 1);
+      }
+
+      function stopAutoplay() {
+        if (autoplayTimer) {
+          clearTimeout(autoplayTimer);
+          autoplayTimer = null;
+        }
+      }
+
+      function resetAutoplay() {
+        stopAutoplay();
+        lastManualChange = Date.now();
+
+        if (!isPaused) {
+          autoplayTimer = setTimeout(() => {
+            nextSlide();
+            resetAutoplay();
+          }, autoplayDelay);
+        }
+      }
+
+      function startAutoplay() {
+        stopAutoplay();
+        isPaused = false;
+
+        const timeSinceLastManualChange = Date.now() - lastManualChange;
+
+        if (timeSinceLastManualChange >= autoplayDelay) {
+          nextSlide();
+          resetAutoplay();
+        } else {
+          const remainingTime = autoplayDelay - timeSinceLastManualChange;
+          autoplayTimer = setTimeout(() => {
+            nextSlide();
+            resetAutoplay();
+          }, remainingTime);
+        }
+      }
+
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          prevSlide();
+          resetAutoplay();
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          nextSlide();
+          resetAutoplay();
+        });
+      }
+
+      carouselContainer.addEventListener('mouseenter', () => {
+        isPaused = true;
+        stopAutoplay();
+      });
+
+      carouselContainer.addEventListener('mouseleave', () => {
+        startAutoplay();
+      });
+
+      lastManualChange = Date.now();
+      startAutoplay();
+    }
+
+    const desktopCarousels = document.querySelectorAll('.desktop-carousel .carousel-container');
+    desktopCarousels.forEach(container => {
+      const parent = container.closest('.warehouse-carousel, .testing-carousel');
+      if (parent && parent.classList.contains('testing-carousel')) {
+        initCarousel(container, testingImages);
+      } else {
+        initCarousel(container, warehouseImages);
+      }
+    });
+
+    const mobileCarousels = document.querySelectorAll('.mobile-carousel .carousel-container');
+    mobileCarousels.forEach(container => {
+      const parent = container.closest('.warehouse-carousel, .testing-carousel');
+      if (parent && parent.classList.contains('testing-carousel')) {
+        initCarousel(container, testingImages);
+      } else {
+        initCarousel(container, warehouseImages);
+      }
+    });
+
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        setTimeout(() => {
+          const activeTab = document.querySelector('.tab-pane.active');
+          if (activeTab) {
+            const carouselContainers = activeTab.querySelectorAll('.carousel-container');
+            carouselContainers.forEach(container => {
+              if (!container.getAttribute('data-initialized')) {
+                container.setAttribute('data-initialized', 'true');
+                if (activeTab.id === 'tab-warehouse') {
+                  initCarousel(container, warehouseImages);
+                } else if (activeTab.id === 'tab-testing') {
+                  initCarousel(container, testingImages);
+                }
+              }
+            });
+          }
+        }, 100);
+      });
+    });
+
+    const collapseHeaders = document.querySelectorAll('.collapse-header');
+    collapseHeaders.forEach(header => {
+      header.addEventListener('click', function() {
+        const collapseContent = this.nextElementSibling;
+        setTimeout(() => {
+          if (collapseContent.style.maxHeight && collapseContent.style.maxHeight !== '0px') {
+            const carouselContainers = collapseContent.querySelectorAll('.carousel-container');
+            carouselContainers.forEach(container => {
+              if (!container.getAttribute('data-initialized')) {
+                container.setAttribute('data-initialized', 'true');
+                const parent = container.closest('.warehouse-carousel, .testing-carousel');
+                if (parent && parent.classList.contains('testing-carousel')) {
+                  initCarousel(container, testingImages);
+                } else {
+                  initCarousel(container, warehouseImages);
+                }
+              }
+            });
+          }
+        }, 300);
+      });
+    });
+
+    // 标签页切换
+    const tabButtonsAll = document.querySelectorAll('.tab-button');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    function switchTab(tabId) {
+      tabButtonsAll.forEach(btn => {
+        btn.classList.remove('active', 'bg-white', 'text-primary', 'shadow-sm');
+        btn.classList.add('text-dark/70');
+      });
+
+      const targetButton = document.querySelector('.tab-button[data-tab="' + tabId + '"]');
+      if (targetButton) {
+        targetButton.classList.add('active', 'bg-white', 'text-primary', 'shadow-sm');
+        targetButton.classList.remove('text-dark/70');
+      }
+
+      tabPanes.forEach(pane => {
+        pane.classList.add('hidden');
+      });
+
+      const activePane = document.getElementById('tab-' + tabId);
+      if (activePane) {
+        activePane.classList.remove('hidden');
+      }
+    }
+
+    tabButtonsAll.forEach(button => {
+      button.addEventListener('click', function() {
+        const tabId = this.getAttribute('data-tab');
+        switchTab(tabId);
+      });
+    });
+
+    if (tabButtonsAll.length > 0) {
+      const firstTab = tabButtonsAll[0].getAttribute('data-tab');
+      switchTab(firstTab);
+    }
+
+    // 折叠面板
+    const collapseHeadersAll = document.querySelectorAll('.collapse-header');
+
+    collapseHeadersAll.forEach(header => {
+      header.addEventListener('click', function() {
+        const collapseItem = this.closest('.collapse-item');
+        const collapseContent = collapseItem.querySelector('.collapse-content');
+        const collapseIcon = this.querySelector('.fa-chevron-down');
+
+        if (collapseContent.style.maxHeight && collapseContent.style.maxHeight !== '0px') {
+          collapseContent.style.maxHeight = '0px';
+          collapseIcon.style.transform = 'rotate(0deg)';
+        } else {
+          document.querySelectorAll('.collapse-content').forEach(content => {
+            content.style.maxHeight = '0px';
+          });
+          document.querySelectorAll('.collapse-header .fa-chevron-down').forEach(icon => {
+            icon.style.transform = 'rotate(0deg)';
+          });
+
+          const contentHeight = collapseContent.scrollHeight + 'px';
+          collapseContent.style.maxHeight = contentHeight;
+          collapseIcon.style.transform = 'rotate(180deg)';
+
+          setTimeout(() => {
+            collapseItem.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+              inline: 'nearest'
+            });
+          }, 100);
+        }
+      });
+    });
+
+    // 导航栏下拉菜单点击
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    const mobileDropdownItems = document.querySelectorAll('.mobile-dropdown-item');
+
+    function handleDropdownClick(submenu) {
+      const resourceShowcase = document.getElementById('resource-showcase');
+      if (resourceShowcase) {
+        resourceShowcase.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+
+      setTimeout(() => {
+        if (window.innerWidth >= 768) {
+          switchTab(submenu);
+        } else {
+          const collapseHeadersAll = document.querySelectorAll('.collapse-header');
+          collapseHeadersAll.forEach(header => {
+            if (header.textContent.indexOf({
+              'warehouse': '备品备件',
+              'testing': '实验环境',
+              'knowledge': '知识库'
+            }[submenu]) !== -1) {
+              header.click();
+            }
+          });
+        }
+      }, 800);
+    }
+
+    dropdownItems.forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const submenu = this.getAttribute('data-submenu');
+        if (submenu) {
+          handleDropdownClick(submenu);
+        }
+      });
+    });
+
+    mobileDropdownItems.forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        if (mobileMenu && mobileMenuBtn) {
+          mobileMenu.classList.remove('open');
+          const icon = mobileMenuBtn.querySelector('i');
+          icon.classList.remove('fa-times');
+          icon.classList.add('fa-bars');
+        }
+
+        const submenu = this.getAttribute('data-submenu');
+        if (submenu) {
+          handleDropdownClick(submenu);
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

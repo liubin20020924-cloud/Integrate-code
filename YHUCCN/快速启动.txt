@@ -1,0 +1,152 @@
+=======================================================
+    云户科技网站 - Python Flask版本 快速启动指南
+=======================================================
+
+【方法一】最简单的方式（推荐新手）
+
+1. 双击运行: run_sqlite.bat
+
+或者手动执行：
+
+2. 打开命令行/PowerShell，进入项目目录:
+   cd c:\gzkf\cloud-doors
+
+3. 安装依赖:
+   pip install -r requirements.txt
+
+4. 初始化数据库:
+   python init_db_sqlite.py
+
+5. 启动应用:
+   python app_sqlite.py
+
+6. 打开浏览器访问: http://localhost:5000
+
+-------------------------------------------------------
+
+【方法二】使用MySQL数据库
+
+1. 确保MySQL已安装并运行
+
+2. 创建数据库:
+   CREATE DATABASE clouddoors_db DEFAULT CHARACTER SET utf8mb4;
+
+3. 编辑 .env 文件，配置数据库连接:
+   DB_HOST=localhost
+   DB_USER=root
+   DB_PASSWORD=你的MySQL密码
+   DB_NAME=clouddoors_db
+   DB_PORT=3306
+
+4. 安装依赖:
+   pip install -r requirements.txt
+
+5. 初始化数据库:
+   python init_db.py
+
+6. 启动应用:
+   python app.py
+
+7. 打开浏览器访问: http://localhost:5000
+
+-------------------------------------------------------
+
+【功能测试】
+
+- 首页: http://localhost:5000
+- 留言管理: http://localhost:5000/admin/messages
+- API接口: http://localhost:5000/api/messages
+
+-------------------------------------------------------
+
+【主要功能】
+
+✅ 首页 - 公司介绍和CTA按钮
+✅ 专业服务 - 备品备件、实验环境、知识库（含轮播图）
+✅ 业务介绍 - 9个核心业务展示
+✅ 用户案例 - 3个客户案例
+✅ 解决方案 - 4个解决方案
+✅ 联系我们 - 表单提交和联系方式
+✅ 留言管理后台 - 查看、搜索、分页
+
+-------------------------------------------------------
+
+【页面组件说明】
+
+所有页面已拆分为独立组件，存放在 templates/components/ 目录:
+
+- header.html      - 导航栏
+- home.html        - 首页横幅
+- about.html       - 专业服务
+- services.html     - 业务介绍
+- cases.html        - 用户案例
+- solutions.html    - 解决方案
+- contact.html      - 联系我们
+- footer.html       - 页脚
+
+-------------------------------------------------------
+
+【测试环境】
+
+运行测试脚本检查应用是否正常:
+python test_app.py
+
+所有测试应显示 [OK]
+
+-------------------------------------------------------
+
+【停止服务】
+
+在命令行中按 Ctrl+C 即可停止服务
+
+-------------------------------------------------------
+
+【问题排查】
+
+1. 依赖安装失败?
+   → 升级pip: python -m pip install --upgrade pip
+   → 再运行: pip install -r requirements.txt
+
+2. 数据库错误?
+   → 使用SQLite版本（不需要配置数据库）
+   → 运行: python app_sqlite.py
+
+3. 页面图片不显示?
+   → 确保 jpg/ 文件夹存在并包含所有图片文件
+
+4. 端口被占用?
+   → 修改app.py或app_sqlite.py中的端口号:
+     app.run(host='0.0.0.0', port=5001, debug=True)
+
+-------------------------------------------------------
+
+【文件说明】
+
+重要文件:
+- app_sqlite.py       - SQLite版本启动文件（推荐）
+- app.py              - MySQL版本启动文件
+- init_db_sqlite.py    - SQLite数据库初始化
+- init_db.py           - MySQL数据库初始化
+- test_app.py          - 测试脚本
+- requirements.txt     - Python依赖列表
+- .env                - MySQL配置文件
+
+文档文件:
+- README.md           - 项目说明
+- 使用说明.md         - 详细使用文档
+- 项目完成总结.md     - 完整项目总结
+
+启动脚本:
+- run_sqlite.bat      - Windows一键启动（SQLite）
+- run.bat             - Windows一键启动（MySQL）
+
+-------------------------------------------------------
+
+【技术支持】
+
+如有问题，请查看:
+1. 使用说明.md - 详细文档
+2. test_app.py - 运行测试
+3. 浏览器控制台（F12）- 查看前端错误
+
+=======================================================
