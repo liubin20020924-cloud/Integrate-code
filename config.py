@@ -30,11 +30,14 @@ class BaseConfig:
     JSON_AS_ASCII = False
 
     # Session 配置
-    SESSION_COOKIE_SAMESITE = 'None'
+    SESSION_COOKIE_SAMESITE = 'Lax'
     SESSION_COOKIE_HTTPONLY = True
 
     # 最大上传大小
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB
+
+    # 静态文件缓存时间
+    STATIC_CACHE_TIME = 3600  # 静态文件缓存1小时
 
 
 # ============================================
@@ -95,7 +98,7 @@ CONTACT_EMAIL = 'dora.dong@cloud-doors.com'
 # ============================================
 # Trilium 服务器配置
 TRILIUM_SERVER_URL = 'http://10.10.10.250:8080'
-TRILIUM_TOKEN = 'geJWc61h07w7_OSwK2FqHZ4PaV3F8K8iCx/Rus2EaIJn1uyNyrRM6zOk='
+TRILIUM_TOKEN = 'CAdIBlRbkihf_vZGsEocvjR7xMjb0HdSqXaDR+MBpTRUNdX+W99NnWxw='
 TRILIUM_SERVER_HOST = '10.10.10.250:8080'
 
 # Trilium 登录配置
@@ -141,7 +144,6 @@ ENABLE_IMAGE_PROXY = True
 ENABLE_EDGE_OPTIMIZATION = True
 EDGE_COMPATIBILITY_MODE = True
 CACHE_CONTROL_HEADERS = True
-STATIC_CACHE_TIME = 3600  # 静态文件缓存1小时
 
 
 # ============================================

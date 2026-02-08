@@ -40,6 +40,8 @@ body {
 /* Logo 样式 */
 .logo {
     height: 60px;
+    width: auto;
+    max-width: 100%;
     object-fit: contain;
 }
 

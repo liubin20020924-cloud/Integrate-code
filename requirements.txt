@@ -9,10 +9,15 @@ Flask-Session==0.5.0
 flask-socketio==5.3.6
 python-socketio==5.11.0
 
+# WebSocket 异步驱动（eventlet 优先，gevent 备选）
+eventlet==0.33.3
+gevent==23.9.1
+
 # 数据库相关
 PyMySQL==1.1.0
 mysql-connector-python==8.0.33
 dbutils==3.0.3
+SQLAlchemy==2.0.35
 
 # 其他依赖
 python-dotenv==1.0.0

@@ -67,6 +67,14 @@ html {
     scroll-behavior: smooth;
 }
 
+/* 全局图片尺寸控制 */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+
 body {
     background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
     color: var(--gray-700);
@@ -78,8 +86,8 @@ body {
 }
 
 .container {
-    max-width: 1600px;
-    padding: 0 10px;
+    max-width: 1400px;
+    padding: 0 20px;
     margin: 0 auto;
 }
 
@@ -87,6 +95,7 @@ body {
 .logo-img {
     height: 60px;
     width: auto;
+    max-width: 200px;
     object-fit: contain;
     filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
     background: rgba(255, 255, 255, 0.9);
@@ -95,12 +104,13 @@ body {
 }
 
 .logo-img-large {
-    height: 100px;
+    height: 80px;
     width: auto;
+    max-width: 250px;
     object-fit: contain;
     background: rgba(255, 255, 255, 0.95);
     border-radius: 12px;
-    padding: 10px 15px;
+    padding: 8px 12px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
@@ -731,8 +741,10 @@ body {
 .login-card {
     background: white;
     border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-xl);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(0, 0, 0, 0.3);
     overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
 }
 
 .login-header {
@@ -740,10 +752,23 @@ body {
     color: white;
     padding: 40px 30px;
     text-align: center;
+    border-bottom: 4px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* 登录页面的Logo图片特殊控制 - 移除固定高度限制,使用自适应 */
+.login-header .logo-img-large {
+    max-width: 280px !important;
+    width: auto !important;
+    height: 70px !important;
+    object-fit: contain !important;
+    display: block;
+    margin: 0 auto !important;
 }
 
 .login-body {
     padding: 40px;
+    background: #ffffff;
 }
 
 .login-logo {
@@ -770,16 +795,21 @@ body {
 .back-home {
     text-align: center;
     margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid var(--gray-200);
 }
 
 .back-home a {
-    color: var(--gray-500);
+    color: var(--gray-600);
     text-decoration: none;
     transition: var(--transition);
+    font-size: 14px;
+    display: inline-block;
 }
 
 .back-home a:hover {
     color: var(--primary);
+    transform: translateY(-2px);
 }
 
 /* ========================================
@@ -991,7 +1021,7 @@ table {
 
     .container {
         max-width: 100%;
-        padding: 0 10px;
+        padding: 0 15px;
     }
 
     .header {
