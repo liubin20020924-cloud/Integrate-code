@@ -54,3 +54,6 @@ uploads/
 
 # Session
 flask_session/
+
+# 日志目录
+logs/
