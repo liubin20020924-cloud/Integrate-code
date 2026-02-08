@@ -21,10 +21,10 @@ load_dotenv()
 class BaseConfig:
     """基础配置类"""
     # Flask 安全密钥 - 生产环境请修改
-    SECRET_KEY = 'yihu-website-secret-key-2024-CHANGE-ME'
+    SECRET_KEY = os.getenv('FLASK_SECRET_KEY', 'yihu-website-secret-key-2024-CHANGE-ME')
 
     # 调试模式
-    DEBUG = True  # 生产环境设置为 False
+    DEBUG = os.getenv('FLASK_DEBUG', 'True').lower() == 'true'  # 生产环境设置为 False
 
     # JSON 中文支持
     JSON_AS_ASCII = False
@@ -43,23 +43,23 @@ class BaseConfig:
 # ============================================
 # Flask 服务器配置
 # ============================================
-FLASK_HOST = '0.0.0.0'  # 监听所有网卡
-FLASK_PORT = 5000  # 服务端口
+FLASK_HOST = os.getenv('FLASK_HOST', '0.0.0.0')  # 监听所有网卡
+FLASK_PORT = int(os.getenv('FLASK_PORT', '5000'))  # 服务端口
 
 
 # ============================================
 # 数据库配置 - 统一使用 MariaDB
 # ============================================
 # 通用数据库配置（三个系统共用）
-DB_HOST = '10.10.10.250'
-DB_PORT = 3306
-DB_USER = 'root'
-DB_PASSWORD = 'Nutanix/4u123!'
+DB_HOST = os.getenv('DB_HOST', '10.10.10.250')
+DB_PORT = int(os.getenv('DB_PORT', '3306'))
+DB_USER = os.getenv('DB_USER', 'root')
+DB_PASSWORD = os.getenv('DB_PASSWORD', 'Nutanix/4u123!')
 
 # 各系统数据库名称
-DB_NAME_HOME = 'clouddoors_db'  # 官网系统数据库
-DB_NAME_KB = 'YHKB'              # 知识库系统数据库
-DB_NAME_CASE = 'casedb'           # 工单系统数据库
+DB_NAME_HOME = os.getenv('DB_NAME_HOME', 'clouddoors_db')  # 官网系统数据库
+DB_NAME_KB = os.getenv('DB_NAME_KB', 'YHKB')              # 知识库系统数据库
+DB_NAME_CASE = os.getenv('DB_NAME_CASE', 'casedb')           # 工单系统数据库
 
 # SQLite 数据库配置（官网系统备用）
 SQLITE_DB_PATH = os.path.join(os.path.dirname(__file__), 'instance', 'clouddoors.db')
@@ -75,35 +75,35 @@ DB_POOL_MAX_SHARED = 5
 # 邮件配置
 # ============================================
 # SMTP 服务器配置（通用）
-SMTP_SERVER = 'smtp.qq.com'
-SMTP_PORT = 465
-SMTP_USERNAME = '1919516011@qq.com'
-SMTP_PASSWORD = 'xrbvyjjfkpdmcfbj'  # QQ邮箱授权码
-EMAIL_SENDER = '1919516011@qq.com'
+SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.qq.com')
+SMTP_PORT = int(os.getenv('SMTP_PORT', '465'))
+SMTP_USERNAME = os.getenv('SMTP_USERNAME', '1919516011@qq.com')
+SMTP_PASSWORD = os.getenv('SMTP_PASSWORD', '')  # 必须从环境变量读取
+EMAIL_SENDER = os.getenv('EMAIL_SENDER', '1919516011@qq.com')
 
 # 官网邮件配置（如果使用Gmail）
-MAIL_SERVER = 'smtp.gmail.com'
-MAIL_PORT = 587
+MAIL_SERVER = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+MAIL_PORT = int(os.getenv('MAIL_PORT', '587'))
 MAIL_USE_TLS = True
-MAIL_USERNAME = ''  # 如需使用请填写
-MAIL_PASSWORD = ''  # 如需使用请填写
-MAIL_DEFAULT_SENDER = 'noreply@cloud-doors.com'
+MAIL_USERNAME = os.getenv('MAIL_USERNAME', '')  # 如需使用请填写
+MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', '')  # 如需使用请填写
+MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'noreply@cloud-doors.com')
 
 # 联系邮箱
-CONTACT_EMAIL = 'dora.dong@cloud-doors.com'
+CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', 'dora.dong@cloud-doors.com')
 
 
 # ============================================
 # 知识库系统配置
 # ============================================
 # Trilium 服务器配置
-TRILIUM_SERVER_URL = 'http://10.10.10.250:8080'
-TRILIUM_TOKEN = 'CAdIBlRbkihf_vZGsEocvjR7xMjb0HdSqXaDR+MBpTRUNdX+W99NnWxw='
-TRILIUM_SERVER_HOST = '10.10.10.250:8080'
+TRILIUM_SERVER_URL = os.getenv('TRILIUM_SERVER_URL', 'http://10.10.10.250:8080')
+TRILIUM_TOKEN = os.getenv('TRILIUM_TOKEN', '')  # 必须从环境变量读取
+TRILIUM_SERVER_HOST = os.getenv('TRILIUM_SERVER_HOST', '10.10.10.250:8080')
 
 # Trilium 登录配置
-TRILIUM_LOGIN_USERNAME = ''  # 如需认证请填写用户名
-TRILIUM_LOGIN_PASSWORD = 'Nutanix/4u123!'
+TRILIUM_LOGIN_USERNAME = os.getenv('TRILIUM_LOGIN_USERNAME', '')  # 如需认证请填写用户名
+TRILIUM_LOGIN_PASSWORD = os.getenv('TRILIUM_LOGIN_PASSWORD', 'Nutanix/4u123!')
 
 # 知识库登录配置
 SESSION_TIMEOUT = 180  # Session超时时间（秒），3小时
@@ -161,30 +161,53 @@ CASE_PREFIX = '/case'  # 工单系统前缀
 def check_config():
     """检查关键配置项"""
     warnings = []
+    errors = []
 
     # 检查生产环境配置
     if not BaseConfig.DEBUG:
         if BaseConfig.SECRET_KEY == 'yihu-website-secret-key-2024-CHANGE-ME':
-            warnings.append('警告: 生产环境使用了默认SECRET_KEY，请修改！')
+            errors.append('严重错误: 生产环境使用了默认SECRET_KEY，请立即修改！')
 
-    # 检查数据库配置
-    if not DB_PASSWORD or DB_PASSWORD == 'Nutanix/4u123!':
-        warnings.append('提示: 数据库密码使用默认值，建议修改')
+    # 检查敏感配置是否从环境变量读取
+    if DB_PASSWORD == 'Nutanix/4u123!':
+        warnings.append('警告: 数据库密码使用默认值，建议从环境变量设置强密码')
+
+    if not SMTP_PASSWORD:
+        errors.append('严重错误: SMTP_PASSWORD 未设置，邮件功能将无法使用')
+
+    if not TRILIUM_TOKEN:
+        errors.append('严重错误: TRILIUM_TOKEN 未设置，知识库功能将无法使用')
 
     # 检查邮件配置
     if SMTP_USERNAME and '@qq.com' in SMTP_USERNAME:
         warnings.append('提示: 邮件配置使用QQ邮箱，确保已配置正确的授权码')
 
-    return warnings
+    # 检查 .env 文件是否存在
+    if not os.path.exists('.env'):
+        warnings.append('提示: 未找到 .env 文件，将使用默认配置（不推荐用于生产环境）')
+
+    return warnings, errors
 
 
 
 # 启动时自动检查配置
 if __name__ != '__main__':
-    config_warnings = check_config()
-    if config_warnings:
+    config_warnings, config_errors = check_config()
+    if config_warnings or config_errors:
         print("=" * 60)
         print("配置检查结果:")
-        for warning in config_warnings:
-            print(f"  {warning}")
+        if config_errors:
+            print("\n【严重错误】:")
+            for error in config_errors:
+                print(f"  [X] {error}")
+        if config_warnings:
+            print("\n【警告提示】:")
+            for warning in config_warnings:
+                print(f"  [!] {warning}")
+        print("=" * 60)
+        if config_errors:
+            print("\n注意：存在严重配置错误，建议立即修复！\n")
+    else:
+        print("=" * 60)
+        print("配置检查通过 [OK]")
         print("=" * 60)

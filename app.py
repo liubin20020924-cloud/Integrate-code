@@ -8,7 +8,7 @@ from flask_socketio import SocketIO
 import jinja2
 import config
 from common.db_manager import get_pool
-from routes import register_all_routes, register_socketio_events, init_case_database
+from routes_new import register_all_routes, register_socketio_events, init_case_database
 import os
 from datetime import timedelta
 
