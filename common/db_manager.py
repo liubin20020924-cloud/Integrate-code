@@ -49,7 +49,8 @@ def get_pool(db_name):
         'user': config.DB_USER,
         'password': config.DB_PASSWORD,
         'database': db_name_map[db_name],
-        'charset': 'utf8mb4'
+        'charset': 'utf8mb4',
+        'cursorclass': pymysql.cursors.DictCursor  # 使用字典游标
     }
 
     # 创建连接池
