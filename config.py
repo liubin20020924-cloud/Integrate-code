@@ -48,7 +48,7 @@ FLASK_PORT = 5000  # 服务端口
 # 数据库配置 - 统一使用 MariaDB
 # ============================================
 # 通用数据库配置（三个系统共用）
-DB_HOST = '10.10.10.254'
+DB_HOST = '10.10.10.250'
 DB_PORT = 3306
 DB_USER = 'root'
 DB_PASSWORD = 'Nutanix/4u123!'
@@ -94,9 +94,9 @@ CONTACT_EMAIL = 'dora.dong@cloud-doors.com'
 # 知识库系统配置
 # ============================================
 # Trilium 服务器配置
-TRILIUM_SERVER_URL = 'http://10.10.10.254:8080'
+TRILIUM_SERVER_URL = 'http://10.10.10.250:8080'
 TRILIUM_TOKEN = 'geJWc61h07w7_OSwK2FqHZ4PaV3F8K8iCx/Rus2EaIJn1uyNyrRM6zOk='
-TRILIUM_SERVER_HOST = '10.10.10.254:8080'
+TRILIUM_SERVER_HOST = '10.10.10.250:8080'
 
 # Trilium 登录配置
 TRILIUM_LOGIN_USERNAME = ''  # 如需认证请填写用户名
