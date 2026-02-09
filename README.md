@@ -503,7 +503,7 @@ MIT License
 
 ## 📞 联系方式
 
-- **邮箱**: dora.dong@cloud-doors.com
+- **邮箱**: Leon.Liu@cloud-doors.com
 - **工单系统**: http://your-server:5000/case
 - **官网**: http://your-server:5000/
 
