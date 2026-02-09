@@ -160,24 +160,35 @@
   /* 导航链接悬停效果 */
   .desktop-nav a:hover:not([href="#contact"]) {
     color: #0A4DA2;
+    background: #A2D93D;
+    border-radius: 6px;
   }
-  
+
   .desktop-nav a[href="#contact"]:hover {
     background: rgba(10, 77, 162, 0.9);
   }
-  
+
   /* 移动端菜单样式 */
   .mobile-menu.open {
     max-height: 500px !important;
   }
-  
-  .mobile-menu a:hover {
+
+  .mobile-menu a:hover:not([href="#contact"]) {
     color: #0A4DA2;
+    background: #A2D93D;
+    border-radius: 6px;
+    padding-left: 16px;
   }
-  
+
+  .mobile-menu a[href="#contact"]:hover {
+    background: rgba(10, 77, 162, 0.9);
+  }
+
   .mobile-dropdown-item:hover {
-    background: #f9fafb;
+    background: #A2D93D;
     color: #0A4DA2;
+    border-radius: 4px;
+    padding-left: 16px;
   }
 </style>
 
