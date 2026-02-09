@@ -3,7 +3,7 @@
 整合官网、知识库、工单三个系统
 使用统一路由管理
 """
-from flask import Flask, make_response, request
+from flask import Flask, request
 from flask_socketio import SocketIO
 import jinja2
 import config

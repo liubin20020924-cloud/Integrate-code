@@ -6,14 +6,9 @@ from flask import Blueprint, render_template, request, redirect, url_for, jsonif
 from flask_socketio import emit, join_room, leave_room
 from datetime import datetime
 import re
-import hashlib
 import uuid
 import pymysql
 import os
-import smtplib
-from email.mime.text import MIMEText
-from email.header import Header
-from email.utils import formataddr
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import sys
@@ -480,37 +475,17 @@ def register_all_routes(app):
     @app.route('/kb/MGMT/')
     @login_required(roles=['admin'])
     def kb_management():
-        """管理页面 - 使用分页加载优化性能"""
+        """管理页面 - 前端通过 AJAX 加载数据"""
         try:
-            # 使用分页加载第一页数据，而非加载所有记录
-            page = request.args.get('page', 1, type=int)
-            per_page = 20  # 每页显示20条记录
-            records, total_count = fetch_records_with_pagination(page, per_page)
             user = get_kb_current_user()
-
-            total_pages = (total_count + per_page - 1) // per_page
-            showing_start = (page - 1) * per_page + 1
-            showing_end = min(page * per_page, total_count)
-
+            # 只传递必要的用户信息，数据通过前端 AJAX 加载
             return render_template('kb_management.html',
-                                 records=records,
-                                 total_count=total_count,
-                                 showing_count=showing_end - showing_start + 1 if records else 0,
-                                 page=page,
-                                 per_page=per_page,
-                                 total_pages=total_pages,
-                                 showing_start=showing_start,
-                                 showing_end=showing_end,
                                  current_user=user,
                                  debug_mode=DEBUG_MODE)
         except Exception as e:
             return render_template('kb_management.html',
-                                 records=[],
                                  error=str(e),
-                                 total_count=0,
-                                 page=1,
-                                 per_page=20,
-                                 total_pages=1)
+                                 debug_mode=DEBUG_MODE)
 
     # 知识库用户管理路由
     @app.route('/kb/auth/users')
@@ -1820,11 +1795,11 @@ def register_socketio_events(socketio):
 
     @socketio.on('connect')
     def handle_connect():
-        print(f'客户端已连接：{request.sid}')
+        pass
 
     @socketio.on('disconnect')
     def handle_disconnect():
-        print(f'客户端已断开连接：{request.sid}')
+        pass
 
     @socketio.on('join_ticket')
     def handle_join_ticket(data):
@@ -1835,7 +1810,6 @@ def register_socketio_events(socketio):
         if ticket_id:
             room = f'ticket_{ticket_id}'
             join_room(room)
-            print(f'{user_name} ({user_type}) 加入了工单 {ticket_id} 聊天室')
 
             emit('notification', {
                 'message': f'{user_name} 加入了聊天',
@@ -1851,7 +1825,6 @@ def register_socketio_events(socketio):
         if ticket_id:
             room = f'ticket_{ticket_id}'
             leave_room(room)
-            print(f'{user_name} ({user_type}) 离开了工单 {ticket_id} 聊天室')
 
             emit('notification', {
                 'message': f'{user_name} 离开了聊天',
@@ -1900,7 +1873,6 @@ def register_socketio_events(socketio):
 
             return {'success': True, 'message': '消息发送成功'}
         except Exception as e:
-            print(f"发送消息异常：{e}")
             return {'success': False, 'message': f'发送失败：{str(e)}'}
 
 
@@ -1951,10 +1923,8 @@ def init_case_database():
         cursor.execute(create_ticket_sql)
         cursor.execute(create_message_sql)
         conn.commit()
-        print("工单系统数据库表初始化成功")
     except pymysql.MySQLError as e:
         conn.rollback()
-        print(f"工单系统数据库初始化失败：{e}")
     finally:
         cursor.close()
         conn.close()
