@@ -279,8 +279,10 @@ def register_all_routes(app):
             if not old_password or not new_password:
                 return error_response('请输入旧密码和新密码', 400)
 
-            # 验证新密码
-            is_valid, msg = validate_password(new_password)
+            # 验证新密码（检查用户角色以应用适当的安全级别）
+            user_role = session.get('role', 'user')
+            is_admin = user_role == 'admin'
+            is_valid, msg = validate_password(new_password, is_admin=is_admin)
             if not is_valid:
                 return error_response(msg, 400)
 
@@ -1255,9 +1257,17 @@ def register_all_routes(app):
     def case_serve_frontend(filename):
         """提供前端文件"""
         try:
-            return render_template(f'case/{filename}')
-        except:
-            return "404 - 文件未找到", 404
+            # 确定模板路径
+            if not filename.endswith('.html'):
+                template_path = f'case/{filename}.html'
+            else:
+                template_path = f'case/{filename}'
+            
+            logger.info(f"Rendering template: {template_path}")
+            return render_template(template_path)
+        except Exception as e:
+            logger.error(f"Failed to render template {filename}: {e}")
+            return f"404 - 文件未找到: {filename}", 404
 
     @app.route('/case/api/login', methods=['POST'])
     def case_login():
@@ -1297,46 +1307,6 @@ def register_all_routes(app):
         except Exception as e:
             log_exception(logger, "登录失败")
             return server_error_response(message=f'登录失败：{str(e)}')
-
-    @app.route('/case/api/register', methods=['POST'])
-    def case_register():
-        """注册新用户"""
-        try:
-            log_request(logger, request, '/case/api/register')
-            data = request.get_json()
-            username = data.get('username', '').strip()
-            email = data.get('email', '').strip()
-            password = data.get('password', '').strip()
-
-            # 简单验证
-            if not username:
-                return error_response(message='用户名不能为空')
-            if not email:
-                return error_response(message='邮箱不能为空')
-            if not password:
-                return error_response(message='密码不能为空')
-
-            is_valid_email, email_error = validate_email(email)
-            if not is_valid_email:
-                return error_response(message=email_error)
-
-            # 使用统一认证创建用户
-            success, result = create_user(
-                username=username,
-                email=email,
-                password=password,
-                display_name=username,
-                real_name=username,
-                role='customer'  # 默认注册为客户角色
-            )
-
-            if not success:
-                return error_response(message=result)
-
-            return success_response(message='注册成功')
-        except Exception as e:
-            log_exception(logger, "注册失败")
-            return server_error_response(message=f'注册失败：{str(e)}')
 
     @app.route('/case/api/logout', methods=['POST'])
     def case_logout():

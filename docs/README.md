@@ -1,174 +1,306 @@
 # 文档目录
 
-本目录包含云户科技网站项目的所有文档文件。
+> 云户科技网站项目完整文档索引
 
-## 系统说明文档
+---
 
-### [官网系统说明](./HOME_SYSTEM_GUIDE.md)
-详细介绍官网系统的架构、功能、API接口和部署方法。
-- 官网系统架构和功能介绍
-- 数据库设计和API接口
+## 📖 快速导航
+
+### 新手入门
+1. [项目总览](../README.md) - 了解项目概况
+2. [快速开始](../README.md#快速开始) - 快速启动项目
+3. [安全配置检查](../README.md#检查配置安全) - 确保配置安全
+
+### 系统说明
+1. [官网系统说明](./HOME_SYSTEM_GUIDE.md) - 官网系统完整指南
+2. [知识库系统说明](./KB_SYSTEM_GUIDE.md) - 知识库系统完整指南
+3. [工单系统说明](./CASE_SYSTEM_GUIDE.md) - 工单系统完整指南
+4. [统一用户管理说明](./UNIFIED_SYSTEM_GUIDE.md) - 用户管理完整指南
+
+### 安全相关
+1. [安全改进文档](./SECURITY_IMPROVEMENTS.md) - 安全优化总结
+
+---
+
+## 📚 文档列表
+
+### 系统说明文档
+
+#### [官网系统说明](./HOME_SYSTEM_GUIDE.md)
+详细介绍官网系统的架构、功能、API 接口和部署方法。
+
+**内容包括**：
+- 系统架构和功能介绍
+- 路由和 API 接口说明
+- 模板和组件说明
+- 数据库设计
 - 部署和维护指南
-- 故障排除和安全建议
+- 故障排除
 
-### [知识库系统说明](./KB_SYSTEM_GUIDE.md)
-详细介绍知识库系统的架构、功能、认证和Trilium集成。
-- 知识库系统架构和功能介绍
+**适合人群**：所有用户、运维人员
+
+---
+
+#### [知识库系统说明](./KB_SYSTEM_GUIDE.md)
+详细介绍知识库系统的架构、功能、认证和 Trilium 集成。
+
+**内容包括**：
+- 系统架构和功能介绍
 - 用户认证和权限管理
-- Trilium集成配置
-- 数据库设计和API接口
-
-### [工单系统说明](./CASE_SYSTEM_GUIDE.md)
-详细介绍工单系统的架构、功能、实时聊天和邮件通知。
-- 工单系统架构和功能介绍
-- 实时聊天和WebSocket
-- 邮件通知和附件管理
-- 数据库设计和API接口
-
-### [统一用户管理系统说明](./UNIFIED_SYSTEM_GUIDE.md)
-详细介绍统一用户管理系统的架构和功能。
-- 统一用户管理系统架构
-- 用户管理功能详解
-- API接口和安全配置
+- Trilium 集成配置
+- 数据库设计
+- API 接口说明
 - 部署和使用指南
 
-## 用户管理相关
+**适合人群**：所有用户、开发人员、运维人员
 
-### [统一用户管理系统详细指南](./UNIFIED_USER_MANAGEMENT.md)
-- 详细介绍统一用户管理系统的功能和使用方法
+---
+
+#### [工单系统说明](./CASE_SYSTEM_GUIDE.md)
+详细介绍工单系统的架构、功能、实时聊天和邮件通知。
+
+**内容包括**：
+- 系统架构和功能介绍
+- 实时聊天和 WebSocket
+- 邮件通知
+- 工单流程说明
+- 数据库设计
 - API 接口说明
-- 部署步骤和故障排查
+- 部署和使用指南
 
-### [用户表整合修改指南](./MERGE_USERS_GUIDE.md)
-- 可选方案：如何将知识库和工单系统的用户表合并
-- 代码修改步骤
-- 数据迁移脚本
+**适合人群**：客服人员、开发人员、运维人员
 
-### [统一用户管理系统实施总结](./UNIFIED_IMPLEMENTATION_SUMMARY.md)
-- 已完成的工作总结
-- 功能清单
-- 技术特点和后续优化建议
+---
 
-## 开发相关
+#### [统一用户管理系统说明](./UNIFIED_SYSTEM_GUIDE.md)
+详细介绍统一用户管理系统的架构和功能。
 
-### [代码风格指南](./STYLE_GUIDE.md)
-- 项目代码规范
-- 命名约定
-- 最佳实践
+**内容包括**：
+- 统一用户管理系统架构
+- 用户管理功能详解
+- API 接口说明
+- 安全配置
+- 部署和使用指南
 
-## 项目总览
+**适合人群**：管理员、开发人员
 
-### [项目 README](../README.md)
-- 项目介绍
-- 系统架构
-- 快速开始指南
+---
 
-## 数据库脚本
+### 安全文档
 
-数据库初始化脚本位于项目根目录：
+#### [安全改进文档](./SECURITY_IMPROVEMENTS.md)
+记录已完成的安全优化工作。
 
-- `init_database.sql` - 标准数据库初始化（独立用户表）
-- `init_database_shared_user.sql` - 共用用户表版本（可选）
+**内容包括**：
+- 已完成的 4 个高优先级安全优化
+- 删除冗余文件
+- 增强密码强度验证
+- 环境变量检查机制
+- 下一步操作建议
 
-## 项目结构
+**适合人群**：所有用户、运维人员
+
+---
+
+### 技术文档
+
+#### [代码统计](./CODE_STATISTICS.md)
+项目代码统计和分析。
+
+**内容包括**：
+- 代码行数统计
+- 文件分类统计
+- 模块分析
+- 技术栈说明
+
+**适合人群**：开发人员、项目经理
+
+---
+
+## 🗂️ 文档分类
+
+### 按用户角色
+
+#### 所有用户
+- [项目总览](../README.md)
+- [官网系统说明](./HOME_SYSTEM_GUIDE.md)
+- [知识库系统说明](./KB_SYSTEM_GUIDE.md)
+- [工单系统说明](./CASE_SYSTEM_GUIDE.md)
+
+#### 管理员
+- [统一用户管理说明](./UNIFIED_SYSTEM_GUIDE.md)
+- [安全改进文档](./SECURITY_IMPROVEMENTS.md)
+
+#### 开发人员
+- 所有系统说明文档
+- [代码统计](./CODE_STATISTICS.md)
+- [统一用户管理说明](./UNIFIED_SYSTEM_GUIDE.md)
+
+#### 运维人员
+- [项目总览](../README.md) - 部署相关
+- 所有系统说明文档 - 部署章节
+- [安全改进文档](./SECURITY_IMPROVEMENTS.md)
+
+---
+
+### 按功能分类
+
+#### 部署相关
+- [项目总览 - 快速开始](../README.md#快速开始)
+- [官网系统 - 部署说明](./HOME_SYSTEM_GUIDE.md#部署说明)
+- [知识库系统 - 部署说明](./KB_SYSTEM_GUIDE.md#部署说明)
+- [工单系统 - 部署说明](./CASE_SYSTEM_GUIDE.md#部署说明)
+
+#### API 接口
+- [官网系统 API](./HOME_SYSTEM_GUIDE.md#api接口)
+- [知识库系统 API](./KB_SYSTEM_GUIDE.md#api接口)
+- [工单系统 API](./CASE_SYSTEM_GUIDE.md#api接口)
+- [统一用户管理 API](./UNIFIED_SYSTEM_GUIDE.md#api接口)
+
+#### 数据库
+- [官网系统数据库](./HOME_SYSTEM_GUIDE.md#数据库设计)
+- [知识库系统数据库](./KB_SYSTEM_GUIDE.md#数据库设计)
+- [工单系统数据库](./CASE_SYSTEM_GUIDE.md#数据库设计)
+- [统一用户管理数据库](./UNIFIED_SYSTEM_GUIDE.md#数据库设计)
+
+#### 故障排除
+- [项目总览 - 故障排除](../README.md#故障排除)
+- [官网系统 - 故障排除](./HOME_SYSTEM_GUIDE.md#故障排除)
+- [知识库系统 - 故障排除](./KB_SYSTEM_GUIDE.md#故障排除)
+- [工单系统 - 故障排除](./CASE_SYSTEM_GUIDE.md#故障排除)
+
+---
+
+## 🚀 快速开始指南
+
+### 第一次使用？
+
+按照以下顺序阅读文档：
+
+1. **了解项目**
+   - 📖 [项目总览](../README.md)
+   - 📊 [代码统计](./CODE_STATISTICS.md)
+
+2. **快速启动**
+   - 🚀 [快速开始](../README.md#快速开始)
+   - 🔧 [环境配置](../README.md#配置环境)
+   - 🔒 [配置安全检查](../README.md#检查配置安全)
+
+3. **了解各系统**
+   - 🏠 [官网系统说明](./HOME_SYSTEM_GUIDE.md)
+   - 📚 [知识库系统说明](./KB_SYSTEM_GUIDE.md)
+   - 🎫 [工单系统说明](./CASE_SYSTEM_GUIDE.md)
+   - 👥 [统一用户管理说明](./UNIFIED_SYSTEM_GUIDE.md)
+
+4. **安全配置**
+   - 🔒 [安全改进文档](./SECURITY_IMPROVEMENTS.md)
+
+---
+
+## 📁 项目结构
 
 ```
 Integrate-code/
-├── README.md                      # 项目总览和快速开始指南
-├── STYLE_GUIDE.md                 # 代码风格指南
-├── init_database.sql              # 数据库初始化脚本
-├── init_database_shared_user.sql  # 共用用户表版本（可选）
-├── requirements.txt              # Python依赖
-├── start.bat                     # Windows启动脚本
-├── start.sh                      # Linux启动脚本
-├── docs/                         # 文档目录（本目录）
-│   ├── README.md                  # 本文件
+├── README.md                      # 项目总览
+├── docs/                          # 文档目录
+│   ├── README.md                  # 本文件 - 文档索引
 │   ├── HOME_SYSTEM_GUIDE.md       # 官网系统说明
 │   ├── KB_SYSTEM_GUIDE.md         # 知识库系统说明
 │   ├── CASE_SYSTEM_GUIDE.md       # 工单系统说明
 │   ├── UNIFIED_SYSTEM_GUIDE.md    # 统一用户管理说明
-│   ├── UNIFIED_USER_MANAGEMENT.md # 统一用户管理详细指南
-│   ├── MERGE_USERS_GUIDE.md      # 用户表合并指南
-│   ├── UNIFIED_IMPLEMENTATION_SUMMARY.md  # 实施总结
-│   └── STYLE_GUIDE.md            # 代码风格指南
-├── modules/                      # 应用模块
-│   ├── case/                     # 工单系统
-│   ├── kb/                       # 知识库系统
-│   ├── home/                     # 官网系统
-│   └── unified/                  # 统一用户管理
-├── templates/                    # 模板文件
-├── static/                       # 静态资源
-├── common/                       # 公共模块
-└── instance/                     # SQLite数据库文件（官网）
+│   ├── SECURITY_IMPROVEMENTS.md   # 安全改进文档
+│   └── CODE_STATISTICS.md         # 代码统计
+├── app.py                         # Flask 应用入口
+├── config.py                      # 统一配置
+├── routes_new.py                  # 统一路由
+├── common/                        # 公共模块
+│   ├── db_manager.py              # 数据库管理
+│   ├── kb_utils.py                # 知识库工具
+│   ├── logger.py                  # 日志模块
+│   ├── password_policy.py          # 密码策略
+│   ├── response.py                # 统一响应
+│   ├── trilium_helper.py          # Trilium 集成
+│   ├── unified_auth.py            # 统一认证
+│   └── validators.py              # 输入验证
+├── services/                      # 业务逻辑
+│   └── user_service.py            # 用户服务
+├── scripts/                       # 工具脚本
+│   ├── check_config.py            # 配置检查
+│   ├── check_security.py          # 安全检查
+│   └── generate_secure_env.py     # 生成配置
+├── templates/                     # 模板文件
+│   ├── home/                      # 官网模板
+│   ├── kb/                        # 知识库模板
+│   ├── case/                      # 工单模板
+│   └── common/                    # 通用模板
+├── static/                        # 静态资源
+│   ├── common.css                 # 统一样式
+│   ├── home/                      # 官网资源
+│   ├── kb/                        # 知识库资源
+│   └── case/                      # 工单资源
+├── init_database.sql              # 数据库初始化
+├── requirements.txt               # Python 依赖
+├── .env.example                   # 环境变量示例
+├── start.bat                      # Windows 启动脚本
+└── start.sh                       # Linux 启动脚本
 ```
 
-## 更新日志
+---
 
-### 2026-02-06 (系统说明文档)
-- 创建官网系统说明文档
-- 创建知识库系统说明文档
-- 创建工单系统说明文档
-- 创建统一用户管理说明文档
-- 更新文档索引
+## 📝 文档更新日志
 
-### 2026-02-06 (目录重组)
-- 将 `website/` 目录下的所有文件移动到项目根目录
-- 删除 `website/` 目录
-- 更新所有代码中的路径引用
-- 项目结构更简洁，便于部署
+### 2026-02-09
+- ✅ 重写主 README.md
+- ✅ 更新文档索引
+- ✅ 添加安全改进文档
+- ✅ 更新项目结构说明
 
-### 2026-02-06 (文档重组)
-- 创建文档目录
-- 移动所有 MD 文档到 `docs/` 目录
-- 保留 `README.md` 在项目根目录
-- 添加本说明文件
+### 2026-02-06
+- ✅ 创建官网系统说明文档
+- ✅ 创建知识库系统说明文档
+- ✅ 创建工单系统说明文档
+- ✅ 创建统一用户管理说明文档
+- ✅ 创建代码统计文档
 
-## 快速导航
+---
 
-### 新手入门
-1. [项目总览](../README.md) - 了解项目概况
-2. [快速开始](../README.md#快速启动) - 快速启动项目
-3. [官网系统说明](./HOME_SYSTEM_GUIDE.md) - 了解官网系统
-4. [知识库系统说明](./KB_SYSTEM_GUIDE.md) - 了解知识库系统
-5. [工单系统说明](./CASE_SYSTEM_GUIDE.md) - 了解工单系统
-6. [统一用户管理说明](./UNIFIED_SYSTEM_GUIDE.md) - 了解用户管理
+## ❓ 常见问题
 
-### 开发人员
-1. [代码风格指南](./STYLE_GUIDE.md) - 代码规范
-2. [官网系统API](./HOME_SYSTEM_GUIDE.md#api接口)
-3. [知识库系统API](./KB_SYSTEM_GUIDE.md#api接口)
-4. [工单系统API](./CASE_SYSTEM_GUIDE.md#api接口)
-5. [统一用户管理API](./UNIFIED_SYSTEM_GUIDE.md#api接口)
-
-### 运维人员
-1. [官网系统部署](./HOME_SYSTEM_GUIDE.md#部署说明)
-2. [知识库系统部署](./KB_SYSTEM_GUIDE.md#部署说明)
-3. [工单系统部署](./CASE_SYSTEM_GUIDE.md#部署说明)
-4. [统一用户管理部署](./UNIFIED_SYSTEM_GUIDE.md#部署说明)
-5. [故障排除](./CASE_SYSTEM_GUIDE.md#故障排除)
-
-## 常见问题
-
-### 如何启动项目？
-参考 [项目总览](../README.md) 的快速启动部分。
+### 如何快速启动项目？
+参考 [项目总览 - 快速开始](../README.md#快速开始)
 
 ### 如何配置数据库？
-参考各个系统说明文档的部署说明部分：
-- [官网系统数据库配置](./HOME_SYSTEM_GUIDE.md#数据库配置)
-- [知识库系统数据库配置](./KB_SYSTEM_GUIDE.md#数据库配置)
-- [工单系统数据库配置](./CASE_SYSTEM_GUIDE.md#数据库配置)
+参考各系统说明文档的部署章节
 
 ### 默认账号是什么？
-- 知识库系统: admin / YHKB@2024
-- 工单系统: admin / admin123
+- 知识库：admin / YHKB@2024
+- 工单系统：用户需由管理员创建（不支持自助注册）
 
-详见各系统说明文档的"默认账号"部分。
+详见 [安全改进文档](./SECURITY_IMPROVEMENTS.md)
 
-### 如何部署到Linux服务器？
-参考各个系统说明文档的"部署说明"部分，或使用项目根目录的启动脚本 `start.sh`。
+### 如何部署到生产环境？
+参考各系统说明文档的部署章节，并参考 [安全改进文档](./SECURITY_IMPROVEMENTS.md)
 
-## 联系方式
+### 遇到问题怎么办？
+1. 查看相应系统的故障排除章节
+2. 运行安全检查：`python scripts/check_security.py`
+3. 查看日志文件：`logs/app.log` 和 `logs/error.log`
 
-如有问题或建议，请联系：
-- 邮箱: dora.dong@cloud-doors.com
-- 工单系统: http://your-server:5000/case
+---
+
+## 🔗 相关链接
+
+- [云户科技官网](http://www.cloud-doors.com)
+- [Flask 官方文档](https://flask.palletsprojects.com)
+- [Flask-SocketIO 文档](https://flask-socketio.readthedocs.io)
+- [Trilium Notes](https://github.com/zadam/trilium)
+
+---
+
+<div align="center">
+
+**云户科技 © 2026**
+
+如有问题请联系：dora.dong@cloud-doors.com
+
+</div>

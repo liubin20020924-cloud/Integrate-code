@@ -20,11 +20,11 @@ load_dotenv()
 # ============================================
 class BaseConfig:
     """基础配置类"""
-    # Flask 安全密钥 - 生产环境请修改
+    # Flask 安全密钥 - 生产环境请必须修改！
     SECRET_KEY = os.getenv('FLASK_SECRET_KEY', 'yihu-website-secret-key-2024-CHANGE-ME')
 
     # 调试模式
-    DEBUG = os.getenv('FLASK_DEBUG', 'True').lower() == 'true'  # 生产环境设置为 False
+    DEBUG = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'  # 生产环境默认为 False
 
     # JSON 中文支持
     JSON_AS_ASCII = False
@@ -108,7 +108,7 @@ TRILIUM_LOGIN_PASSWORD = os.getenv('TRILIUM_LOGIN_PASSWORD', 'Nutanix/4u123!')
 # 知识库登录配置
 SESSION_TIMEOUT = 180  # Session超时时间（秒），3小时
 DEFAULT_ADMIN_USERNAME = 'admin'
-DEFAULT_ADMIN_PASSWORD = 'YHKB@2024'
+DEFAULT_ADMIN_PASSWORD = 'YHKB@2024'  # ⚠️ 安全警告：请在生产环境中立即修改此默认密码！管理员密码要求至少10位，包含大小写字母、数字和特殊字符
 
 # 内容查看配置
 ENABLE_CONTENT_VIEW = True
@@ -166,11 +166,14 @@ def check_config():
     # 检查生产环境配置
     if not BaseConfig.DEBUG:
         if BaseConfig.SECRET_KEY == 'yihu-website-secret-key-2024-CHANGE-ME':
-            errors.append('严重错误: 生产环境使用了默认SECRET_KEY，请立即修改！')
+            errors.append('严重错误: 生产环境使用了默认SECRET_KEY，请立即修改！设置 FLASK_SECRET_KEY 环境变量')
 
     # 检查敏感配置是否从环境变量读取
     if DB_PASSWORD == 'Nutanix/4u123!':
-        warnings.append('警告: 数据库密码使用默认值，建议从环境变量设置强密码')
+        errors.append('严重错误: 数据库密码使用默认值，存在安全风险！请从环境变量 DB_PASSWORD 设置强密码')
+
+    if BaseConfig.DEBUG and DB_PASSWORD == 'Nutanix/4u123!':
+        warnings.append('警告: 开发环境使用默认数据库密码，生产环境必须修改')
 
     if not SMTP_PASSWORD:
         errors.append('严重错误: SMTP_PASSWORD 未设置，邮件功能将无法使用')
@@ -178,13 +181,20 @@ def check_config():
     if not TRILIUM_TOKEN:
         errors.append('严重错误: TRILIUM_TOKEN 未设置，知识库功能将无法使用')
 
+    if TRILIUM_LOGIN_PASSWORD == 'Nutanix/4u123!':
+        errors.append('严重错误: Trilium登录密码使用默认值，存在安全风险！请从环境变量 TRILIUM_LOGIN_PASSWORD 设置')
+
+    # 检查默认管理员密码
+    if DEFAULT_ADMIN_PASSWORD == 'YHKB@2024':
+        warnings.append('警告: 知识库默认管理员密码未修改，建议立即修改')
+
     # 检查邮件配置
     if SMTP_USERNAME and '@qq.com' in SMTP_USERNAME:
         warnings.append('提示: 邮件配置使用QQ邮箱，确保已配置正确的授权码')
 
     # 检查 .env 文件是否存在
     if not os.path.exists('.env'):
-        warnings.append('提示: 未找到 .env 文件，将使用默认配置（不推荐用于生产环境）')
+        errors.append('严重错误: 未找到 .env 文件，请创建并配置环境变量')
 
     return warnings, errors
 
