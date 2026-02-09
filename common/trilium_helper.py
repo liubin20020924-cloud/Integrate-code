@@ -182,12 +182,9 @@ class TriliumHelper:
 
                         if content:
                             logger.info(f"成功获取Trilium笔记内容，内容长度: {len(content)}")
-                            print(f"[DEBUG] 原始内容前200字符: {content[:200]}")
 
                             # 清理内容
                             content = self._clean_content(content)
-                            print(f"[DEBUG] 清理后内容前200字符: {content[:200]}")
-                            print(f"[DEBUG] 清理后内容长度: {len(content)}")
                             return True, content, '获取成功'
                         elif response.status_code == 401:
                             logger.warning("HTTP访问失败，尝试使用get_note方法")
@@ -345,11 +342,10 @@ class TriliumHelper:
         if not content:
             return content
 
-        # 调试：检查是否有外部引用
+        # 检查是否有外部引用
         has_kb_ref = '/kb/' in content
         has_svg_ref = '.svg' in content or '<svg' in content
         has_img_ref = '<img' in content
-        print(f"[DEBUG] 清理前检查: has_kb_ref={has_kb_ref}, has_svg_ref={has_svg_ref}, has_img_ref={has_img_ref}")
         logger.info(f"清理前检查: has_kb_ref={has_kb_ref}, has_svg_ref={has_svg_ref}, has_img_ref={has_img_ref}")
 
         # 移除外部CSS链接引用（这些会导致404错误）
@@ -389,7 +385,6 @@ class TriliumHelper:
         has_kb_ref_after = '/kb/' in content
         has_svg_ref_after = '.svg' in content or '<svg' in content
         has_img_ref_after = '<img' in content
-        print(f"[DEBUG] 清理后检查: has_kb_ref={has_kb_ref_after}, has_svg_ref={has_svg_ref_after}, has_img_ref={has_img_ref_after}")
         logger.info(f"清理后检查: has_kb_ref={has_kb_ref_after}, has_svg_ref={has_svg_ref_after}, has_img_ref={has_img_ref_after}")
 
         # 确保HTML标签正确闭合

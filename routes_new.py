@@ -8,18 +8,12 @@
 - 使用用户服务层 (services.user_service)
 - 使用输入验证 (common.validators)
 """
-from flask import Blueprint, render_template, request, redirect, url_for, session, Response, send_from_directory
+from flask import Blueprint, render_template, request, redirect, url_for, session, Response, send_from_directory, jsonify
 from flask_socketio import emit, join_room, leave_room
 from datetime import datetime
-import re
-import hashlib
 import uuid
 import pymysql
 import os
-import smtplib
-from email.mime.text import MIMEText
-from email.header import Header
-from email.utils import formataddr
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import sys
@@ -1041,28 +1035,24 @@ def register_all_routes(app):
             showing_start = (page - 1) * per_page + 1
             showing_end = min(page * per_page, total_count)
 
-            return success_response(
-                data={
-                    'records': records,
-                    'total_count': total_count,
-                    'showing_count': showing_end - showing_start + 1 if records else 0,
-                    'page': page,
-                    'per_page': per_page,
-                    'total_pages': total_pages,
-                    'showing_start': showing_start,
-                    'showing_end': showing_end
-                },
-                message='查询成功'
-            )
+            response_data = {
+                'records': records,
+                'total_count': total_count,
+                'showing_count': showing_end - showing_start + 1 if records else 0,
+                'page': page,
+                'per_page': per_page,
+                'total_pages': total_pages,
+                'showing_start': showing_start,
+                'showing_end': showing_end
+            }
+            return jsonify({
+                'success': True,
+                'message': '查询成功',
+                **response_data
+            })
         except Exception as e:
             log_exception(logger, "获取知识库分页记录失败")
             return server_error_response(
-                data={
-                    'records': [],
-                    'total_count': 0,
-                    'total_pages': 1,
-                    'page': 1
-                },
                 message=f"获取记录失败: {str(e)}"
             )
 
