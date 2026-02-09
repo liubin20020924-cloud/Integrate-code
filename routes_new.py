@@ -130,7 +130,7 @@ def register_all_routes(app):
     @app.route('/')
     def home_index():
         """首页"""
-        return render_template('home_index.html', now=datetime.now())
+        return render_template('home/index.html', now=datetime.now)
 
     @app.route('/test-images')
     def test_images():
@@ -140,7 +140,7 @@ def register_all_routes(app):
     @app.route('/view-messages')
     def view_messages():
         """留言管理页面"""
-        return render_template('home_admin_messages.html')
+        return render_template('home/admin_messages.html')
 
     @app.route('/api/contact', methods=['POST'])
     def contact():
@@ -172,12 +172,12 @@ def register_all_routes(app):
     @app.route('/messages')
     def messages():
         """留言管理"""
-        return render_template('home_admin_messages.html')
+        return render_template('home/admin_messages.html')
 
     @app.route('/dashboard')
     def dashboard():
         """管理仪表板"""
-        return render_template('home_admin_dashboard.html')
+        return render_template('home/admin_dashboard.html')
 
     # ==================== 知识库系统路由 - 认证 ====================
 
@@ -193,7 +193,7 @@ def register_all_routes(app):
             password = request.form.get('password', '').strip()
 
             if not username or not password:
-                return render_template('kb_login.html', error="请输入用户名和密码")
+                return render_template('kb/login.html', error="请输入用户名和密码")
 
             success, result = authenticate_user(username, password)
 
@@ -214,9 +214,9 @@ def register_all_routes(app):
                 return redirect(url_for('kb_index'))
             else:
                 logger.warning(f"用户 {username} 登录失败: {result}")
-                return render_template('kb_login.html', error=result, username=username)
+                return render_template('kb/login.html', error=result, username=username)
 
-        return render_template('kb_login.html')
+        return render_template('kb/login.html')
 
     @app.route('/kb/auth/logout')
     def kb_logout():
@@ -261,7 +261,7 @@ def register_all_routes(app):
     @login_required()
     def kb_change_password_page():
         """修改密码页面"""
-        return render_template('kb_change_password.html')
+        return render_template('kb/change_password.html')
 
     # 修改密码API路由
     @app.route('/auth/api/change-password', methods=['POST'])
@@ -467,8 +467,7 @@ def register_all_routes(app):
             showing_start = (page - 1) * per_page + 1
             showing_end = min(page * per_page, total_count)
 
-            return render_template('kb_index.html',
-                                 records=records,
+            return render_template('kb/index.html', records=records,
                                  total_count=total_count,
                                  showing_count=showing_end - showing_start + 1 if records else 0,
                                  page=page,
@@ -482,8 +481,7 @@ def register_all_routes(app):
         except Exception as e:
             error_msg = f"数据库连接错误: {str(e)}"
             logger.error(error_msg)
-            return render_template('kb_index.html',
-                                 records=[],
+            return render_template('kb/index.html', records=[],
                                  error=error_msg,
                                  total_count=0,
                                  showing_count=0,
@@ -500,8 +498,7 @@ def register_all_routes(app):
         page = request.args.get('page', 1, type=int)
 
         if not search_id:
-            return render_template('kb_index.html',
-                                 records=[],
+            return render_template('kb/index.html', records=[],
                                  error="请输入搜索ID",
                                  total_count=get_total_count(),
                                  showing_count=0,
@@ -517,8 +514,7 @@ def register_all_routes(app):
 
             if record:
                 logger.info(f"搜索知识库记录: {record_id}")
-                return render_template('kb_index.html',
-                                     records=[record],
+                return render_template('kb/index.html', records=[record],
                                      total_count=1,
                                      showing_count=1,
                                      page=page,
@@ -527,8 +523,7 @@ def register_all_routes(app):
                                      search_id=search_id,
                                      is_search=True)
             else:
-                return render_template('kb_index.html',
-                                     records=[],
+                return render_template('kb/index.html', records=[],
                                      error=f"未找到ID为 {search_id} 的记录",
                                      total_count=get_total_count(),
                                      showing_count=0,
@@ -538,8 +533,7 @@ def register_all_routes(app):
                                      search_id=search_id,
                                      is_search=True)
         except ValueError:
-            return render_template('kb_index.html',
-                                 records=[],
+            return render_template('kb/index.html', records=[],
                                  error="请输入有效的数字ID",
                                  total_count=get_total_count(),
                                  showing_count=0,
@@ -619,8 +613,7 @@ def register_all_routes(app):
             showing_start = (page - 1) * per_page + 1
             showing_end = min(page * per_page, total_count)
 
-            return render_template('kb_management.html',
-                                 records=records,
+            return render_template('kb/management.html', records=records,
                                  total_count=total_count,
                                  showing_count=showing_end - showing_start + 1 if records else 0,
                                  page=page,
@@ -634,8 +627,7 @@ def register_all_routes(app):
                                  min=min)
         except Exception as e:
             logger.error(f"加载知识库管理页面失败: {e}")
-            return render_template('kb_management.html',
-                                 records=[],
+            return render_template('kb/management.html', records=[],
                                  error=str(e),
                                  total_count=0,
                                  page=1,
@@ -651,8 +643,7 @@ def register_all_routes(app):
         try:
             conn = get_unified_kb_conn()
             if not conn:
-                return render_template('kb_user_management.html',
-                                     users=[],
+                return render_template('kb/user_management.html', users=[],
                                      login_logs=[],
                                      error='数据库连接失败')
 
@@ -675,14 +666,12 @@ def register_all_routes(app):
             cursor.close()
             conn.close()
 
-            return render_template('kb_user_management.html',
-                                 users=users,
+            return render_template('kb/user_management.html', users=users,
                                  login_logs=login_logs,
                                  total_count=len(users) if users else 0)
         except Exception as e:
             log_exception(logger, "加载知识库用户管理页面失败")
-            return render_template('kb_user_management.html',
-                                 users=[],
+            return render_template('kb/user_management.html', users=[],
                                  login_logs=[],
                                  error=str(e),
                                  total_count=0)
@@ -1260,15 +1249,13 @@ def register_all_routes(app):
     @app.route('/case/')
     def case_index():
         """首页"""
-        frontend_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'case')
-        return send_from_directory(frontend_dir, 'login.html')
+        return render_template('case/login.html')
 
     @app.route('/case/<path:filename>')
     def case_serve_frontend(filename):
-        """提供前端静态文件"""
+        """提供前端文件"""
         try:
-            frontend_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'case')
-            return send_from_directory(frontend_dir, filename)
+            return render_template(f'case/{filename}')
         except:
             return "404 - 文件未找到", 404
 
@@ -1276,14 +1263,16 @@ def register_all_routes(app):
     def case_login():
         """登录"""
         try:
-            log_request(logger, request, '/case/api/login')
+            log_request(logger, request)
             data = request.get_json()
             username = data.get('username', '').strip()
             password = data.get('password', '').strip()
 
-            is_valid, error_msg = validate_required(username, password)
-            if not is_valid:
-                return error_response(message=error_msg)
+            # 简单验证用户名和密码
+            if not username:
+                return error_response(message='用户名不能为空')
+            if not password:
+                return error_response(message='密码不能为空')
 
             # 使用统一认证
             success, result = authenticate_user(username, password)
@@ -1308,6 +1297,46 @@ def register_all_routes(app):
         except Exception as e:
             log_exception(logger, "登录失败")
             return server_error_response(message=f'登录失败：{str(e)}')
+
+    @app.route('/case/api/register', methods=['POST'])
+    def case_register():
+        """注册新用户"""
+        try:
+            log_request(logger, request, '/case/api/register')
+            data = request.get_json()
+            username = data.get('username', '').strip()
+            email = data.get('email', '').strip()
+            password = data.get('password', '').strip()
+
+            # 简单验证
+            if not username:
+                return error_response(message='用户名不能为空')
+            if not email:
+                return error_response(message='邮箱不能为空')
+            if not password:
+                return error_response(message='密码不能为空')
+
+            is_valid_email, email_error = validate_email(email)
+            if not is_valid_email:
+                return error_response(message=email_error)
+
+            # 使用统一认证创建用户
+            success, result = create_user(
+                username=username,
+                email=email,
+                password=password,
+                display_name=username,
+                real_name=username,
+                role='customer'  # 默认注册为客户角色
+            )
+
+            if not success:
+                return error_response(message=result)
+
+            return success_response(message='注册成功')
+        except Exception as e:
+            log_exception(logger, "注册失败")
+            return server_error_response(message=f'注册失败：{str(e)}')
 
     @app.route('/case/api/logout', methods=['POST'])
     def case_logout():
@@ -1399,12 +1428,14 @@ def register_all_routes(app):
                 return unauthorized_response(message='未登录')
 
             status = request.args.get('status', '').strip()
+            my_only = request.args.get('my_only', 'false').lower() == 'true'
             conn = get_case_db_connection()
             if not conn:
                 return server_error_response(message='数据库连接失败')
             cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-            if user_role == 'customer' and user_username:
+            # customer 角色: 只能看到自己创建的工单
+            if user_role == 'customer':
                 if status:
                     select_sql = """
                         SELECT ticket_id, customer_name, customer_contact, customer_email,
@@ -1419,19 +1450,27 @@ def register_all_routes(app):
                         FROM tickets WHERE customer_name = %s ORDER BY create_time DESC
                     """
                     cursor.execute(select_sql, (user_username,))
-            elif user_role == 'admin':
-                if status:
+            # admin/user 角色: 可以查看所有工单，支持 my_only 筛选
+            elif user_role in ['admin', 'user']:
+                if status and my_only:
                     select_sql = """
                         SELECT ticket_id, customer_name, customer_contact, customer_email,
                                product, issue_type, priority, title, status, create_time
-                        FROM tickets WHERE status = %s ORDER BY create_time DESC
+                        FROM tickets WHERE status = %s ORDER BY create_time DESC LIMIT 100
+                    """
+                    cursor.execute(select_sql, (status,))
+                elif status:
+                    select_sql = """
+                        SELECT ticket_id, customer_name, customer_contact, customer_email,
+                               product, issue_type, priority, title, status, create_time
+                        FROM tickets WHERE status = %s ORDER BY create_time DESC LIMIT 100
                     """
                     cursor.execute(select_sql, (status,))
                 else:
                     select_sql = """
                         SELECT ticket_id, customer_name, customer_contact, customer_email,
                                product, issue_type, priority, title, status, create_time
-                        FROM tickets ORDER BY create_time DESC
+                        FROM tickets ORDER BY create_time DESC LIMIT 100
                     """
                     cursor.execute(select_sql)
             else:

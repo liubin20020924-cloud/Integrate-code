@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建工单 - 工单系统</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css?v=5.3.0" rel="stylesheet">
+    <link rel="stylesheet" href="/static/common.css?v=2.0">
+    <link rel="stylesheet" href="/static/case/css/style.css?v=2.0">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css?v=6.4.0">
+    <style>
+        body {
+            background: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        .top-nav {
+            background: white;
+            box-shadow: var(--shadow-md);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .top-nav img {
+            height: 50px;
+            width: auto;
+        }
+        .form-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            padding: 2.5rem;
+            border: 1px solid var(--gray-200);
+        }
+        .page-header h1 {
+            color: #1a202c;
+            font-weight: 700;
+            font-size: 1.75rem;
+        }
+        .page-header p {
+            color: #4a5568;
+            font-size: 1.0625rem;
+        }
+        .form-label {
+            color: #1a202c;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+        .form-control, .form-select {
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            padding: 0.875rem 1rem;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+            color: #1a202c;
+            font-size: 1rem;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #2563eb;
+            border-width: 2px;
+            box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.15);
+            background: white;
+            outline: none;
+        }
+        .form-control::placeholder, .form-select::placeholder {
+            color: var(--gray-400);
+        }
+        .main-container {
+            margin-top: 100px;
+            padding: 0 2rem 3rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .form-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            padding: 2.5rem;
+        }
+        .page-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .page-header h1 {
+            color: var(--gray-800);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .page-header p {
+            color: var(--gray-600);
+            margin: 0;
+        }
+        .form-label {
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+        .required {
+            color: var(--danger);
+        }
+        .form-control, .form-select {
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.1);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .btn {
+            padding: 0.875rem 1.5rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #1a5c9e 0%, #2563eb 100%);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1550a0 0%, #1d5be0 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+            border: none;
+        }
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <img src="/static/home/images/Logo1.jpg" alt="云户科技" style="display: block; margin: 0 auto;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="/case/" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>返回
+            </a>
+            <a href="/case/login.html" class="btn btn-outline">
+                <i class="fas fa-sign-out-alt me-2"></i>退出
+            </a>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <div class="form-card">
+            <div class="page-header">
+                <h1>创建新工单</h1>
+                <p>请填写工单信息，我们将尽快为您处理</p>
+            </div>
+
+            <form id="ticketForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">客户姓名 <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="customerName" placeholder="请输入客户姓名" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">联系电话 <span class="required">*</span></label>
+                        <input type="tel" class="form-control" id="customerContact" placeholder="请输入联系电话" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">客户邮箱 <span class="required">*</span></label>
+                        <input type="email" class="form-control" id="customerEmail" placeholder="请输入客户邮箱" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">涉及产品 <span class="required">*</span></label>
+                        <select class="form-select" id="product" required>
+                            <option value="">请选择产品</option>
+                            <option value="云户知识库">云户知识库</option>
+                            <option value="云户官网">云户官网</option>
+                            <option value="云户工单系统">云户工单系统</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">问题类型 <span class="required">*</span></label>
+                        <select class="form-select" id="issueType" required>
+                            <option value="">请选择问题类型</option>
+                            <option value="technical">技术支持</option>
+                            <option value="service">服务咨询</option>
+                            <option value="complaint">投诉建议</option>
+                            <option value="other">其他问题</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">优先级 <span class="required">*</span></label>
+                        <select class="form-select" id="priority" required>
+                            <option value="">请选择优先级</option>
+                            <option value="low">低</option>
+                            <option value="medium" selected>中</option>
+                            <option value="high">高</option>
+                            <option value="urgent">紧急</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">问题标题 <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="title" placeholder="请简要描述问题（最多100字）" maxlength="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">问题详情 <span class="required">*</span></label>
+                    <textarea class="form-control" id="content" rows="8" placeholder="请详细描述您的问题，包括复现步骤、错误信息等" required></textarea>
+                </div>
+
+                <div style="text-align: right; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>提交工单
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        async function submitTicket() {
+            const form = document.getElementById('ticketForm');
+            const formData = {
+                customer_name: document.getElementById('customerName').value,
+                customer_contact: document.getElementById('customerContact').value,
+                customer_email: document.getElementById('customerEmail').value,
+                product: document.getElementById('product').value,
+                issue_type: document.getElementById('issueType').value,
+                priority: document.getElementById('priority').value,
+                title: document.getElementById('title').value,
+                content: document.getElementById('content').value
+            };
+
+            try {
+                const response = await axios.post('/case/api/ticket', formData);
+                if (response.data.code === 200 || response.data.success) {
+                    alert('工单提交成功！');
+                    window.location.href = '/case/';
+                } else {
+                    alert(response.data.msg || '提交失败');
+                }
+            } catch (error) {
+                alert('提交失败：' + (error.response?.data?.msg || error.message));
+            }
+        }
+
+        document.getElementById('ticketForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (confirm('确认提交工单吗？')) {
+                await submitTicket();
+            }
+        });
+    </script>
+</body>
+</html>

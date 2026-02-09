@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta charset="UTF-8">
     <title>云户知识库管理系统</title>
-    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='kb/css/edge_fixes.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='kb/css/style.css') }}">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css?v=5.3.0" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css?v=6.4.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}?v=2.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='kb/css/edge_fixes.css') }}?v=2.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='kb/css/style.css') }}?v=2.0">
 </head>
 <body>
     <div class="container">
@@ -46,7 +47,7 @@
         <div class="header">
             <div class="container">
                 <div class="logo-container">
-                    <img src="{{ url_for('static', filename='kb/image/Logo.jpg') }}" alt="云户知识库" class="logo-img">
+                    <img src="{{ url_for('static', filename='kb/images/Logo.jpg') }}" alt="云户知识库" class="logo-img">
                     <div class="logo-text">
                         <h1><i class="fas fa-book me-2"></i>云户知识库管理系统</h1>
                         <p class="lead">知识库信息浏览与检索</p>
