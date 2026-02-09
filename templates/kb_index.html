@@ -196,6 +196,9 @@
                 <a href="/" class="btn btn-outline-secondary">
                     <i class="fas fa-home me-1"></i>返回官网
                 </a>
+                <a href="/kb/" class="btn btn-outline-primary">
+                    <i class="fas fa-search me-1"></i>返回知识库首页
+                </a>
                 <button id="showAll" class="btn btn-outline-primary">
                     <i class="fas fa-list me-1"></i>显示全部记录
                 </button>
@@ -228,10 +231,10 @@
             {% if records and records|length > 0 %}
                 <!-- 卡片视图 -->
                 <div id="cardView">
-                    <div class="row" id="recordsContainer">
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4" id="recordsContainer">
                         {% for record in records %}
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card record-card">
+                        <div class="col">
+                            <div class="card record-card h-100">
                                 <div class="card-header">
                                     <h5 class="mb-0">
                                         <i class="fas fa-database me-2"></i>KB_{{ record.KB_Number }}
@@ -511,10 +514,16 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // 返回知识库首页按钮
+            document.querySelector('a[href="/kb/"]')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = '/kb/';
+            });
+
             // 显示全部按钮（现在是一个链接）
             document.getElementById('showAll')?.addEventListener('click', function(e) {
                 e.preventDefault();
-                window.location.href = '/';
+                window.location.href = '/kb/';
             });
 
             // 刷新按钮
@@ -630,39 +639,38 @@
                 if (searchName) {
                     const formData = new FormData();
                     formData.append('name', searchName);
-                    
-                    fetch('/search/name', {
+                    console.log('发送请求数据:', Object.fromEntries(formData));
+
+                    fetch('/kb/search/name', {
                         method: 'POST',
                         body: formData
                     })
                     .then(response => response.json())
                     .then(data => {
+                        console.log('名称搜索返回数据:', data);
                         const resultsDiv = document.getElementById('nameSearchResults');
                         if (data.success) {
-                            if (data.count > 0) {
+                            if (data.data.count > 0) {
                                 let html = `<div class="alert alert-success">
                                     <i class="fas fa-check-circle me-2"></i>
-                                    找到 ${data.count} 条记录
+                                    找到 ${data.data.count} 条记录
                                 </div>
                                 <div class="list-group">`;
-                                
-                                data.records.forEach(record => {
+
+                                data.data.records.forEach(record => {
                                     html += `
                                         <div class="list-group-item list-group-item-action">
                                             <div class="d-flex w-100 justify-content-between">
                                                 <h6 class="mb-1">${record.KB_Name}</h6>
                                                 <small class="text-muted">KB_${record.KB_Number}</small>
                                             </div>
-                                            <p class="mb-1">
-                                                <small>链接: ${record.KB_link || '无'}</small>
-                                            </p>
                                             <div class="mt-2">
-                                                <a href="/search?id=${record.KB_Number}" 
+                                                <a href="/search?id=${record.KB_Number}"
                                                    class="btn btn-sm btn-outline-primary me-2">
                                                     <i class="fas fa-eye me-1"></i>查看详情
                                                 </a>
-                                                ${record.KB_link && record.KB_link !== 'None' ? 
-                                                    `<button class="btn btn-sm btn-info btn-view-content" 
+                                                ${record.KB_link && record.KB_link !== 'None' ?
+                                                    `<button class="btn btn-sm btn-info btn-view-content"
                                                             data-kb-number="${record.KB_Number}"
                                                             data-kb-name="${record.KB_Name}"
                                                             data-trilium-url="${record.KB_link}">
@@ -727,16 +735,17 @@
                     fetch(`/api/trilium/search?q=${encodeURIComponent(searchContent)}`)
                         .then(response => response.json())
                         .then(data => {
+                            console.log('Trilium搜索返回数据:', data);
                             if (data.success) {
-                                if (data.count > 0) {
+                                if (data.data.count > 0) {
                                     let html = `
                                         <div class="search-result-header">
-                                            <h6><i class="fas fa-search me-2"></i>搜索到 ${data.count} 条相关笔记</h6>
+                                            <h6><i class="fas fa-search me-2"></i>搜索到 ${data.data.count} 条相关笔记</h6>
                                             <p class="search-meta mb-0">关键词: "${searchContent}"</p>
                                         </div>
                                         <div class="content-search-results mt-3">`;
-                                    
-                                    data.results.forEach((note, index) => {
+
+                                    data.data.results.forEach((note, index) => {
                                         // 构建Trilium笔记的URL
                                         const triliumBaseUrl = '{{ trilium_base_url|safe }}';
                                         const noteUrl = `${triliumBaseUrl}/#root/${note.noteId}`;
@@ -758,15 +767,12 @@
                                                         </small>
                                                     </div>
                                                     <div class="mt-3 action-buttons">
-                                                        <button class="btn btn-sm btn-info btn-view-note-content" 
+                                                        <button class="btn btn-sm btn-info btn-view-note-content"
                                                                 data-note-id="${note.noteId}"
                                                                 data-note-title="${note.title}"
                                                                 data-note-url="${noteUrl}">
                                                             <i class="fas fa-eye me-1"></i>查看内容
                                                         </button>
-                                                        <a href="${noteUrl}" target="_blank" class="btn btn-sm btn-success">
-                                                            <i class="fas fa-external-link-alt me-1"></i>在Trilium中打开
-                                                        </a>
                                                         <button class="btn btn-sm btn-outline-secondary find-kb-record"
                                                                 data-note-title="${note.title}"
                                                                 data-note-url="${noteUrl}">
@@ -845,8 +851,9 @@
                 fetch('/api/all')
                     .then(response => response.json())
                     .then(data => {
+                        console.log('获取所有记录返回数据:', data);
                         if (data.success) {
-                            const records = data.records || [];
+                            const records = data.data.records || [];
                             // 查找匹配的记录
                             const matchedRecords = records.filter(record => 
                                 record.KB_link && record.KB_link.includes(noteUrl.split('#root/')[1])
@@ -939,23 +946,38 @@
                 if (kbNumber) {
                     apiUrl = `/api/trilium/content?kb_number=${kbNumber}&trilium_url=${encodeURIComponent(triliumUrl)}`;
                 } else {
+                    // 如果只有URL没有kbNumber，直接显示
                     apiUrl = `/api/trilium/content?trilium_url=${encodeURIComponent(triliumUrl)}`;
                 }
-                
+
                 fetch(apiUrl)
                     .then(response => response.json())
                     .then(data => {
+                        console.log('API返回数据:', data);
+                        console.log('data.success:', data.success);
+                        console.log('data.data:', data.data);
                         if (data.success) {
                             // 显示内容
                             const contentDisplay = document.getElementById('contentDisplay');
-                            contentDisplay.innerHTML = data.content;
+                            const content = data.data.content;
+                            console.log('内容数据:', content);
+                            console.log('内容长度:', content ? content.length : 0);
+                            console.log('内容类型:', typeof content);
+                            console.log('内容前100字符:', content ? content.substring(0, 100) : '无内容');
+
+                            if (!content || content.length === 0) {
+                                console.error('内容为空!');
+                                contentDisplay.innerHTML = '<div class="alert alert-warning">内容为空</div>';
+                            } else {
+                                contentDisplay.innerHTML = content;
+                            }
                             contentDisplay.style.display = 'block';
-                            
+
                             // 为所有图片添加错误处理
                             contentDisplay.querySelectorAll('img').forEach(img => {
                                 img.onerror = function() { handleImageError(this); };
                             });
-                            
+
                             // 为所有外部链接添加target="_blank"
                             contentDisplay.querySelectorAll('a').forEach(link => {
                                 if (link.href && link.href.startsWith('http')) {
@@ -963,31 +985,65 @@
                                     link.rel = 'noopener noreferrer';
                                 }
                             });
-                            
+
                             // 更新信息
                             let infoHtml = `<i class="fas fa-info-circle me-2"></i>`;
-                            infoHtml += `<strong>${data.title}</strong>`;
-                            
-                            if (data.modified) {
-                                const modifiedDate = new Date(data.modified).toLocaleString();
+                            infoHtml += `<strong>${data.data.title}</strong>`;
+
+                            if (data.data.modified) {
+                                const modifiedDate = new Date(data.data.modified).toLocaleString();
                                 infoHtml += ` | 最后更新: ${modifiedDate}`;
                             }
 
                             document.getElementById('contentInfo').innerHTML = infoHtml;
 
                         } else {
-                            // 显示错误
-                            document.getElementById('errorMessage').textContent = data.message || '加载内容失败';
-                            document.getElementById('contentError').style.display = 'block';
+                            // 如果API返回失败，显示原始链接作为备选方案
+                            console.warn('API加载失败，使用备选方案:', data.message);
+                            const contentDisplay = document.getElementById('contentDisplay');
+                            contentDisplay.innerHTML = `
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>内容加载失败</strong>
+                                    <p class="mb-2">${data.message}</p>
+                                    <p class="mb-0">
+                                        <a href="${triliumUrl}" target="_blank" class="btn btn-sm btn-info">
+                                            <i class="fas fa-external-link-alt me-1"></i>在Trilium中打开
+                                        </a>
+                                    </p>
+                                </div>
+                            `;
+                            contentDisplay.style.display = 'block';
+
+                            // 更新信息
+                            let infoHtml = `<i class="fas fa-info-circle me-2"></i>`;
+                            infoHtml += `<strong>${currentContentData.kbName || '知识库内容'}</strong>`;
+                            document.getElementById('contentInfo').innerHTML = infoHtml;
                         }
-                        
+
                         document.getElementById('contentLoading').style.display = 'none';
+                        document.getElementById('contentError').style.display = 'none';
                     })
                     .catch(error => {
                         console.error('加载内容失败:', error);
-                        document.getElementById('errorMessage').textContent = '网络错误，请检查连接';
-                        document.getElementById('contentError').style.display = 'block';
+                        // 显示错误信息，但提供备选链接
+                        const contentDisplay = document.getElementById('contentDisplay');
+                        contentDisplay.innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="fas fa-times-circle me-2"></i>
+                                <strong>网络错误</strong>
+                                <p class="mb-2">无法加载内容，请检查网络连接</p>
+                                <p class="mb-0">
+                                    <a href="${triliumUrl}" target="_blank" class="btn btn-sm btn-success">
+                                        <i class="fas fa-external-link-alt me-1"></i>在新标签页中打开
+                                    </a>
+                                </p>
+                            </div>
+                        `;
+                        contentDisplay.style.display = 'block';
+
                         document.getElementById('contentLoading').style.display = 'none';
+                        document.getElementById('contentError').style.display = 'none';
                     });
             }
             

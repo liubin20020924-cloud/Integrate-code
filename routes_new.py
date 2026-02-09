@@ -313,7 +313,7 @@ def register_all_routes(app):
     # Trilium 搜索路由
     @app.route('/api/trilium/search')
     def trilium_search():
-        """Trilium 搜索"""
+        """Trilium 搜索 - 使用 trilium-py 模块"""
         try:
             query = request.args.get('q', '').strip()
             limit = int(request.args.get('limit', 30))
@@ -326,11 +326,57 @@ def register_all_routes(app):
                 logger.error("Trilium 服务未配置")
                 return error_response('Trilium 服务未配置', 500)
 
-            # 模拟搜索结果 (实际需要调用 Trilium API)
-            # TODO: 实现真实的 Trilium 搜索调用
-            results = []
-            logger.info(f"Trilium搜索: {query}")
-            return success_response(data={'results': results, 'query': query, 'count': len(results)}, message='搜索完成')
+            logger.info(f"开始Trilium搜索: {query}")
+
+            # 使用 trilium-py 模块进行搜索
+            try:
+                from trilium_py.client import ETAPI
+
+                server_url = config.TRILIUM_SERVER_URL.rstrip('/')
+                token = config.TRILIUM_TOKEN
+
+                # 如果没有token，尝试使用密码登录
+                if not token and hasattr(config, 'TRILIUM_LOGIN_PASSWORD'):
+                    ea = ETAPI(server_url)
+                    token = ea.login(config.TRILIUM_LOGIN_PASSWORD)
+                    logger.info("使用密码登录Trilium成功")
+                    if not token:
+                        return error_response('Trilium登录失败，请检查密码配置', 500)
+
+                # 创建ETAPI客户端
+                ea = ETAPI(server_url, token)
+
+                # 执行搜索
+                # 注意：根据 trilium-py 文档，limit 只有在使用 orderBy 时才有效
+                # 对于简单搜索，我们不使用 limit，而是获取所有结果后再截取
+                search_results = ea.search_note(search=query)
+
+                # 格式化返回结果
+                results = []
+                if 'results' in search_results:
+                    # 限制返回结果数量
+                    for i, result in enumerate(search_results['results']):
+                        if i >= limit:
+                            break
+                        results.append({
+                            'noteId': result.get('noteId', ''),
+                            'title': result.get('title', ''),
+                            'type': result.get('type', 'text'),
+                            'dateModified': result.get('utcDateModified', '')
+                        })
+
+                logger.info(f"Trilium搜索完成: 找到 {len(results)} 条结果")
+                return success_response(
+                    data={'results': results, 'query': query, 'count': len(results)},
+                    message='搜索完成'
+                )
+
+            except ImportError as e:
+                logger.error(f"trilium-py 模块未安装: {e}")
+                return error_response('trilium-py 模块未安装，请运行: pip install trilium-py', 500)
+            except Exception as e:
+                logger.error(f"Trilium搜索异常: {str(e)}")
+                return error_response(f'Trilium搜索失败: {str(e)}', 500)
 
         except Exception as e:
             log_exception(logger, "Trilium搜索失败")
@@ -386,8 +432,12 @@ def register_all_routes(app):
             # 使用 Trilium 辅助类获取内容
             from common.trilium_helper import get_trilium_helper
 
+            logger.info(f"开始获取Trilium内容: trilium_url={trilium_url}, kb_number={kb_number}")
+
             trilium_helper = get_trilium_helper()
             success, content, message = trilium_helper.get_note_content(trilium_url)
+
+            logger.info(f"Trilium内容获取结果: success={success}, message={message}, content_length={len(content) if content else 0}")
 
             if success:
                 return success_response(data={
@@ -399,6 +449,7 @@ def register_all_routes(app):
                 }, message='获取成功')
             else:
                 # 返回错误信息，但不是 501 错误
+                logger.error(f"Trilium内容获取失败: {message}")
                 return error_response(message=message)
 
         except Exception as e:
