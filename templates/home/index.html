@@ -1,8 +1,8 @@
-{% extends "home_base.html" %}
+{% extends "home/base.html" %}
 
 {% block content %}
   <!-- 导航栏 -->
-  {% include 'home_components_header.html' %}
+  {% include 'home/components/header.html' %}
 
   <!-- 首页横幅 -->
   <section id="home" style="min-height: 100vh; display: flex; align-items: center; padding-top: clamp(60px, 8vh, 72px); position: relative; overflow: hidden; background: white;">
@@ -629,7 +629,7 @@
   </div>
 
   <!-- 页脚 -->
-  {% include 'home_components_footer.html' %}
+  {% include 'home/components/footer.html' %}
 {% endblock %}
 
 {% block extra_js %}

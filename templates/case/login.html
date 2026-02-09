@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云户工单系统 - 登录</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/case/css/style.css">
+    <style>
+        /* 登录页面特殊样式 */
+        body {
+            background: linear-gradient(135deg, #1a5c9e 0%, #2563eb 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        /* 登录容器 */
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        /* 登录卡片 */
+        .login-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        /* 登录头部 */
+        .login-header {
+            background: linear-gradient(135deg, #0f4c81 0%, #1a5c9e 100%);
+            color: white;
+            padding: 30px 25px;
+            text-align: center;
+        }
+
+        /* 登录Logo */
+        .login-header .logo-img-large {
+            height: 70px !important;
+            width: auto !important;
+            max-width: 280px !important;
+            margin: 0 auto 15px auto !important;
+            display: block;
+        }
+
+        /* 登录表单区域 */
+        .login-body {
+            padding: 30px 25px;
+        }
+
+        /* Tab切换 */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 4px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 6px;
+            color: #718096;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.875rem;
+        }
+
+        .tab.active {
+            background: white;
+            color: #2563eb;
+            font-weight: 700;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 返回首页按钮 */
+        .back-home {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .back-home a {
+            display: inline-block;
+            color: #718096;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .back-home a:hover {
+            color: #1a5c9e;
+            background: #f7fafc;
+        }
+
+        /* 登录按钮 */
+        .btn-login {
+            background: linear-gradient(135deg, #1a5c9e 0%, #2563eb 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #0f4c81 0%, #1a5c9e 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 92, 158, 0.3);
+        }
+
+        /* 输入框组 */
+        .input-group {
+            position: relative;
+        }
+
+        .input-group-text {
+            background: #f7fafc;
+            border: 1px solid #e5e7eb;
+            color: #718096;
+        }
+
+        .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+        }
+
+        /* 表单标签 */
+        .form-label {
+            color: #1a202c;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <!-- 头部 -->
+            <div class="login-header">
+                <img src="/static/home/images/Logo1.jpg" alt="云户工单系统" class="logo-img-large mb-3">
+                <h3>云户工单系统</h3>
+                <p class="mb-0">用户登录</p>
+            </div>
+
+            <!-- 登录表单 -->
+            <div class="login-body">
+                <!-- Tab切换 -->
+                <div class="tabs">
+                    <div class="tab active" data-tab="login">登录</div>
+                    <div class="tab" data-tab="register">注册</div>
+                </div>
+
+                <!-- 登录表单 -->
+                <form id="loginForm">
+                    <!-- 用户名 -->
+                    <div class="mb-3">
+                        <label class="form-label">用户名/邮箱</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            <input type="text"
+                                   class="form-control"
+                                   id="loginUsername"
+                                   placeholder="请输入用户名或邮箱"
+                                   required
+                                   autofocus>
+                        </div>
+                    </div>
+
+                    <!-- 密码 -->
+                    <div class="mb-4">
+                        <label class="form-label">密码</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <input type="password"
+                                   class="form-control"
+                                   id="loginPassword"
+                                   placeholder="请输入密码"
+                                   required>
+                        </div>
+                    </div>
+
+                    <!-- 提交按钮 -->
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-login btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>登录
+                        </button>
+                    </div>
+
+                    <!-- 忘记密码 -->
+                    <div class="text-center mb-3">
+                        <a href="#" class="text-muted" style="text-decoration: none;">
+                            <small><i class="fas fa-question-circle me-1"></i>忘记密码？</small>
+                        </a>
+                    </div>
+                </form>
+
+                <!-- 注册表单 -->
+                <form id="registerForm" style="display: none;">
+                    <!-- 用户名 -->
+                    <div class="mb-3">
+                        <label class="form-label">用户名</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            <input type="text"
+                                   class="form-control"
+                                   id="regUsername"
+                                   placeholder="请输入用户名"
+                                   required>
+                        </div>
+                    </div>
+
+                    <!-- 邮箱 -->
+                    <div class="mb-3">
+                        <label class="form-label">邮箱</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-envelope"></i>
+                            </span>
+                            <input type="email"
+                                   class="form-control"
+                                   id="regEmail"
+                                   placeholder="请输入邮箱"
+                                   required>
+                        </div>
+                    </div>
+
+                    <!-- 密码 -->
+                    <div class="mb-4">
+                        <label class="form-label">密码</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <input type="password"
+                                   class="form-control"
+                                   id="regPassword"
+                                   placeholder="请输入密码（至少6位）"
+                                   required>
+                        </div>
+                    </div>
+
+                    <!-- 提交按钮 -->
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-login btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>注册
+                        </button>
+                    </div>
+                </form>
+
+                <!-- 返回首页 -->
+                <div class="back-home">
+                    <a href="/" class="text-center w-100">
+                        <i class="fas fa-home me-1"></i>返回官网首页
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 系统信息 -->
+        <div class="text-center text-white mt-4">
+            <small>
+                <i class="fas fa-copyright me-1"></i>云户工单系统 2026
+            </small>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        // Tab 切换
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                const tabType = this.dataset.tab;
+                document.getElementById('loginForm').style.display = tabType === 'login' ? 'block' : 'none';
+                document.getElementById('registerForm').style.display = tabType === 'register' ? 'block' : 'none';
+            });
+        });
+
+        // 登录
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await axios.post('/case/api/login', { username, password });
+                if (response.data.code === 200 || response.data.success) {
+                    window.location.href = '/case/ticket-list.html';
+                } else {
+                    alert(response.data.msg || '登录失败');
+                }
+            } catch (error) {
+                alert('登录失败：' + (error.response?.data?.msg || error.message));
+            }
+        });
+
+        // 注册
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            if (password.length < 6) {
+                alert('密码长度不能少于6位');
+                return;
+            }
+
+            try {
+                const response = await axios.post('/case/api/register', { username, email, password });
+                if (response.data.code === 200 || response.data.success) {
+                    alert('注册成功，请登录');
+                    document.querySelector('.tab[data-tab="login"]').click();
+                } else {
+                    alert(response.data.msg || '注册失败');
+                }
+            } catch (error) {
+                alert('注册失败：' + (error.response?.data?.msg || error.message));
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 自动聚焦到用户名输入框
+            const usernameInput = document.getElementById('loginUsername');
+            if (usernameInput) {
+                usernameInput.focus();
+            }
+
+            // 监听回车键提交
+            document.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const loginForm = document.getElementById('loginForm');
+                    const registerForm = document.getElementById('registerForm');
+                    if (loginForm && loginForm.style.display !== 'none') {
+                        loginForm.dispatchEvent(new Event('submit'));
+                    } else if (registerForm && registerForm.style.display !== 'none') {
+                        registerForm.dispatchEvent(new Event('submit'));
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

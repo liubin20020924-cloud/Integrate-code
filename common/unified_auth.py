@@ -19,13 +19,13 @@ def authenticate_user(username, password):
 
     try:
         with conn.cursor() as cursor:
-            # 查询用户信息
+            # 查询用户信息 - 支持用户名或邮箱登录
             sql = """
             SELECT id, username, password_hash, display_name, real_name, role, status, login_attempts
             FROM `users`
-            WHERE username = %s AND status = 'active'
+            WHERE (username = %s OR email = %s) AND status = 'active'
             """
-            cursor.execute(sql, (username,))
+            cursor.execute(sql, (username, username))
             user = cursor.fetchone()
 
             if not user:
