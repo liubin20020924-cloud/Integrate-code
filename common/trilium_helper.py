@@ -364,13 +364,15 @@ class TriliumHelper:
         content = re.sub(r"url\(['\"]?\.\./[^'\"]*['\"]?\)", '', content, flags=re.IGNORECASE)
 
         # 移除或替换图片标签中的外部资源引用
-        # 移除所有包含外部路径的 img 标签
+        # 保留图片标签以便正常显示图片
+        # 移除包含外部路径的 img 标签，但保留本地或 base64 图片
         content = re.sub(r'<img[^>]*src=["\']/?kb/[^"\']*["\'][^>]*>', '', content, flags=re.IGNORECASE)
         content = re.sub(r'<img[^>]*src=["\']?\.\./[^"\']*["\'][^>]*>', '', content, flags=re.IGNORECASE)
-        content = re.sub(r'<img[^>]*src=["\'][^"\"]*\.(png|jpg|jpeg|gif|svg|ico|webp)["\'][^>]*>', '', content, flags=re.IGNORECASE)
+        # 注意：以下正则会移除所有图片，已注释掉以允许图片显示
+        # content = re.sub(r'<img[^>]*src=["\'][^"\"]*\.(png|jpg|jpeg|gif|svg|ico|webp)["\'][^>]*>', '', content, flags=re.IGNORECASE)
 
-        # 移除 SVG 标签
-        content = re.sub(r'<svg[^>]*>.*?</svg>', '', content, flags=re.DOTALL | re.IGNORECASE)
+        # 保留 SVG 标签以显示图标和矢量图形
+        # content = re.sub(r'<svg[^>]*>.*?</svg>', '', content, flags=re.DOTALL | re.IGNORECASE)
 
         # 移除 script 标签（避免外部脚本加载问题）
         content = re.sub(r'<script[^>]*>.*?</script>', '', content, flags=re.DOTALL | re.IGNORECASE)
