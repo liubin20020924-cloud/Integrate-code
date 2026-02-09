@@ -9,6 +9,7 @@
 - 使用输入验证 (common.validators)
 """
 from flask import Blueprint, render_template, request, redirect, url_for, session, Response, send_from_directory, jsonify
+from trilium_py.client import ETAPI
 from flask_socketio import emit, join_room, leave_room
 from datetime import datetime
 import uuid
@@ -1057,6 +1058,42 @@ def register_all_routes(app):
             )
 
     # 系统状态API
+    @app.route('/kb/api/attachments/<path:attachment_path>', methods=['GET'])
+    @login_required(roles=['admin', 'user'])
+    def proxy_kb_image(attachment_path):
+        """代理 Trilium 知识库的图片请求，使用 ETAPI"""
+        try:
+            # attachment_path 格式: ZjD0OZLY4aWU/image/f6f83bfe35c1711a70ed62a985ab1a92.png
+            # 提取 attachment_id (第一部分)
+            parts = attachment_path.split('/')
+            if not parts or len(parts) < 1:
+                return Response('Invalid attachment path', status=400)
+
+            attachment_id = parts[0]
+            logger.info(f"代理图片请求: attachment_id={attachment_id}, full_path={attachment_path}")
+
+            # 使用 trilium-py 的 ETAPI 获取附件内容
+            ea = ETAPI(config.TRILIUM_SERVER_URL, config.TRILIUM_TOKEN)
+
+            # 获取附件内容
+            attachment_content = ea.get_attachment_content(attachment_id)
+
+            if attachment_content:
+                # 返回图片内容
+                return Response(
+                    attachment_content,
+                    mimetype='image/png',
+                    headers={
+                        'Cache-Control': 'public, max-age=86400',  # 缓存 1 天
+                    }
+                )
+            else:
+                logger.error(f"从 Trilium 获取图片失败: attachment_id={attachment_id}")
+                return Response('Image not found', status=404)
+        except Exception as e:
+            log_exception(logger, "代理 Trilium 图片失败")
+            return Response(f'Failed to proxy image: {str(e)}', status=500)
+
     @app.route('/kb/MGMT/api/system-status', methods=['GET'])
     @login_required(roles=['admin'])
     def kb_system_status():
