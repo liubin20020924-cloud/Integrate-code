@@ -57,34 +57,7 @@
             padding: 30px 25px;
         }
 
-        /* Tab切换 */
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            background: #f7fafc;
-            border-radius: 8px;
-            padding: 4px;
-            border: 1px solid #e5e7eb;
-        }
 
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            cursor: pointer;
-            border-radius: 6px;
-            color: #718096;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-size: 0.875rem;
-        }
-
-        .tab.active {
-            background: white;
-            color: #2563eb;
-            font-weight: 700;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
 
         /* 返回首页按钮 */
         .back-home {
@@ -162,12 +135,6 @@
 
             <!-- 登录表单 -->
             <div class="login-body">
-                <!-- Tab切换 -->
-                <div class="tabs">
-                    <div class="tab active" data-tab="login">登录</div>
-                    <div class="tab" data-tab="register">注册</div>
-                </div>
-
                 <!-- 登录表单 -->
                 <form id="loginForm">
                     <!-- 用户名 -->
@@ -208,68 +175,14 @@
                         </button>
                     </div>
 
-                    <!-- 忘记密码 -->
-                    <div class="text-center mb-3">
-                        <a href="#" class="text-muted" style="text-decoration: none;">
-                            <small><i class="fas fa-question-circle me-1"></i>忘记密码？</small>
-                        </a>
-                    </div>
                 </form>
 
-                <!-- 注册表单 -->
-                <form id="registerForm" style="display: none;">
-                    <!-- 用户名 -->
-                    <div class="mb-3">
-                        <label class="form-label">用户名</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-user"></i>
-                            </span>
-                            <input type="text"
-                                   class="form-control"
-                                   id="regUsername"
-                                   placeholder="请输入用户名"
-                                   required>
-                        </div>
-                    </div>
-
-                    <!-- 邮箱 -->
-                    <div class="mb-3">
-                        <label class="form-label">邮箱</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-envelope"></i>
-                            </span>
-                            <input type="email"
-                                   class="form-control"
-                                   id="regEmail"
-                                   placeholder="请输入邮箱"
-                                   required>
-                        </div>
-                    </div>
-
-                    <!-- 密码 -->
-                    <div class="mb-4">
-                        <label class="form-label">密码</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-lock"></i>
-                            </span>
-                            <input type="password"
-                                   class="form-control"
-                                   id="regPassword"
-                                   placeholder="请输入密码（至少6位）"
-                                   required>
-                        </div>
-                    </div>
-
-                    <!-- 提交按钮 -->
-                    <div class="d-grid gap-2 mb-3">
-                        <button type="submit" class="btn btn-login btn-lg">
-                            <i class="fas fa-user-plus me-2"></i>注册
-                        </button>
-                    </div>
-                </form>
+                <!-- 提示信息 -->
+                <div class="text-center mb-3">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>如需注册账户，请联系系统管理员
+                    </small>
+                </div>
 
                 <!-- 返回首页 -->
                 <div class="back-home">
@@ -291,18 +204,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        // Tab 切换
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-
-                const tabType = this.dataset.tab;
-                document.getElementById('loginForm').style.display = tabType === 'login' ? 'block' : 'none';
-                document.getElementById('registerForm').style.display = tabType === 'register' ? 'block' : 'none';
-            });
-        });
-
         // 登录
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -312,37 +213,12 @@
             try {
                 const response = await axios.post('/case/api/login', { username, password });
                 if (response.data.code === 200 || response.data.success) {
-                    window.location.href = '/case/ticket-list.html';
+                    window.location.href = '/case/ticket_list';
                 } else {
                     alert(response.data.msg || '登录失败');
                 }
             } catch (error) {
                 alert('登录失败：' + (error.response?.data?.msg || error.message));
-            }
-        });
-
-        // 注册
-        document.getElementById('registerForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const username = document.getElementById('regUsername').value;
-            const email = document.getElementById('regEmail').value;
-            const password = document.getElementById('regPassword').value;
-
-            if (password.length < 6) {
-                alert('密码长度不能少于6位');
-                return;
-            }
-
-            try {
-                const response = await axios.post('/case/api/register', { username, email, password });
-                if (response.data.code === 200 || response.data.success) {
-                    alert('注册成功，请登录');
-                    document.querySelector('.tab[data-tab="login"]').click();
-                } else {
-                    alert(response.data.msg || '注册失败');
-                }
-            } catch (error) {
-                alert('注册失败：' + (error.response?.data?.msg || error.message));
             }
         });
 
@@ -353,15 +229,12 @@
                 usernameInput.focus();
             }
 
-            // 监听回车键提交
+            // 监听回车键提交登录表单
             document.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     const loginForm = document.getElementById('loginForm');
-                    const registerForm = document.getElementById('registerForm');
-                    if (loginForm && loginForm.style.display !== 'none') {
+                    if (loginForm) {
                         loginForm.dispatchEvent(new Event('submit'));
-                    } else if (registerForm && registerForm.style.display !== 'none') {
-                        registerForm.dispatchEvent(new Event('submit'));
                     }
                 }
             });
