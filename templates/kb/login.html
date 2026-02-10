@@ -120,7 +120,7 @@
             <!-- 头部 -->
             <div class="login-header">
                 <img src="{{ url_for('static', filename='kb/images/Logo.jpg') }}" alt="云户知识库" class="logo-img-large mb-3">
-                <h3>云户知识库管理系统</h3>
+                <h3>知识库管理系统</h3>
                 <p class="mb-0">用户登录</p>
             </div>
             
@@ -133,7 +133,7 @@
                 </div>
                 {% endif %}
                 
-                <form method="POST" action="{{ url_for('kb_login') }}">
+                <form method="POST" action="{{ url_for('kb.login') }}">
                     <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
                     
                     <!-- 用户名 -->

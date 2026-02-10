@@ -598,8 +598,22 @@
                         </div>
                         <div class="mb-3">
                             <label for="newPassword" class="form-label">密码 *</label>
-                            <input type="password" class="form-control" id="newPassword"
-                                   name="password" required placeholder="请输入密码">
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="newPassword"
+                                       name="password" required placeholder="请输入密码">
+                                <button type="button" class="btn btn-outline-secondary" id="toggleNewPassword" title="显示/隐藏密码">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                <strong>密码复杂度要求：</strong>
+                                <ul class="mb-0 ps-3 mt-1" style="font-size: 0.85rem; color: #666;">
+                                    <li>至少 <strong>6</strong> 个字符</li>
+                                    <li>建议包含<strong>大写字母</strong>、<strong>小写字母</strong>、<strong>数字</strong>和<strong>特殊符号</strong></li>
+                                    <li>不要使用常见密码如：123456、password 等</li>
+                                </ul>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="newDisplayName" class="form-label">显示名称</label>
@@ -698,9 +712,25 @@
                         </div>
                         <div class="mb-3" id="passwordChangeSection" style="display: none;">
                             <label for="editPassword" class="form-label">新密码</label>
-                            <input type="password" class="form-control" id="editPassword"
-                                   name="password" placeholder="请输入新密码(留空则不修改)">
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="editPassword"
+                                       name="password" placeholder="请输入新密码(留空则不修改)">
+                                <button type="button" class="btn btn-outline-secondary" id="toggleEditPassword" title="显示/隐藏密码">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                <strong>密码复杂度要求：</strong>
+                                <ul class="mb-0 ps-3 mt-1" style="font-size: 0.85rem; color: #666;">
+                                    <li>至少 <strong>6</strong> 个字符</li>
+                                    <li>建议包含<strong>大写字母</strong>、<strong>小写字母</strong>、<strong>数字</strong>和<strong>特殊符号</strong></li>
+                                    <li>不要使用常见密码如：123456、password 等</li>
+                                </ul>
+                            </div>
                         </div>
+
+
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -958,6 +988,32 @@
                         }
                     }
                 });
+            });
+
+            // 密码显示/隐藏切换功能 - 添加用户
+            $('#toggleNewPassword').on('click', function() {
+                const input = $('#newPassword');
+                const icon = $(this).find('i');
+                if (input.attr('type') === 'password') {
+                    input.attr('type', 'text');
+                    icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                } else {
+                    input.attr('type', 'password');
+                    icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                }
+            });
+
+            // 密码显示/隐藏切换功能 - 编辑用户
+            $('#toggleEditPassword').on('click', function() {
+                const input = $('#editPassword');
+                const icon = $(this).find('i');
+                if (input.attr('type') === 'password') {
+                    input.attr('type', 'text');
+                    icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                } else {
+                    input.attr('type', 'password');
+                    icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                }
             });
         });
     </script>
