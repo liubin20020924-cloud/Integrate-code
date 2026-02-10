@@ -28,6 +28,7 @@ from common.response import (
     unauthorized_response, forbidden_response, validation_error_response,
     server_error_response
 )
+from flask_limiter import limiter
 from common.logger import logger, log_exception, log_request
 from common.validators import (
     validate_email, validate_password, validate_username,
@@ -104,8 +105,11 @@ def register_all_routes(app):
                 os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'home', 'images'),
                 filename
             )
-        except:
+        except FileNotFoundError:
             return "404 - File Not Found", 404
+        except Exception as e:
+            logger.error(f"静态文件访问错误: {e}")
+            return "500 - Internal Server Error", 500
 
     # 404错误处理
     @app.errorhandler(404)
@@ -144,20 +148,66 @@ def register_all_routes(app):
 
     @app.route('/api/contact', methods=['POST'])
     def contact():
-        """联系表单提交"""
+        """联系表单提交
+
+        提交官网联系表单
+        ---
+        tags:
+          - 官网
+        consumes:
+          - application/json
+        parameters:
+          - in: body
+            name: body
+            description: 联系表单数据
+            required: true
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - message
+              properties:
+                name:
+                  type: string
+                  description: 联系人姓名
+                  example: 张三
+                email:
+                  type: string
+                  format: email
+                  description: 联系人邮箱
+                  example: test@example.com
+                message:
+                  type: string
+                  description: 留言内容
+                  example: 这是测试消息
+        responses:
+          200:
+            description: 提交成功
+            schema:
+              $ref: '#/definitions/SuccessResponse'
+          400:
+            description: 参数错误
+            schema:
+              $ref: '#/definitions/ErrorResponse'
+          500:
+            description: 服务器错误
+            schema:
+              $ref: '#/definitions/ErrorResponse'
+        """
         try:
             data = request.get_json()
-            
+
             # 验证必填字段
             is_valid, errors = validate_required(data, ['name', 'email', 'message'])
             if not is_valid:
                 return validation_error_response(errors)
-            
+
             # 验证邮箱
             is_valid, msg = validate_email(data['email'])
             if not is_valid:
                 return error_response(msg, 400)
-            
+
             logger.info(f"收到联系表单: {data['name']} <{data['email']}>")
             return success_response(message='留言提交成功')
         except Exception as e:
@@ -182,8 +232,35 @@ def register_all_routes(app):
     # ==================== 知识库系统路由 - 认证 ====================
 
     @app.route('/kb/auth/login', methods=['GET', 'POST'])
+    @limiter.limit("5 per minute")
     def kb_login():
-        """登录页面"""
+        """知识库系统登录
+
+        用户登录知识库系统
+        ---
+        tags:
+          - 知识库-认证
+        consumes:
+          - application/x-www-form-urlencoded
+        parameters:
+          - in: formData
+            name: username
+            type: string
+            required: true
+            description: 用户名或邮箱
+          - in: formData
+            name: password
+            type: string
+            required: true
+            description: 密码
+        responses:
+          200:
+            description: 登录成功，重定向到知识库首页
+          302:
+            description: 已登录，重定向到知识库首页
+          200:
+            description: 登录失败，显示错误信息
+        """
         if get_kb_current_user():
             logger.info("用户已登录，重定向到知识库首页")
             return redirect(url_for('kb_index'))
@@ -228,7 +305,29 @@ def register_all_routes(app):
 
     @app.route('/kb/auth/check-login')
     def kb_check_login():
-        """检查登录状态"""
+        """检查登录状态
+
+        检查当前用户是否已登录
+        ---
+        tags:
+          - 知识库-认证
+        responses:
+          200:
+            description: 检查结果
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                message:
+                  type: string
+                data:
+                  type: object
+                  properties:
+                    user:
+                      type: object
+                      description: 用户信息（已登录时）
+        """
         user = get_kb_current_user()
         if user:
             return success_response(data={'user': user}, message='已登录')
@@ -310,7 +409,62 @@ def register_all_routes(app):
     # Trilium 搜索路由
     @app.route('/api/trilium/search')
     def trilium_search():
-        """Trilium 搜索 - 使用 trilium-py 模块"""
+        """Trilium 笔记搜索
+
+        在 Trilium 笔记系统中搜索内容
+        ---
+        tags:
+          - Trilium
+        parameters:
+          - name: q
+            in: query
+            type: string
+            required: true
+            description: 搜索关键词
+          - name: limit
+            in: query
+            type: integer
+            default: 30
+            description: 返回结果数量限制
+        responses:
+          200:
+            description: 搜索成功
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                message:
+                  type: string
+                data:
+                  type: object
+                  properties:
+                    results:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          noteId:
+                            type: string
+                          title:
+                            type: string
+                          type:
+                            type: string
+                          dateModified:
+                            type: string
+                    query:
+                      type: string
+                    count:
+                      type: integer
+          400:
+            description: 参数错误
+            schema:
+              $ref: '#/definitions/ErrorResponse'
+          500:
+            description: Trilium 服务错误
+            schema:
+              $ref: '#/definitions/ErrorResponse'
+        """
         try:
             query = request.args.get('q', '').strip()
             limit = int(request.args.get('limit', 30))
@@ -1270,8 +1424,58 @@ def register_all_routes(app):
             return f"404 - 文件未找到: {filename}", 404
 
     @app.route('/case/api/login', methods=['POST'])
+    @limiter.limit("5 per minute")
     def case_login():
-        """登录"""
+        """工单系统登录
+
+        用户登录工单系统
+        ---
+        tags:
+          - 工单-认证
+        consumes:
+          - application/json
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: 用户名
+                password:
+                  type: string
+                  description: 密码
+        responses:
+          200:
+            description: 登录成功
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                message:
+                  type: string
+                data:
+                  type: object
+                  properties:
+                    user_id:
+                      type: integer
+                    username:
+                      type: string
+                    real_name:
+                      type: string
+                    role:
+                      type: string
+          401:
+            description: 登录失败
+            schema:
+              $ref: '#/definitions/ErrorResponse'
+        """
         try:
             log_request(logger, request)
             data = request.get_json()
@@ -1331,7 +1535,78 @@ def register_all_routes(app):
 
     @app.route('/case/api/ticket', methods=['POST'])
     def case_create_ticket():
-        """创建工单"""
+        """创建工单
+
+        创建新的工单
+        ---
+        tags:
+          - 工单-操作
+        consumes:
+          - application/json
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              type: object
+              required:
+                - customer_name
+                - customer_contact
+                - customer_email
+                - product
+                - issue_type
+                - priority
+                - title
+                - content
+              properties:
+                customer_name:
+                  type: string
+                  description: 客户名称
+                customer_contact:
+                  type: string
+                  description: 客户联系方式
+                customer_email:
+                  type: string
+                  format: email
+                  description: 客户邮箱
+                product:
+                  type: string
+                  description: 涉及产品
+                issue_type:
+                  type: string
+                  enum: [technical, service, complaint, other]
+                  description: 问题类型
+                priority:
+                  type: string
+                  enum: [low, medium, high, urgent]
+                  description: 优先级
+                title:
+                  type: string
+                  description: 工单标题
+                content:
+                  type: string
+                  description: 工单详情
+        responses:
+          200:
+            description: 创建成功
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                message:
+                  type: string
+                data:
+                  type: object
+                  properties:
+                    ticket_id:
+                      type: string
+                      description: 工单ID
+          400:
+            description: 参数错误
+            schema:
+              $ref: '#/definitions/ErrorResponse'
+        """
         try:
             log_request(logger, request, '/case/api/ticket')
             data = request.get_json()

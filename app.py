@@ -3,17 +3,19 @@
 整合官网、知识库、工单三个系统
 使用统一路由管理
 """
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_socketio import SocketIO
+from flasgger import Swagger
+from flask_wtf.csrf import CSRFProtect
 import jinja2
 import config
 from common.db_manager import get_pool
-from routes_new import register_all_routes, register_socketio_events, init_case_database
+from services.socketio_service import register_socketio_events, init_case_database
+from routes import home_bp, kb_bp, kb_management_bp, case_bp, unified_bp, api_bp, auth_bp
 import os
 from datetime import timedelta
 
 # 初始化主应用
-import os
 template_dirs = [
     os.path.join(os.path.dirname(__file__), 'templates')
 ]
@@ -29,6 +31,154 @@ app.config['DEBUG'] = config.BaseConfig.DEBUG
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=3)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = config.BaseConfig.STATIC_CACHE_TIME
 
+# Swagger UI 配置
+swagger_config = {
+    "headers": [],
+    "specs": [
+        {
+            "endpoint": 'apispec',
+            "route": '/apispec.json',
+            "rule_filter": lambda rule: True,
+            "model_filter": lambda tag: True,
+        }
+    ],
+    "static_url_path": "/flasgger_static",
+    "swagger_ui": True,
+    "specs_route": "/api/docs"
+}
+
+swagger_template = {
+    "swagger": "2.0",
+    "info": {
+        "title": "云户科技网站 API 文档",
+        "description": """
+        云户科技整合平台 API 文档
+
+        本平台整合了以下三个系统的 API：
+        - **官网系统** - 官网首页、联系表单、留言管理
+        - **知识库系统** - 知识库浏览、搜索、管理、Trilium 集成
+        - **工单系统** - 工单创建、查询、聊天、状态管理
+        - **统一用户管理** - 用户认证、权限管理
+
+        ### 认证说明
+
+        大多数 API 需要用户登录认证。登录后，Session 会自动携带认证信息。
+
+        ### 响应格式
+
+        所有 API 返回统一的 JSON 格式：
+
+        ```json
+        {
+          "success": true,
+          "message": "操作成功",
+          "data": {}
+        }
+        ```
+        """,
+        "contact": {
+            "name": "云户科技",
+            "email": "dora.dong@cloud-doors.com"
+        },
+        "version": "2.0"
+    },
+    "host": f"{config.FLASK_HOST}:{config.FLASK_PORT}",
+    "basePath": "/",
+    "schemes": ["http", "https"],
+    "consumes": ["application/json"],
+    "produces": ["application/json"],
+    "tags": [
+        {
+            "name": "官网",
+            "description": "官网系统相关 API"
+        },
+        {
+            "name": "知识库-认证",
+            "description": "知识库系统用户认证 API"
+        },
+        {
+            "name": "知识库-浏览",
+            "description": "知识库内容浏览和搜索 API"
+        },
+        {
+            "name": "知识库-管理",
+            "description": "知识库管理功能 API（需要管理员权限）"
+        },
+        {
+            "name": "工单-认证",
+            "description": "工单系统认证 API"
+        },
+        {
+            "name": "工单-操作",
+            "description": "工单创建和查询 API"
+        },
+        {
+            "name": "用户管理",
+            "description": "统一用户管理 API"
+        },
+        {
+            "name": "Trilium",
+            "description": "Trilium 笔记集成 API"
+        }
+    ],
+    "definitions": {
+        "SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "success": {
+                    "type": "boolean",
+                    "description": "请求是否成功",
+                    "example": True
+                },
+                "message": {
+                    "type": "string",
+                    "description": "响应消息",
+                    "example": "操作成功"
+                },
+                "data": {
+                    "type": "object",
+                    "description": "返回数据"
+                }
+            }
+        },
+        "ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "success": {
+                    "type": "boolean",
+                    "description": "请求是否成功",
+                    "example": False
+                },
+                "message": {
+                    "type": "string",
+                    "description": "错误消息",
+                    "example": "操作失败"
+                }
+            }
+        }
+    }
+}
+
+swagger = Swagger(app, config=swagger_config, template=swagger_template)
+
+# CSRF 保护
+csrf = CSRFProtect()
+
+# 生产环境启用 CSRF
+if not config.BaseConfig.DEBUG:
+    csrf.init_app(app)
+
+# 请求速率限制
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"  # 生产环境可改为 Redis
+)
+limiter.init_app(app)
+
 # 初始化SocketIO
 try:
     import eventlet
@@ -43,7 +193,9 @@ except ImportError:
     except ImportError:
         async_mode = 'threading'
 
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode=async_mode)
+# CORS 配置 - 限制允许的来源
+allowed_origins = config.ALLOWED_ORIGINS.split(',') if config.ALLOWED_ORIGINS else '*'
+socketio = SocketIO(app, cors_allowed_origins=allowed_origins, async_mode=async_mode)
 
 # 预热数据库连接池
 print("预热数据库连接池...")
@@ -73,9 +225,15 @@ def add_cache_headers(response):
 print("初始化工单系统数据库...")
 init_case_database()
 
-# 注册所有路由
+# 注册蓝图
 print("注册路由系统...")
-register_all_routes(app)
+app.register_blueprint(home_bp)
+app.register_blueprint(kb_bp)
+app.register_blueprint(kb_management_bp)
+app.register_blueprint(case_bp)
+app.register_blueprint(unified_bp)
+app.register_blueprint(api_bp)
+app.register_blueprint(auth_bp)
 
 # 注册SocketIO事件
 register_socketio_events(socketio)
@@ -87,6 +245,7 @@ print(f"官网首页: http://{config.FLASK_HOST}:{config.FLASK_PORT}/")
 print(f"知识库系统: http://{config.FLASK_HOST}:{config.FLASK_PORT}/kb")
 print(f"工单系统: http://{config.FLASK_HOST}:{config.FLASK_PORT}/case")
 print(f"统一用户管理: http://{config.FLASK_HOST}:{config.FLASK_PORT}/unified/users")
+print(f"API 文档: http://{config.FLASK_HOST}:{config.FLASK_PORT}/api/docs")
 print("=" * 60)
 
 

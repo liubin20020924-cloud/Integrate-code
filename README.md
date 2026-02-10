@@ -2,9 +2,9 @@
 
 > 🎯 整合官网、知识库、工单三个系统的统一 Web 应用平台
 
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org)
-[![Flask](https://img.shields.io/badge/Flask-3.0.3-green)](https://flask.palletsprojects.com)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+|[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org)
+|[![Flask](https://img.shields.io/badge/Flask-3.0.3-green)](https://flask.palletsprojects.com)
+|[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
@@ -16,7 +16,7 @@
 - **知识库系统** - 文档管理、内容搜索、Trilium 笔记集成
 - **工单系统** - 客户服务、实时聊天、问题跟踪
 
-所有系统共享统一的用户管理和认证体系，使用 Flask 框架构建，支持 MySQL/MariaDB 数据库。
+所有系统共享统一的用户管理和认证体系，使用 Flask 框架构建，采用蓝图路由架构，支持 MySQL/MariaDB 数据库。
 
 ---
 
@@ -27,15 +27,17 @@
 - 产品展示和解决方案介绍
 - 客户案例和公司介绍
 - 在线联系表单
-- 管理后台（留言管理）
+- 留言管理
 
 ### 📚 知识库系统
 - 集成 Trilium 笔记服务
-- 强大的搜索功能
+- 强大的搜索功能（支持 Trilium 搜索）
 - 分页浏览和分类管理
 - 统一用户认证
 - 管理后台（记录管理、批量操作）
-- 密码强度验证（用户8位，管理员10位+）
+- 用户管理界面（添加、编辑、删除用户）
+- 密码复杂度提示（最少 6 位，建议包含大小写字母、数字、特殊符号）
+- 附件代理支持
 
 ### 🎫 工单系统
 - WebSocket 实时聊天
@@ -43,12 +45,12 @@
 - 邮件通知
 - 客户与服务人员实时交流
 - 工单状态管理
-- **用户需由管理员创建**（已移除自助注册功能）
+- **用户需由管理员创建**（无自助注册功能）
 
 ### 🔒 统一安全特性
 - Werkzeug 密码加密（PBKDF2）
 - Session 超时管理（3小时）
-- 登录失败锁定（5次失败自动锁定）
+- 登录失败锁定
 - 基于角色的访问控制（RBAC）
 - 登录日志审计
 - 配置安全检查
@@ -60,54 +62,67 @@
 ```
 Integrate-code/
 ├── 🐍 核心文件
-│   ├── app.py                    # Flask 应用主入口
-│   ├── config.py                 # 统一配置文件
-│   ├── routes_new.py             # 统一路由（2155行）
-│   └── requirements.txt          # Python 依赖
+│   ├── app.py                      # Flask 应用主入口
+│   ├── config.py                   # 统一配置文件
+│   ├── requirements.txt            # Python 依赖
+│   └── .env.example               # 环境变量示例
 │
 ├── 🔧 公共模块 (common/)
-│   ├── db_manager.py             # 数据库连接池管理
-│   ├── kb_utils.py               # 知识库工具函数
-│   ├── logger.py                 # 结构化日志模块
-│   ├── password_policy.py         # 密码策略配置
-│   ├── response.py               # 统一 API 响应
-│   ├── trilium_helper.py         # Trilium 集成
-│   ├── unified_auth.py           # 统一认证模块
-│   └── validators.py             # 输入验证
+│   ├── db_manager.py              # 数据库连接池管理
+│   ├── database_context.py         # 数据库连接上下文管理器
+│   ├── kb_utils.py                # 知识库工具函数
+│   ├── logger.py                  # 结构化日志模块
+│   ├── password_policy.py          # 密码策略配置
+│   ├── response.py                # 统一 API 响应
+│   ├── trilium_helper.py          # Trilium 集成
+│   ├── unified_auth.py            # 统一认证模块
+│   └── validators.py              # 输入验证
+│
+├── 📋 路由蓝图 (routes/)
+│   ├── __init__.py                # 蓝图注册
+│   ├── home_bp.py                # 官网路由
+│   ├── kb_bp.py                  # 知识库认证和浏览路由
+│   ├── kb_management_bp.py        # 知识库管理路由
+│   ├── case_bp.py                # 工单系统路由
+│   ├── unified_bp.py              # 统一用户管理路由
+│   ├── auth_bp.py                # 认证 API 路由
+│   └── api_bp.py                # API 路由（Trilium 等）
 │
 ├── 💼 业务逻辑 (services/)
-│   └── user_service.py           # 用户服务层
-│
-├── 📜 工具脚本 (scripts/)
-│   ├── check_config.py           # 配置安全检查
-│   ├── check_security.py         # 快速安全检查
-│   └── generate_secure_env.py    # 生成安全配置
+│   ├── user_service.py            # 用户服务层
+│   └── socketio_service.py       # WebSocket 服务
 │
 ├── 🎨 前端模板 (templates/)
-│   ├── home/                     # 官网模板
-│   ├── kb/                       # 知识库模板
-│   ├── case/                     # 工单模板
-│   └── common/                   # 通用模板
+│   ├── home/                      # 官网模板
+│   ├── kb/                        # 知识库模板
+│   ├── case/                      # 工单模板
+│   └── common/                    # 通用模板
 │
 ├── 📦 静态资源 (static/)
-│   ├── common.css                # 统一样式
-│   ├── home/                     # 官网资源
-│   ├── kb/                       # 知识库资源
-│   └── case/                     # 工单资源
+│   ├── common.css                 # 统一样式
+│   ├── home/                      # 官网资源
+│   ├── kb/                        # 知识库资源
+│   └── case/                      # 工单资源
+│
+├── 📜 工具脚本 (scripts/)
+│   ├── check_config.py            # 配置安全检查
+│   ├── check_security.py          # 快速安全检查
+│   └── generate_secure_env.py     # 生成安全配置
 │
 ├── 📚 文档 (docs/)
-│   ├── README.md                 # 文档索引
-│   ├── HOME_SYSTEM_GUIDE.md      # 官网系统说明
-│   ├── KB_SYSTEM_GUIDE.md        # 知识库系统说明
-│   ├── CASE_SYSTEM_GUIDE.md      # 工单系统说明
-│   ├── UNIFIED_SYSTEM_GUIDE.md   # 统一用户管理说明
+│   ├── README.md                  # 文档索引
+│   ├── HOME_SYSTEM_GUIDE.md       # 官网系统说明
+│   ├── KB_SYSTEM_GUIDE.md         # 知识库系统说明
+│   ├── CASE_SYSTEM_GUIDE.md       # 工单系统说明
+│   ├── UNIFIED_SYSTEM_GUIDE.md    # 统一用户管理说明
+│   ├── API_DOCS.md               # API 文档
+│   ├── OPTIMIZATION_PLAN.md       # 优化计划
 │   ├── SECURITY_IMPROVEMENTS.md  # 安全改进文档
-│   └── CODE_STATISTICS.md        # 代码统计
+│   └── CODE_STATISTICS.md         # 代码统计
 │
 ├── 🗄️ 数据库
-│   ├── init_database.sql          # 数据库初始化脚本
-│   ├── .env                      # 环境变量（本地配置）
-│   └── .env.example              # 环境变量示例
+│   ├── init_database.sql           # 数据库初始化脚本
+│   └── .env                       # 环境变量（本地配置）
 │
 └── 🚀 启动脚本
     ├── start.bat                 # Windows 启动脚本
@@ -122,7 +137,7 @@ Integrate-code/
 
 - Python 3.8 或更高版本
 - MySQL/MariaDB 5.7 或更高版本
-- Trilium 笔记服务器（用于知识库功能）
+- Trilium 笔记服务器（用于知识库功能，可选）
 
 ### 1. 安装依赖
 
@@ -153,6 +168,8 @@ python scripts/generate_secure_env.py
 # Flask 配置
 FLASK_SECRET_KEY=your-secret-key-here
 FLASK_DEBUG=False
+FLASK_HOST=0.0.0.0
+FLASK_PORT=5000
 
 # 数据库配置
 DB_HOST=127.0.0.1
@@ -163,7 +180,7 @@ DB_NAME_HOME=clouddoors_db
 DB_NAME_KB=YHKB
 DB_NAME_CASE=casedb
 
-# Trilium 配置
+# Trilium 配置（可选）
 TRILIUM_SERVER_URL=http://127.0.0.1:8080
 TRILIUM_TOKEN=your-trilium-token
 
@@ -172,6 +189,9 @@ SMTP_SERVER=smtp.qq.com
 SMTP_PORT=465
 SMTP_USERNAME=your-email@qq.com
 SMTP_PASSWORD=your-email-password
+
+# CORS 配置（生产环境建议设置允许的域名）
+ALLOWED_ORIGINS=*
 ```
 
 ### 3. 初始化数据库
@@ -188,7 +208,7 @@ mysql -u root -p < init_database.sql
 ### 4. 检查配置安全
 
 ```bash
-python scripts/check_security.py
+python scripts/check_config.py
 ```
 
 ### 5. 启动应用
@@ -217,8 +237,10 @@ python app.py
 |------|------|------|
 | 官网首页 | http://localhost:5000/ | 企业官网 |
 | 知识库系统 | http://localhost:5000/kb | 文档管理 |
+| 知识库管理 | http://localhost:5000/kb/MGMT | 知识库后台 |
 | 工单系统 | http://localhost:5000/case | 客户服务 |
 | 统一用户管理 | http://localhost:5000/unified/users | 用户管理 |
+| API 文档 | http://localhost:5000/api/docs | Swagger 文档 |
 
 ---
 
@@ -241,17 +263,33 @@ python app.py
 
 ---
 
-## 📊 项目统计
+## 📊 路由架构
 
-| 类型 | 数量 | 代码行数 |
-|------|------|----------|
-| Python 文件 | 17 | ~4,000 行 |
-| HTML 模板 | 23 | ~7,000 行 |
-| CSS 样式 | 5 | ~2,600 行 |
-| JavaScript | 1 | 88 行 |
-| Markdown 文档 | 9 | ~3,700 行 |
-| SQL 脚本 | 1 | 262 行 |
-| **总计** | **105** | **~18,000+ 行** |
+### 蓝图划分
+
+| 蓝图 | 前缀 | 说明 |
+|------|--------|------|
+| `home_bp` | `/` | 官网首页路由 |
+| `kb_bp` | `/kb` | 知识库认证和浏览 |
+| `kb_management_bp` | `/kb/MGMT` | 知识库管理后台 |
+| `case_bp` | `/case` | 工单系统 |
+| `unified_bp` | `/unified` | 统一用户管理 |
+| `auth_bp` | `/auth` | 认证 API（用户管理） |
+| `api_bp` | `/api` | API 路由（Trilium 等） |
+
+### API 端点
+
+#### Trilium 集成 API
+- `GET /api/trilium/search` - 搜索 Trilium 笔记
+- `GET /api/trilium/content` - 获取笔记内容
+- `GET /api/trilium/test` - 测试 Trilium 连接
+- `GET /kb/api/attachments/<path>` - Trilium 附件代理
+
+#### 用户管理 API
+- `POST /auth/api/add-user` - 添加用户
+- `PUT /auth/api/update-user/<id>` - 更新用户
+- `DELETE /auth/api/delete-user/<id>` - 删除用户
+- `POST /auth/api/reset-password/<id>` - 重置密码
 
 ---
 
@@ -292,10 +330,10 @@ DB_POOL_MAX_SHARED = 5         # 最大共享连接
 所有系统共享用户表和认证逻辑：
 
 - **用户名或邮箱登录**
-- **密码强度验证**
-  - 普通用户：至少 8 位，包含字母和数字
-  - 管理员：至少 10 位，包含大小写字母、数字和特殊字符
-- **登录失败锁定**（5 次失败自动锁定）
+- **密码强度验证**（最少 6 位）
+- **密码复杂度提示**（建议包含大小写字母、数字、特殊符号）
+- **密码显示/隐藏切换**
+- **登录失败锁定**
 - **Session 超时**（3 小时）
 - **登录日志审计**
 
@@ -313,9 +351,9 @@ DB_POOL_MAX_SHARED = 5         # 最大共享连接
 知识库系统集成 Trilium 笔记：
 
 - 从 Trilium 搜索笔记
-- 获取笔记内容（支持克隆笔记）
-- HTML 内容清理和格式化
-- 图片处理和代理
+- 获取笔记内容
+- 附件代理访问
+- 使用 ETAPI 认证
 
 ### 统一 API 响应
 
@@ -339,7 +377,9 @@ DB_POOL_MAX_SHARED = 5         # 最大共享连接
 - [知识库系统说明](./docs/KB_SYSTEM_GUIDE.md)
 - [工单系统说明](./docs/CASE_SYSTEM_GUIDE.md)
 - [统一用户管理说明](./docs/UNIFIED_SYSTEM_GUIDE.md)
+- [API 文档](./docs/API_DOCS.md)
 - [安全改进文档](./docs/SECURITY_IMPROVEMENTS.md)
+- [优化计划](./docs/OPTIMIZATION_PLAN.md)
 - [代码统计](./docs/CODE_STATISTICS.md)
 
 ---
@@ -349,11 +389,10 @@ DB_POOL_MAX_SHARED = 5         # 最大共享连接
 ### 密码安全
 
 - **Werkzeug PBKDF2 加密**
-- **密码强度验证**
-  - 普通用户：8+ 位，字母 + 数字
-  - 管理员：10+ 位，大小写 + 数字 + 特殊字符
+- **密码强度验证**（最少 6 位，建议包含大小写字母、数字、特殊符号）
 - **禁止常见弱密码**
 - **密码修改需验证旧密码**
+- **密码显示/隐藏切换功能**
 
 ### 会话安全
 
@@ -365,10 +404,10 @@ DB_POOL_MAX_SHARED = 5         # 最大共享连接
 ### API 安全
 
 - **登录验证装饰器**
-- **角色权限控制**
+- **角色权限控制**（RBAC）
 - **SQL 注入防护**（参数化查询）
 - **XSS 防护**（HTML 内容清理）
-- **CSRF 保护**
+- **CSRF 保护**（生产环境）
 
 ### 审计日志
 
@@ -392,10 +431,11 @@ DB_POOL_MAX_SHARED = 5         # 最大共享连接
 
 ### 添加新路由
 
-1. 在 `routes_new.py` 中添加路由函数
-2. 使用统一响应格式
+1. 在对应的蓝图文件中添加路由函数（`routes/` 目录）
+2. 使用统一响应格式（`common/response.py`）
 3. 添加登录验证装饰器（如需要）
-4. 记录日志
+4. 记录日志（`common/logger.py`）
+5. 在 `app.py` 中注册新蓝图
 
 ### 修改配置
 
@@ -456,16 +496,22 @@ FLASK_PORT=5001
 
 ## 📝 更新日志
 
-### 2026-02-09 (v2.0)
+### 2026-02-10 (v2.0 - 架构重构)
 
-#### 新功能
-- ✅ 工单系统移除自助注册功能
-- ✅ 增强密码强度验证（管理员 10 位 + 特殊字符）
-- ✅ 添加配置安全检查工具
-- ✅ 生成安全环境变量配置脚本
-- ✅ 统一 API 响应格式
-- ✅ 结构化日志系统
-- ✅ 输入验证模块
+#### 架构优化
+- ✅ 将单体路由文件（`routes_new.py`）拆分为蓝图架构
+- ✅ 创建独立路由蓝图：`home_bp`, `kb_bp`, `kb_management_bp`, `case_bp`, `unified_bp`, `auth_bp`, `api_bp`
+- ✅ 数据库连接使用上下文管理器（`database_context.py`）
+- ✅ 统一 API 响应格式（`common/response.py`）
+- ✅ 结构化日志系统（`common/logger.py`）
+
+#### 功能更新
+- ✅ 添加 Trilium API 路由（`/api/trilium/*`）
+- ✅ 添加 Trilium 附件代理路由
+- ✅ 用户管理界面添加密码复杂度说明
+- ✅ 添加密码显示/隐藏切换功能
+- ✅ 统一用户管理 API（`/auth/api/*`）
+- ✅ 知识库用户管理页面（`/kb/auth/users`）
 
 #### 安全改进
 - 🔒 默认调试模式改为 `False`
@@ -475,8 +521,8 @@ FLASK_PORT=5001
 - 🔒 登录日志审计
 
 #### 文档更新
-- 📚 重写所有项目文档
-- 📚 添加安全改进文档
+- 📚 重写所有项目文档，符合当前架构
+- 📚 更新 API 文档
 - 📚 更新代码统计
 
 ---
@@ -517,6 +563,7 @@ MIT License
 - [Flask-SocketIO](https://flask-socketio.readthedocs.io)
 - [Bootstrap](https://getbootstrap.com)
 - [Trilium Notes](https://github.com/zadam/trilium)
+- [trilium-py](https://github.com/naereen/trilium-py)
 
 ---
 

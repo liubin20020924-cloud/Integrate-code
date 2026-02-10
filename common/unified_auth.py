@@ -176,7 +176,7 @@ def login_required(roles=None):
             user = get_current_user()
             if not user:
                 from flask import redirect, url_for
-                return redirect(url_for('kb_login', next=request.url))
+                return redirect(url_for('kb.login', next=request.url))
 
             if roles and user.get('role') not in roles:
                 from flask import render_template
