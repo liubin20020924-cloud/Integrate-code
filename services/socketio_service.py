@@ -151,4 +151,4 @@ def emit_ticket_update(ticket_id):
     """发送工单更新事件到所有客户端"""
     global socketio_instance
     if socketio_instance:
-        socketio_instance.emit('ticket_update', {'ticket_id': ticket_id}, broadcast=True)
+        socketio_instance.emit('ticket_update', {'ticket_id': ticket_id})

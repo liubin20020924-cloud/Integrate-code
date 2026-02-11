@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta charset="UTF-8">
     <title>云户工单系统 - 登录</title>
-    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='case/css/edge_fixes.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='case/css/style.css') }}">
     <style>
         /* 登录页面特殊样式 */
         body {
-            background: linear-gradient(135deg, #1a5c9e 0%, #2563eb 100%);
+            background: linear-gradient(135deg, #1a7f37 0%, #48bb78 100%);
             height: 100vh;
             display: flex;
             align-items: center;
@@ -38,19 +38,26 @@
 
         /* 登录头部 */
         .login-header {
-            background: linear-gradient(135deg, #0f4c81 0%, #1a5c9e 100%);
+            background: linear-gradient(135deg, #1a7f37 0%, #2d8a4e 50%, #48bb78 100%);
             color: white;
-            padding: 30px 25px;
+            padding: 40px 30px;
             text-align: center;
+            border-bottom: 4px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        /* 登录Logo */
+        /* 登录Logo - 使用与知识库一致的样式 */
         .login-header .logo-img-large {
-            height: 70px !important;
-            width: auto !important;
             max-width: 280px !important;
-            margin: 0 auto 15px auto !important;
+            width: auto !important;
+            height: 70px !important;
+            object-fit: contain !important;
             display: block;
+            margin: 0 auto 15px auto !important;
+            filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.1));
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 8px 12px;
         }
 
         /* 登录表单区域 */
@@ -76,13 +83,13 @@
         }
 
         .back-home a:hover {
-            color: #1a5c9e;
+            color: #2d8a4e;
             background: #f7fafc;
         }
 
         /* 登录按钮 */
         .btn-login {
-            background: linear-gradient(135deg, #1a5c9e 0%, #2563eb 100%);
+            background: linear-gradient(135deg, #2d8a4e 0%, #48bb78 100%);
             border: none;
             color: white;
             font-weight: 600;
@@ -92,9 +99,9 @@
         }
 
         .btn-login:hover {
-            background: linear-gradient(135deg, #0f4c81 0%, #1a5c9e 100%);
+            background: linear-gradient(135deg, #1a7f37 0%, #2d8a4e 100%);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(26, 92, 158, 0.3);
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
         }
 
         /* 输入框组 */
@@ -109,8 +116,8 @@
         }
 
         .form-control:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+            border-color: #48bb78;
+            box-shadow: 0 0 0 0.2rem rgba(72, 187, 120, 0.15);
         }
 
         /* 密码显示/隐藏按钮 */
@@ -123,12 +130,12 @@
         }
 
         .password-toggle:hover {
-            color: #2563eb;
+            color: #48bb78;
         }
 
         .password-toggle:focus {
             outline: none;
-            color: #2563eb;
+            color: #48bb78;
         }
     </style>
 </head>
@@ -151,7 +158,7 @@
                 </div>
                 {% endif %}
 
-                <form method="POST" action="{{ url_for('case.login') }}">
+                <form id="loginForm" method="POST" action="{{ url_for('case.login') }}">
                     <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
 
                     <!-- 用户名 -->
@@ -192,7 +199,7 @@
 
                     <!-- 提交按钮 -->
                     <div class="d-grid gap-2 mb-3">
-                        <button type="submit" class="btn btn-login btn-lg">
+                        <button type="submit" class="btn btn-login btn-lg" id="loginBtn">
                             <i class="fas fa-sign-in-alt me-2"></i>登录
                         </button>
                     </div>
@@ -228,7 +235,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // 自动聚焦到用户名输入框
@@ -254,13 +261,51 @@
                 }
             });
 
+            // AJAX表单提交
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const nextParam = document.querySelector('input[name="next"]').value;
+
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(loginForm);
+                const originalText = loginBtn.innerHTML;
+
+                // 禁用按钮，显示加载状态
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 登录中...';
+
+                try {
+                    const response = await fetch('/case/api/login', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // 登录成功，跳转到指定页面或默认页面
+                        const nextUrl = nextParam || '/case/my-tickets';
+                        window.location.href = nextUrl;
+                    } else {
+                        // 登录失败，显示错误
+                        alert('登录失败：' + result.message);
+                        loginBtn.disabled = false;
+                        loginBtn.innerHTML = originalText;
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('登录失败，请稍后重试');
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = originalText;
+                }
+            });
+
             // 监听回车键提交
             document.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    const form = document.querySelector('form');
-                    if (form) {
-                        form.submit();
-                    }
+                    loginForm.dispatchEvent(new Event('submit'));
                 }
             });
         });
