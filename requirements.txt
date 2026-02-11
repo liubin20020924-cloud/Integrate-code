@@ -34,3 +34,7 @@ flasgger==0.9.7.1
 # 安全增强
 Flask-WTF==1.2.1
 flask-limiter==3.5.0
+
+# 图片优化
+Pillow==10.0.0
+

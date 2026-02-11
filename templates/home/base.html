@@ -5,8 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>云户科技 - 专业IT运维与数字化解决方案服务商</title>
   <!-- 网页标签页图标 - 云朵图标 -->
-  <link rel="icon" type="image/png" href="/jpg/icon1.png?v=1">
-  <link rel="shortcut icon" type="image/png" href="/jpg/icon1.png?v=1">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='home/images/icon1.png') }}?v=1">
+  <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='home/images/icon1.png') }}?v=1">
+  <!-- 关键图片预加载 -->
+  <link rel="preload" href="{{ url_for('static', filename='home/images/Logo4.png') }}" as="image">
+  <link rel="preload" href="{{ url_for('static', filename='home/images/hero-bg.jpg') }}" as="image">
+  <link rel="preload" href="{{ url_for('static', filename='home/images/sy.jpg') }}" as="image">
+  <link rel="preload" href="{{ url_for('static', filename='home/images/Logo5.png') }}" as="image">
   <!-- Tailwind CSS - 使用国内镜像 -->
   <script src="https://cdn.bootcdn.net/ajax/libs/tailwindcss/3.4.1/tailwindcss.min.js"></script>
   <!-- Font Awesome -->
@@ -56,9 +61,9 @@
             sans: ['Inter', 'system-ui', 'Microsoft YaHei', '微软雅黑', 'sans-serif'],
           },
           backgroundImage: {
-            'hero-pattern': "url('/jpg/hero-bg.jpg')",
-            'about-pattern': "url('/jpg/Logo5.png')",
-            'qrcode-pattern': "url('/jpg/wx.jpg')",
+      'hero-pattern': "{{ url_for('static', filename='home/images/hero-bg.jpg') }}",
+      'about-pattern': "{{ url_for('static', filename='home/images/Logo5.png') }}",
+      'qrcode-pattern': "{{ url_for('static', filename='home/images/wx.jpg') }}",
           }
         },
       }

@@ -112,6 +112,24 @@
             border-color: #2563eb;
             box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
         }
+
+        /* 密码显示/隐藏按钮 */
+        .password-toggle {
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: #718096;
+            transition: color 0.2s;
+        }
+
+        .password-toggle:hover {
+            color: #2563eb;
+        }
+
+        .password-toggle:focus {
+            outline: none;
+            color: #2563eb;
+        }
     </style>
 </head>
 <body>
@@ -160,11 +178,15 @@
                             <span class="input-group-text">
                                 <i class="fas fa-lock"></i>
                             </span>
-                            <input type="password" 
-                                   class="form-control" 
-                                   name="password" 
+                            <input type="password"
+                                   class="form-control"
+                                   id="passwordInput"
+                                   name="password"
                                    placeholder="请输入密码"
                                    required>
+                            <button type="button" class="input-group-text password-toggle" id="passwordToggle">
+                                <i class="fas fa-eye" id="toggleIcon"></i>
+                            </button>
                         </div>
                     </div>
                     
@@ -179,7 +201,12 @@
                     <div class="text-center text-muted mb-4">
                         <small>
                             <i class="fas fa-info-circle me-1"></i>
-                            <br>首次登录后请修改密码
+                            首次登录后请修改密码
+                        </small>
+                        <br>
+                        <small>
+                            <i class="fas fa-info-circle me-1"></i>
+                            注册账户请联系管理员
                         </small>
                     </div>
                 </form>
@@ -209,7 +236,24 @@
             if (usernameInput && !usernameInput.value) {
                 usernameInput.focus();
             }
-            
+
+            // 密码显示/隐藏切换
+            const passwordInput = document.getElementById('passwordInput');
+            const passwordToggle = document.getElementById('passwordToggle');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            passwordToggle.addEventListener('click', function() {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    toggleIcon.classList.remove('fa-eye');
+                    toggleIcon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    toggleIcon.classList.remove('fa-eye-slash');
+                    toggleIcon.classList.add('fa-eye');
+                }
+            });
+
             // 监听回车键提交
             document.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
