@@ -117,7 +117,7 @@ def get_user_info():
     user_id = session.get('user_id')
     if not user_id:
         return unauthorized_response(message='未登录')
-    
+
     return success_response(data={
         'user_id': session.get('user_id'),
         'username': session.get('username'),
@@ -127,10 +127,54 @@ def get_user_info():
     })
 
 
+@case_bp.route('/api/admins', methods=['GET'])
+def get_admins():
+    """获取管理员和普通用户列表（用于工单分配）"""
+    try:
+        log_request(logger, request)
+
+        # 检查权限，只有 admin 和 user 角色可以查看
+        user_role = session.get('role')
+        if user_role not in ['admin', 'user']:
+            return unauthorized_response(message='权限不足')
+
+        with db_connection('kb') as conn:
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+            # 查询 admin 和 user 角色的活跃用户
+            select_sql = """
+                SELECT id, username, real_name, display_name, role, email
+                FROM `users`
+                WHERE role IN ('admin', 'user') AND status = 'active'
+                ORDER BY role, username
+            """
+            cursor.execute(select_sql)
+            users = cursor.fetchall()
+
+        # 格式化用户数据，优先使用 real_name
+        formatted_users = []
+        for user in users:
+            name = user.get('real_name') or user.get('display_name') or user.get('username', '')
+            formatted_users.append({
+                'id': user['id'],
+                'username': user['username'],
+                'name': name,
+                'role': user['role'],
+                'email': user.get('email', '')
+            })
+
+        return success_response(data=formatted_users, message='查询成功')
+    except Exception as e:
+        log_exception(logger, "查询用户列表失败")
+        import traceback
+        logger.error(f"详细错误: {traceback.format_exc()}")
+        return server_error_response(message=f'查询失败：{str(e)}')
+
+
 @case_bp.route('/api/ticket', methods=['POST'])
 def create_ticket():
     """创建工单
-    
+
     创建新的工单
     ---
     tags:
@@ -145,7 +189,7 @@ def create_ticket():
           type: object
           required:
             - customer_name
-            - customer_contact
+            - customer_contact_phone
             - customer_email
             - product
             - issue_type
@@ -155,14 +199,17 @@ def create_ticket():
           properties:
             customer_name:
               type: string
-              description: 客户名称
-            customer_contact:
+              description: 客户名称（公司名）
+            customer_contact_name:
               type: string
-              description: 客户联系方式
+              description: 客户联系人姓名（当前登录用户）
+            customer_contact_phone:
+              type: string
+              description: 联系电话
             customer_email:
               type: string
               format: email
-              description: 客户邮箱
+              description: 联系邮箱
             product:
               type: string
               description: 涉及产品
@@ -191,13 +238,24 @@ def create_ticket():
           $ref: '#/definitions/ErrorResponse'
     """
     try:
-        log_request(logger, request, '/case/api/ticket')
-        data = request.get_json()
+        log_request(logger, request)
+        # 支持两种提交方式：JSON 和 表单
+        if request.is_json:
+            data = request.get_json()
+        else:
+            # 获取表单数据
+            data = request.form.to_dict()
+
+        user_role = session.get('role')
+        user_real_name = session.get('real_name', '')
+        user_username = session.get('username', '')
+        user_email = session.get('email', '')
+
         required_fields = [
-            'customer_name', 'customer_contact', 'customer_email',
+            'customer_name', 'customer_contact_phone', 'customer_email',
             'product', 'issue_type', 'priority', 'title', 'content'
         ]
-        
+
         # 验证必填字段
         for field in required_fields:
             if field not in data or not str(data[field]).strip():
@@ -217,21 +275,75 @@ def create_ticket():
         
         ticket_id = generate_ticket_id()
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        
+
+        # 检查是否有上传的文件
+        uploaded_files = []
+        if 'files' in request.files:
+            files = request.files.getlist('files')
+            for file in files:
+                if file and file.filename:
+                    import os
+                    from werkzeug.utils import secure_filename
+
+                    allowed_extensions = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx', 'xls', 'xlsx', 'zip', 'rar'}
+
+                    def allowed_file(filename):
+                        return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+                    if allowed_file(file.filename):
+                        filename = secure_filename(file.filename)
+                        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+                        saved_filename = f"{ticket_id}_{timestamp}_{filename}"
+
+                        upload_dir = os.path.join('static', 'uploads', 'case')
+                        os.makedirs(upload_dir, exist_ok=True)
+
+                        file_path = os.path.join(upload_dir, saved_filename)
+                        file.save(file_path)
+                        uploaded_files.append(saved_filename)
+
         with db_connection('case') as conn:
             cursor = conn.cursor()
             insert_sql = """
-                INSERT INTO tickets (ticket_id, customer_name, customer_contact, customer_email,
-                                    product, issue_type, priority, title, content,
+                INSERT INTO tickets (ticket_id, customer_name, customer_contact_name, customer_contact, customer_email,
+                                    submit_user, product, issue_type, priority, title, content,
                                     status, create_time, update_time)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
+
+            # 客户名称（公司名）：用户填写
+            final_customer_name = data['customer_name'].strip()
+
+            # 客户联系人姓名：当前登录用户的真实姓名或用户名
+            final_contact_name = data.get('customer_contact_name', user_real_name or user_username).strip()
+
+            # 提交用户名：当前登录用户的用户名
+            submit_user = user_username or 'unknown'
+
+            logger.info(f"创建工单 - submit_user: {submit_user}, final_customer_name: {final_customer_name}, final_contact_name: {final_contact_name}")
+            logger.info(f"创建工单参数 - ticket_id: {ticket_id}, customer_contact_phone: {data.get('customer_contact_phone')}, customer_email: {customer_email}")
+
             cursor.execute(insert_sql, (
-                ticket_id, data['customer_name'].strip(), data['customer_contact'].strip(),
-                customer_email, data['product'].strip(), data['issue_type'].strip(),
+                ticket_id, final_customer_name, final_contact_name,
+                data['customer_contact_phone'].strip(), customer_email, submit_user,
+                data['product'].strip(), data['issue_type'].strip(),
                 data['priority'].strip(), data['title'].strip(), data['content'].strip(),
                 'pending', now, now
             ))
+
+            # 如果有附件，保存到数据库
+            if uploaded_files:
+                for filename in uploaded_files:
+                    file_url = f'/static/uploads/case/{filename}'
+                    insert_msg_sql = """
+                        INSERT INTO messages (ticket_id, sender, sender_name, content, send_time)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """
+                    cursor.execute(insert_msg_sql, (
+                        ticket_id, 'system', '系统',
+                        f'附件上传: {filename}|url:{file_url}', now
+                    ))
+
             conn.commit()
         
         logger.info(f"工单创建成功: {ticket_id}")
@@ -241,74 +353,123 @@ def create_ticket():
         return server_error_response(message=f'工单创建失败：{str(e)}')
 
 
+@case_bp.route('/api/tickets/debug', methods=['GET'])
+def debug_tickets():
+    """调试接口：检查工单数据"""
+    try:
+        user_role = session.get('role')
+        user_username = session.get('username')
+
+        with db_connection('case') as conn:
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+            # 查询所有工单
+            cursor.execute("SELECT ticket_id, customer_name, customer_contact_name, customer_contact, customer_email, submit_user, status, create_time FROM tickets ORDER BY create_time DESC LIMIT 10")
+            all_tickets = cursor.fetchall()
+
+            # 查询当前用户相关的工单
+            cursor.execute("SELECT COUNT(*) as cnt FROM tickets WHERE submit_user = %s", (user_username,))
+            user_ticket_count = cursor.fetchone()
+
+            # 检查 submit_user 字段是否存在
+            cursor.execute("SELECT COUNT(*) as cnt FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='casedb' AND TABLE_NAME='tickets' AND COLUMN_NAME='submit_user'")
+            submit_user_exists = cursor.fetchone()
+
+            return success_response(data={
+                'user_role': user_role,
+                'user_username': user_username,
+                'submit_user_exists': submit_user_exists,
+                'user_ticket_count': user_ticket_count,
+                'all_tickets': all_tickets
+            }, message='调试信息')
+    except Exception as e:
+        log_exception(logger, "调试查询失败")
+        import traceback
+        return server_error_response(message=f'调试失败：{str(e)}\n{traceback.format_exc()}')
+
+
 @case_bp.route('/api/tickets', methods=['GET'])
 def get_tickets():
     """获取工单列表"""
     try:
-        log_request(logger, request, '/case/api/tickets')
+        log_request(logger, request)
         user_role = session.get('role')
         user_username = session.get('username')
-        
+        user_id = session.get('user_id')
+
+        # 添加调试日志
+        logger.info(f"工单列表查询 - user_role: {user_role}, user_username: {user_username}, user_id: {user_id}")
+
         if not user_role:
             return unauthorized_response(message='未登录')
-        
+
         status = request.args.get('status', '').strip()
         my_only = request.args.get('my_only', 'false').lower() == 'true'
-        
+
         with db_connection('case') as conn:
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            
-            # customer 角色: 只能看到自己创建的工单
+
+            # customer 角色: 只能看到自己创建的工单（通过 submit_user 判断）
             if user_role == 'customer':
                 if status:
                     select_sql = """
-                        SELECT ticket_id, customer_name, customer_contact, customer_email,
+                        SELECT ticket_id, customer_name, customer_contact_name, customer_contact, customer_email,
                                product, issue_type, priority, title, status, create_time
-                        FROM tickets WHERE customer_name = %s AND status = %s ORDER BY create_time DESC
+                        FROM tickets WHERE submit_user = %s AND status = %s ORDER BY create_time DESC
                     """
-                    cursor.execute(select_sql, (user_username, status))
+                    params = (user_username, status)
+                    logger.info(f"SQL: {select_sql}, params: {params}")
+                    cursor.execute(select_sql, params)
                 else:
                     select_sql = """
-                        SELECT ticket_id, customer_name, customer_contact, customer_email,
+                        SELECT ticket_id, customer_name, customer_contact_name, customer_contact, customer_email,
                                product, issue_type, priority, title, status, create_time
-                        FROM tickets WHERE customer_name = %s ORDER BY create_time DESC
+                        FROM tickets WHERE submit_user = %s ORDER BY create_time DESC
                     """
-                    cursor.execute(select_sql, (user_username,))
+                    params = (user_username,)
+                    logger.info(f"SQL: {select_sql}, params: {params}")
+                    cursor.execute(select_sql, params)
             # admin/user 角色: 可以查看所有工单，支持 my_only 筛选
             elif user_role in ['admin', 'user']:
                 if status and my_only:
                     select_sql = """
-                        SELECT ticket_id, customer_name, customer_contact, customer_email,
+                        SELECT ticket_id, customer_name, customer_contact_name, customer_contact, customer_email,
                                product, issue_type, priority, title, status, create_time
                         FROM tickets WHERE status = %s ORDER BY create_time DESC LIMIT 100
                     """
                     cursor.execute(select_sql, (status,))
                 elif status:
                     select_sql = """
-                        SELECT ticket_id, customer_name, customer_contact, customer_email,
+                        SELECT ticket_id, customer_name, customer_contact_name, customer_contact, customer_email,
                                product, issue_type, priority, title, status, create_time
                         FROM tickets WHERE status = %s ORDER BY create_time DESC LIMIT 100
                     """
                     cursor.execute(select_sql, (status,))
                 else:
                     select_sql = """
-                        SELECT ticket_id, customer_name, customer_contact, customer_email,
+                        SELECT ticket_id, customer_name, customer_contact_name, customer_contact, customer_email,
                                product, issue_type, priority, title, status, create_time
                         FROM tickets ORDER BY create_time DESC LIMIT 100
                     """
                     cursor.execute(select_sql)
             else:
                 tickets = []
+                logger.warning(f"未知角色: {user_role}")
                 return success_response(data=tickets, message='查询成功')
-            
+
             tickets = cursor.fetchall()
-        
+            logger.info(f"查询到工单数量: {len(tickets)}")
+            if tickets:
+                logger.info(f"第一个工单: {tickets[0]}")
+
         for ticket in tickets:
             ticket['create_time'] = ticket['create_time'].strftime('%Y-%m-%d %H:%M:%S')
-        
+
         return success_response(data=tickets, message='查询成功')
     except Exception as e:
         log_exception(logger, "查询工单列表失败")
+        import traceback
+        logger.error(f"详细错误: {traceback.format_exc()}")
         return server_error_response(message=f'查询失败：{str(e)}')
 
 
@@ -316,7 +477,7 @@ def get_tickets():
 def get_ticket_detail(ticket_id):
     """获取工单详情"""
     try:
-        log_request(logger, request, f'/case/api/ticket/{ticket_id}')
+        log_request(logger, request)
         user_role = session.get('role')
         user_username = session.get('username')
         
@@ -332,8 +493,9 @@ def get_ticket_detail(ticket_id):
         if not ticket:
             from common.response import not_found_response
             return not_found_response(message='工单不存在')
-        
-        if user_role == 'customer' and ticket['customer_name'] != user_username:
+
+        # customer 角色只能查看自己提交的工单
+        if user_role == 'customer' and ticket.get('submit_user') != user_username:
             from common.response import forbidden_response
             return forbidden_response(message='无权访问此工单')
         
@@ -351,7 +513,7 @@ def get_ticket_detail(ticket_id):
 def update_ticket_status(ticket_id):
     """更新工单状态"""
     try:
-        log_request(logger, request, f'/case/api/ticket/{ticket_id}/status')
+        log_request(logger, request)
         user_role = session.get('role')
         if not user_role or user_role != 'admin':
             from common.response import forbidden_response
@@ -395,8 +557,8 @@ def update_ticket_status(ticket_id):
 def get_messages(ticket_id):
     """获取工单消息"""
     try:
-        log_request(logger, request, f'/case/api/ticket/{ticket_id}/messages')
-        
+        log_request(logger, request)
+
         with db_connection('case') as conn:
             cursor = conn.cursor(pymysql.cursors.DictCursor)
             select_sql = """
@@ -443,7 +605,7 @@ def ticket_detail_page(ticket_id):
 def send_message(ticket_id):
     """发送消息"""
     try:
-        log_request(logger, request, f'/case/api/ticket/{ticket_id}/message')
+        log_request(logger, request)
         
         user_id = session.get('user_id')
         if not user_id:
@@ -480,8 +642,8 @@ def send_message(ticket_id):
 def upload_attachment(ticket_id):
     """上传附件"""
     try:
-        log_request(logger, request, f'/case/api/ticket/{ticket_id}/attachment')
-        
+        log_request(logger, request)
+
         user_id = session.get('user_id')
         if not user_id:
             return unauthorized_response(message='未登录')
@@ -553,7 +715,7 @@ def get_attachments(ticket_id):
 def assign_ticket(ticket_id):
     """分配工单"""
     try:
-        log_request(logger, request, f'/case/api/ticket/{ticket_id}/assign')
+        log_request(logger, request)
         
         user_role = session.get('role')
         if not user_role or user_role != 'admin':
@@ -597,8 +759,8 @@ def assign_ticket(ticket_id):
 def close_ticket(ticket_id):
     """关闭工单"""
     try:
-        log_request(logger, request, f'/case/api/ticket/{ticket_id}/close')
-        
+        log_request(logger, request)
+
         user_role = session.get('role')
         if not user_role or user_role != 'admin':
             from common.response import forbidden_response

@@ -41,7 +41,7 @@ def get_users():
           $ref: '#/definitions/SuccessResponse'
     """
     try:
-        log_request(logger, request, '/unified/api/users')
+        log_request(logger, request)
         with db_connection('kb') as conn:
             users, total = UserService.get_users(conn)
             return success_response(data=users, message='获取用户列表成功')
@@ -102,7 +102,7 @@ def add_user():
           $ref: '#/definitions/ErrorResponse'
     """
     try:
-        log_request(logger, request, '/unified/api/users')
+        log_request(logger, request)
         data = request.get_json()
         
         # 验证输入
@@ -181,7 +181,7 @@ def update_user(user_id):
           $ref: '#/definitions/ErrorResponse'
     """
     try:
-        log_request(logger, request, f'/unified/api/users/{user_id}')
+        log_request(logger, request)
         data = request.get_json()
         if not data:
             return error_response('请求数据不能为空', 400)
@@ -228,7 +228,7 @@ def delete_user(user_id):
           $ref: '#/definitions/ErrorResponse'
     """
     try:
-        log_request(logger, request, f'/unified/api/users/{user_id}')
+        log_request(logger, request)
         
         with db_connection('kb') as conn:
             # 检查是否是当前登录用户
@@ -271,7 +271,7 @@ def get_user_stats():
           $ref: '#/definitions/SuccessResponse'
     """
     try:
-        log_request(logger, request, '/unified/api/user-stats')
+        log_request(logger, request)
         stats = {
             'users': {'total': 0, 'active': 0, 'admins': 0, 'customers': 0, 'kb_users': 0},
             'login_logs': {'total': 0, 'today': 0, 'success': 0, 'failed': 0}
@@ -362,7 +362,7 @@ def reset_user_password(user_id):
           $ref: '#/definitions/ErrorResponse'
     """
     try:
-        log_request(logger, request, f'/auth/api/reset-password/{user_id}')
+        log_request(logger, request)
         
         with db_connection('kb') as conn:
             cursor = conn.cursor()

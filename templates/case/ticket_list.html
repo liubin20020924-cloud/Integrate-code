@@ -442,6 +442,8 @@
     const statusFilter = document.getElementById('statusFilter').value;
     const priorityFilter = document.getElementById('priorityFilter').value;
 
+    console.log('[DEBUG] 开始加载工单列表...');
+
     try {
       let url = '/case/api/tickets';
       const params = [];
@@ -449,32 +451,46 @@
       if (priorityFilter) params.push('priority=' + priorityFilter);
       if (params.length) url += '?' + params.join('&');
 
+      console.log('[DEBUG] 请求URL:', url);
+
       const response = await fetch(url);
       const result = await response.json();
 
+      console.log('[DEBUG] API返回:', result);
+
       if (result.success) {
         loading.style.display = 'none';
+        console.log('[DEBUG] 工单数量:', result.data.length);
 
         if (result.data.length === 0) {
+          console.log('[DEBUG] 没有工单，显示空状态');
           ticketList.innerHTML = '';
           emptyState.style.display = 'block';
           return;
         }
 
+        console.log('[DEBUG] 开始渲染工单...');
         emptyState.style.display = 'none';
         renderTickets(result.data);
+        console.log('[DEBUG] 工单渲染完成');
+      } else {
+        console.error('[DEBUG] API返回失败:', result);
+        loading.innerHTML = '<i class="fa fa-exclamation-circle"></i> ' + (result.message || '加载失败');
       }
     } catch (error) {
-      console.error('Error loading tickets:', error);
+      console.error('[DEBUG] 加载工单异常:', error);
       loading.innerHTML = '<i class="fa fa-exclamation-circle"></i> 加载失败';
     }
   }
 
   function renderTickets(tickets) {
+    console.log('[DEBUG] renderTickets 被调用，工单数量:', tickets.length);
     const ticketList = document.getElementById('ticketList');
     ticketList.innerHTML = '';
 
-    tickets.forEach(ticket => {
+    tickets.forEach((ticket, index) => {
+      console.log('[DEBUG] 渲染工单 ' + index + ':', ticket);
+
       const card = document.createElement('div');
       card.className = 'ticket-card status-' + ticket.status;
 
@@ -492,6 +508,13 @@
         'urgent': '紧急'
       }[ticket.priority] || ticket.priority;
 
+      const typeText = {
+        'technical': '技术支持',
+        'service': '产品咨询',
+        'complaint': '售后投诉',
+        'other': '其他问题'
+      }[ticket.issue_type] || '未分类';
+
       card.innerHTML = `
         <div class="ticket-header">
           <div class="ticket-id">${ticket.ticket_id}</div>
@@ -503,23 +526,27 @@
               <i class="fa fa-clock"></i> ${statusText}
             </span>
             <span class="badge">
-              <i class="fa fa-tag"></i> ${ticket.issue_type || '未分类'}
+              <i class="fa fa-tag"></i> ${typeText}
             </span>
           </div>
         </div>
         <div class="ticket-title">${ticket.title}</div>
         <div class="ticket-meta">
           <div class="ticket-meta-item">
-            <i class="fa fa-user"></i>
-            <span>${ticket.customer_name}</span>
+            <i class="fa fa-building"></i>
+            <span>${ticket.customer_name || '未填写'}</span>
           </div>
           <div class="ticket-meta-item">
-            <i class="fa fa-envelope"></i>
-            <span>${ticket.customer_email}</span>
+            <i class="fa fa-user"></i>
+            <span>${ticket.customer_contact_name || '未填写'}</span>
+          </div>
+          <div class="ticket-meta-item">
+            <i class="fa fa-phone"></i>
+            <span>${ticket.customer_contact || '未填写'}</span>
           </div>
         </div>
         <div class="ticket-preview">
-          ${ticket.content.substring(0, 150)}${ticket.content.length > 150 ? '...' : ''}
+          ${ticket.content ? (ticket.content.substring(0, 150) + (ticket.content.length > 150 ? '...' : '')) : ''}
         </div>
         <div class="ticket-footer">
           <span class="ticket-time">
@@ -535,7 +562,10 @@
 
       card.addEventListener('click', () => viewTicket(ticket.ticket_id));
       ticketList.appendChild(card);
+      console.log('[DEBUG] 工单 ' + index + ' 已添加到DOM');
     });
+
+    console.log('[DEBUG] ticketList 子元素数量:', ticketList.children.length);
   }
 
   function viewTicket(ticketId) {

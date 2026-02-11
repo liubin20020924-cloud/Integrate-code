@@ -14,19 +14,28 @@
       <!-- 客户信息 -->
       <div class="form-section">
         <h3><i class="fa fa-user"></i> 客户信息</h3>
+        <div class="form-group">
+          <label for="customerName">
+            <i class="fa fa-building"></i> 客户名称（公司） <span class="required">*</span>
+          </label>
+          <input type="text" id="customerName" name="customer_name" required
+                   placeholder="请输入客户公司名称">
+          <small class="form-text text-muted">请填写客户公司或机构名称</small>
+        </div>
         <div class="form-row">
           <div class="form-group">
-            <label for="customerName">
-              <i class="fa fa-building"></i> 客户名称 <span class="required">*</span>
+            <label for="customerContactName">
+              <i class="fa fa-user-circle"></i> 客户联系人 <span class="required">*</span>
             </label>
-            <input type="text" id="customerName" name="customer_name" required
-                   placeholder="请输入客户名称">
+            <input type="text" id="customerContactName" name="customer_contact_name" required
+                   placeholder="请输入联系人姓名" value="{{ session.get('real_name', '') or session.get('username', '') }}" readonly>
+            <small class="form-text text-muted">当前登录用户：{{ session.get('real_name', '') or session.get('username', '') }}</small>
           </div>
           <div class="form-group">
-            <label for="customerContact">
+            <label for="customerContactPhone">
               <i class="fa fa-phone"></i> 联系电话 <span class="required">*</span>
             </label>
-            <input type="tel" id="customerContact" name="customer_contact" required
+            <input type="tel" id="customerContactPhone" name="customer_contact_phone" required
                    placeholder="请输入联系电话">
           </div>
         </div>
@@ -468,7 +477,7 @@
       const result = await response.json();
 
       if (result.success) {
-        alert('工单提交成功！\n工单编号：' + result.ticket_id);
+        alert('工单提交成功！\n工单编号：' + result.data.ticket_id);
         window.location.href = '/case/my-tickets';
       } else {
         alert('提交失败：' + result.message);
