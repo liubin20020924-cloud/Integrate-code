@@ -79,78 +79,245 @@
         <div style="width: 60px; height: 3px; background: linear-gradient(to right, #0A4DA2, #A2D93D); margin: clamp(12px, 2vh, 20px) auto;"></div>
       </div>
 
-      <div style="position: relative;">
-        <!-- 时间轴线 -->
-        <div style="position: absolute; left: 50%; transform: translateX(-50%); width: 3px; height: 100%; background: linear-gradient(to bottom, #0A4DA2, #A2D93D); top: 0;"></div>
-
-        <div style="display: flex; flex-direction: column; gap: clamp(32px, 5vh, 48px);">
-          <!-- 2023年 -->
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(24px, 4vw, 40px); align-items: center;">
-            <div style="text-align: right; padding-right: clamp(24px, 4vw, 40px); position: relative;">
-              <div style="background: white; border-radius: 16px; padding: clamp(20px, 3vw, 32px); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); position: relative;">
-                <h3 style="font-size: clamp(1.25rem, 2vw, 1.5rem); font-weight: 700; color: #0A4DA2; margin-bottom: clamp(10px, 1.5vh, 16px);">公司成立</h3>
-                <p style="color: #4b5563; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem);">
-                  云户科技在上海正式成立，注册资本1000万元，致力于为企业提供专业的IT技术服务。
-                </p>
-              </div>
-            </div>
-            <div style="position: relative;">
-              <div style="width: clamp(50px, 7vw, 70px); height: clamp(50px, 7vw, 70px); background: #0A4DA2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 4px 20px rgba(10, 77, 162, 0.3); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 10;">
-                <span style="font-size: clamp(1.1rem, 1.5vw, 1.3rem); font-weight: 800; color: white;">2023</span>
-              </div>
+      <!-- 按年份分组的时间轴 -->
+      <div style="display: flex; flex-direction: column; gap: 0;">
+        <!-- 2018-2023 筹备阶段 -->
+        <div style="background: linear-gradient(135deg, rgba(156, 163, 175, 0.1), rgba(156, 163, 175, 0.05)); border-radius: 20px; padding: clamp(24px, 4vw, 40px); margin-bottom: clamp(32px, 5vh, 48px); border-left: 5px solid #9ca3af;">
+          <div style="display: flex; align-items: center; margin-bottom: clamp(20px, 3vh, 32px); flex-wrap: wrap; gap: 12px;">
+            <span style="font-size: clamp(2rem, 3vw, 2.5rem);">🛠️</span>
+            <div>
+              <h3 style="font-size: clamp(1.5rem, 2.5vw, 1.8rem); font-weight: 800; color: #6b7280; margin: 0; line-height: 1.2;">筹备阶段</h3>
+              <p style="color: #9ca3af; font-weight: 600; font-size: clamp(0.95rem, 1.3vw, 1.1rem); margin: 4px 0 0;">2018 - 2023</p>
             </div>
           </div>
+          <div style="color: #6b7280; line-height: 1.8; font-size: clamp(0.9rem, 1.1vw, 1rem); padding-left: clamp(16px, 2vw, 24px); border-left: 3px solid rgba(156, 163, 175, 0.3);">
+            创始团队长期深耕企业级IT服务领域，积累了丰富的项目经验与技术沉淀，为正式成立公司奠定了坚实基础。
+          </div>
+        </div>
 
-          <!-- 团队组建 -->
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(24px, 4vw, 40px); align-items: center;">
-            <div style="position: relative;">
-              <div style="width: clamp(50px, 7vw, 70px); height: clamp(50px, 7vw, 70px); background: #A2D93D; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 4px 20px rgba(162, 217, 61, 0.3); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 10;">
-                <i class="fa fa-users" style="font-size: clamp(1.1rem, 1.5vw, 1.3rem); color: white;"></i>
+        <!-- 2023年 -->
+        <div style="position: relative; margin-bottom: clamp(40px, 7vh, 60px);">
+          <div style="position: absolute; left: 24px; top: 80px; bottom: 0; width: 3px; background: linear-gradient(to bottom, #0A4DA2, rgba(10, 77, 162, 0.2));"></div>
+          
+          <div style="margin-bottom: clamp(24px, 4vw, 36px);">
+            <div style="display: flex; align-items: center; margin-bottom: clamp(20px, 3vh, 32px); flex-wrap: wrap; gap: 12px;">
+              <span style="font-size: clamp(2rem, 3vw, 2.5rem);">🧱</span>
+              <div>
+                <h3 style="font-size: clamp(1.5rem, 2.5vw, 1.8rem); font-weight: 800; color: #0A4DA2; margin: 0; line-height: 1.2;">创立筑基</h3>
+                <p style="color: #0A4DA2; font-weight: 600; font-size: clamp(0.95rem, 1.3vw, 1.1rem); margin: 4px 0 0;">2023</p>
               </div>
             </div>
-            <div style="padding-left: clamp(24px, 4vw, 40px); position: relative;">
-              <div style="background: white; border-radius: 16px; padding: clamp(20px, 3vw, 32px); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);">
-                <h3 style="font-size: clamp(1.25rem, 2vw, 1.5rem); font-weight: 700; color: #A2D93D; margin-bottom: clamp(10px, 1.5vh, 16px);">专业团队组建</h3>
-                <p style="color: #4b5563; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem);">
-                  汇聚持有国内外主流原厂认证的资深工程师团队，奠定坚实的技术基础。
+            
+            <div style="display: flex; flex-direction: column; gap: clamp(16px, 2.5vh, 24px); padding-left: clamp(48px, 6vw, 72px);">
+              <!-- 2023.11 -->
+              <div style="background: white; border-radius: 16px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); position: relative; transition: all 0.3s;">
+                <div style="position: absolute; left: -28px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: #0A4DA2; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(10, 77, 162, 0.3);"></div>
+                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                  <span style="background: #0A4DA2; color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2023.11.23</span>
+                </div>
+                <p style="color: #374151; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); margin: 0;">
+                  云户科技在上海正式成立，注册资本<span style="font-weight: 700; color: #0A4DA2;">1000万元。</span>
                 </p>
               </div>
-            </div>
-          </div>
-
-          <!-- 服务拓展 -->
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(24px, 4vw, 40px); align-items: center;">
-            <div style="text-align: right; padding-right: clamp(24px, 4vw, 40px); position: relative;">
-              <div style="background: white; border-radius: 16px; padding: clamp(20px, 3vw, 32px); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); position: relative;">
-                <h3 style="font-size: clamp(1.25rem, 2vw, 1.5rem); font-weight: 700; color: #0A4DA2; margin-bottom: clamp(10px, 1.5vh, 16px);">服务能力拓展</h3>
-                <p style="color: #4b5563; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem);">
-                  建立运维知识库与标准化处置流程，服务50+客户，覆盖系统运维、超融合维保等多个领域。
-                </p>
-              </div>
-            </div>
-            <div style="position: relative;">
-              <div style="width: clamp(50px, 7vw, 70px); height: clamp(50px, 7vw, 70px); background: #0A4DA2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 4px 20px rgba(10, 77, 162, 0.3); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 10;">
-                <i class="fa fa-rocket" style="font-size: clamp(1.1rem, 1.5vw, 1.3rem); color: white;"></i>
-              </div>
-            </div>
-          </div>
-
-          <!-- 持续创新 -->
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(24px, 4vw, 40px); align-items: center;">
-            <div style="position: relative;">
-              <div style="width: clamp(50px, 7vw, 70px); height: clamp(50px, 7vw, 70px); background: #A2D93D; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 4px 20px rgba(162, 217, 61, 0.3); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 10;">
-                <i class="fa fa-lightbulb-o" style="font-size: clamp(1.1rem, 1.5vw, 1.3rem); color: white;"></i>
-              </div>
-            </div>
-            <div style="padding-left: clamp(24px, 4vw, 40px); position: relative;">
-              <div style="background: white; border-radius: 16px; padding: clamp(20px, 3vw, 32px); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);">
-                <h3 style="font-size: clamp(1.25rem, 2vw, 1.5rem); font-weight: 700; color: #A2D93D; margin-bottom: clamp(10px, 1.5vh, 16px);">持续创新</h3>
-                <p style="color: #4b5563; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem);">
-                  持续投入技术研发与创新，不断提升服务质量与客户满意度。
+              
+              <!-- 2023.12 -->
+              <div style="background: white; border-radius: 16px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); position: relative; transition: all 0.3s;">
+                <div style="position: absolute; left: -28px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: #0A4DA2; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(10, 77, 162, 0.3);"></div>
+                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                  <span style="background: linear-gradient(135deg, #0A4DA2, #2563eb); color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2023.11</span>
+                </div>
+                <p style="color: #374151; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); margin: 0;">
+                  签约首位客户，完成首个项目交付，成功实现<span style="font-weight: 700; color: #0A4DA2;">0到1</span>的突破
                 </p>
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- 2024年 -->
+        <div style="position: relative; margin-bottom: clamp(40px, 7vh, 60px);">
+          <div style="position: absolute; left: 24px; top: 80px; bottom: 0; width: 3px; background: linear-gradient(to bottom, #A2D93D, rgba(162, 217, 61, 0.2));"></div>
+          
+          <div style="margin-bottom: clamp(24px, 4vw, 36px);">
+            <div style="display: flex; align-items: center; margin-bottom: clamp(20px, 3vh, 32px); flex-wrap: wrap; gap: 12px;">
+              <span style="font-size: clamp(2rem, 3vw, 2.5rem);">🚀</span>
+              <div>
+                <h3 style="font-size: clamp(1.5rem, 2.5vw, 1.8rem); font-weight: 800; color: #A2D93D; margin: 0; line-height: 1.2;">能力建设</h3>
+                <p style="color: #A2D93D; font-weight: 600; font-size: clamp(0.95rem, 1.3vw, 1.1rem); margin: 4px 0 0;">2024</p>
+              </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: clamp(16px, 2.5vh, 24px); padding-left: clamp(48px, 6vw, 72px);">
+              <!-- 2024.03 -->
+              <div style="background: white; border-radius: 16px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); position: relative; transition: all 0.3s;">
+                <div style="position: absolute; left: -28px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: #A2D93D; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(162, 217, 61, 0.3);"></div>
+                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                  <span style="background: #A2D93D; color: #1a202c; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2024.03</span>
+                </div>
+                <p style="color: #374151; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); margin: 0;">
+                  建立<span style="font-weight: 700; color: #A2D93D;">7×24小时</span>全天候运维服务体系，实现快速响应
+                </p>
+              </div>
+              
+              <!-- 2024.05 -->
+              <div style="background: white; border-radius: 16px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); position: relative; transition: all 0.3s;">
+                <div style="position: absolute; left: -28px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: #A2D93D; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(162, 217, 61, 0.3);"></div>
+                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                  <span style="background: #A2D93D; color: #1a202c; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2024.05</span>
+                </div>
+                <p style="color: #374151; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); margin: 0;">
+                  拓展硬件厂商服务领域，承接多家知名厂商维保项目
+                </p>
+              </div>
+              
+              <!-- 2024.08 -->
+              <div style="background: white; border-radius: 16px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); position: relative; transition: all 0.3s;">
+                <div style="position: absolute; left: -28px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: #A2D93D; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(162, 217, 61, 0.3);"></div>
+                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                  <span style="background: linear-gradient(135deg, #A2D93D, #b8e65d); color: #1a202c; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2024.08</span>
+                </div>
+                <p style="color: #374151; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); margin: 0;">
+                  管理超20个<span style="font-weight: 700; color: #A2D93D;">Nutanix</span>原厂备机，提供超融合解决方案
+                </p>
+              </div>
+              
+              <!-- 2024.12 -->
+              <div style="background: white; border-radius: 16px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); position: relative; transition: all 0.3s;">
+                <div style="position: absolute; left: -28px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: #A2D93D; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(162, 217, 61, 0.3);"></div>
+                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                  <span style="background: #A2D93D; color: #1a202c; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2024.12</span>
+                </div>
+                <p style="color: #374151; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); margin: 0;">
+                  获得联想、浪潮等多家厂商认证<br>
+                  团队成员获得多项原厂认证，技术实力显著提升
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2025年 -->
+        <div style="position: relative; margin-bottom: clamp(40px, 7vh, 60px);">
+          <div style="position: absolute; left: 24px; top: 80px; bottom: 0; width: 3px; background: linear-gradient(to bottom, #0A4DA2, rgba(10, 77, 162, 0.2));"></div>
+          
+          <div style="margin-bottom: clamp(24px, 4vw, 36px);">
+            <div style="display: flex; align-items: center; margin-bottom: clamp(20px, 3vh, 32px); flex-wrap: wrap; gap: 12px;">
+              <span style="font-size: clamp(2rem, 3vw, 2.5rem);">📈</span>
+              <div>
+                <h3 style="font-size: clamp(1.5rem, 2.5vw, 1.8rem); font-weight: 800; color: #0A4DA2; margin: 0; line-height: 1.2;">业务拓展</h3>
+                <p style="color: #0A4DA2; font-weight: 600; font-size: clamp(0.95rem, 1.3vw, 1.1rem); margin: 4px 0 0;">2025</p>
+              </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: clamp(16px, 2.5vh, 24px); padding-left: clamp(48px, 6vw, 72px);">
+              <!-- 2025.02 -->
+              <div style="background: white; border-radius: 16px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); position: relative; transition: all 0.3s;">
+                <div style="position: absolute; left: -28px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: #0A4DA2; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(10, 77, 162, 0.3);"></div>
+                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                  <span style="background: #0A4DA2; color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2025.02</span>
+                </div>
+                <p style="color: #374151; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); margin: 0;">
+                  持续扩充专业团队规模，吸纳更多优秀技术人才
+                </p>
+              </div>
+              
+              <!-- 2025.05 -->
+              <div style="background: white; border-radius: 16px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); position: relative; transition: all 0.3s;">
+                <div style="position: absolute; left: -28px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: #0A4DA2; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(10, 77, 162, 0.3);"></div>
+                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                  <span style="background: #0A4DA2; color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2025.05</span>
+                </div>
+                <p style="color: #374151; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); margin: 0;">
+                  推出<span style="font-weight: 700; color: #0A4DA2;">数据备份与容灾</span>解决方案，保障企业数据安全
+                </p>
+              </div>
+              
+              <!-- 2025.08 -->
+              <div style="background: white; border-radius: 16px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); position: relative; transition: all 0.3s;">
+                <div style="position: absolute; left: -28px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: #0A4DA2; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(10, 77, 162, 0.3);"></div>
+                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                  <span style="background: #0A4DA2; color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2025.08</span>
+                </div>
+                <p style="color: #374151; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); margin: 0;">
+                  承接大型数据中心迁移项目，成功交付多个关键项目
+                </p>
+              </div>
+              
+              <!-- 2025.10 -->
+              <div style="background: white; border-radius: 16px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); position: relative; transition: all 0.3s;">
+                <div style="position: absolute; left: -28px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: #0A4DA2; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(10, 77, 162, 0.3);"></div>
+                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                  <span style="background: #0A4DA2; color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2025.10</span>
+                </div>
+                <p style="color: #374151; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); margin: 0;">
+                  与多家上市公司及大型企业签订长期服务合同
+                </p>
+              </div>
+              
+              <!-- 2025.12 -->
+              <div style="background: white; border-radius: 16px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); position: relative; transition: all 0.3s;">
+                <div style="position: absolute; left: -28px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: linear-gradient(135deg, #0A4DA2, #2563eb); border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(10, 77, 162, 0.3);"></div>
+                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                  <span style="background: linear-gradient(135deg, #0A4DA2, #2563eb); color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2025.12</span>
+                </div>
+                <p style="color: #374151; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); margin: 0;">
+                  累计服务客户突破<span style="font-weight: 700; color: #0A4DA2;">50家</span>，业务覆盖全国多个省市
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2026年 -->
+        <div style="position: relative; margin-bottom: clamp(40px, 7vh, 60px);">
+          <div style="position: absolute; left: 24px; top: 80px; bottom: 0; width: 3px; background: linear-gradient(to bottom, #A2D93D, rgba(162, 217, 61, 0.2));"></div>
+          
+          <div style="margin-bottom: clamp(24px, 4vw, 36px);">
+            <div style="display: flex; align-items: center; margin-bottom: clamp(20px, 3vh, 32px); flex-wrap: wrap; gap: 12px;">
+              <span style="font-size: clamp(2rem, 3vw, 2.5rem);">🏗️</span>
+              <div>
+                <h3 style="font-size: clamp(1.5rem, 2.5vw, 1.8rem); font-weight: 800; color: #A2D93D; margin: 0; line-height: 1.2;">体系完善</h3>
+                <p style="color: #A2D93D; font-weight: 600; font-size: clamp(0.95rem, 1.3vw, 1.1rem); margin: 4px 0 0;">2026</p>
+              </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: clamp(16px, 2.5vh, 24px); padding-left: clamp(48px, 6vw, 72px);">
+              <!-- 2026.01 -->
+              <div style="background: white; border-radius: 16px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); position: relative; transition: all 0.3s;">
+                <div style="position: absolute; left: -28px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: #A2D93D; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(162, 217, 61, 0.3);"></div>
+                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                  <span style="background: #A2D93D; color: #1a202c; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2026.01</span>
+                </div>
+                <p style="color: #374151; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); margin: 0;">
+                  公司官网正式上线，全面展示企业实力与服务能力
+                </p>
+              </div>
+              
+              <!-- 2026.02 -->
+              <div style="background: white; border-radius: 16px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); position: relative; transition: all 0.3s;">
+                <div style="position: absolute; left: -28px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: #A2D93D; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(162, 217, 61, 0.3);"></div>
+                <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                  <span style="background: #A2D93D; color: #1a202c; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2026.02</span>
+                </div>
+                <p style="color: #374151; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); margin: 0;">
+                  工单管理系统上线，提升客户服务响应效率<br>
+                  知识库持续优化完善，沉淀项目经验与技术方案
+                </p>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+
+        <!-- 未来展望 -->
+        <div style="background: linear-gradient(135deg, rgba(10, 77, 162, 0.1), rgba(162, 217, 61, 0.05)); border-radius: 20px; padding: clamp(28px, 5vw, 44px); text-align: center; border-left: 5px solid linear-gradient(to bottom, #0A4DA2, #A2D93D);">
+          <div style="margin-bottom: clamp(16px, 2.5vh, 24px);">
+            <span style="font-size: clamp(2.5rem, 4vw, 3rem);">✨</span>
+          </div>
+          <h3 style="font-size: clamp(1.5rem, 2.5vw, 1.8rem); font-weight: 800; color: #0A4DA2; margin: 0 0 clamp(12px, 2vh, 20px);">未来展望 · 持续进化</h3>
+          <p style="color: #4b5563; line-height: 1.9; font-size: clamp(0.95rem, 1.2vw, 1.1rem); margin: 0; max-width: 800px; margin-left: auto; margin-right: auto;">
+            继续深耕企业级IT服务领域，拓展<span style="font-weight: 700; color: #0A4DA2;">云计算</span>、<span style="font-weight: 700; color: #A2D93D;">人工智能</span>、<span style="font-weight: 700; color: #0A4DA2;">大数据</span>等前沿技术应用，致力于成为客户信赖的数字化转型合作伙伴。
+          </p>
         </div>
       </div>
     </div>
@@ -186,7 +353,7 @@
           <h3 style="font-size: clamp(1.25rem, 2vw, 1.5rem); font-weight: 700; margin-bottom: clamp(12px, 2vh, 20px);">企业愿景</h3>
           <p style="line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); opacity: 0.9;">
             成为企业信赖的IT服务合作伙伴<br>
-            助力客户实现数字化转型目标
+            助力客户实现国产化转型目标
           </p>
         </div>
 
@@ -223,7 +390,7 @@
           <div style="width: clamp(100px, 12vw, 140px); height: clamp(100px, 12vw, 140px); background: linear-gradient(135deg, #0A4DA2, #2563eb); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto clamp(16px, 2.5vh, 24px);">
             <i class="fa fa-user" style="font-size: clamp(36px, 5vw, 48px); color: white;"></i>
           </div>
-          <h3 style="font-size: clamp(1.1rem, 1.5vw, 1.3rem); font-weight: 700; color: #1a202c; margin-bottom: clamp(6px, 1vh, 10px);">技术总监</h3>
+          <h3 style="font-size: clamp(1.1rem, 1.5vw, 1.3rem); font-weight: 700; color: #1a202c; margin-bottom: clamp(6px, 1vh, 10px);">技术顾问</h3>
           <p style="color: #6b7280; font-size: clamp(0.85rem, 1vw, 0.95rem); margin-bottom: clamp(12px, 2vh, 20px);">10+ 年行业经验</p>
           <p style="color: #4b5563; line-height: 1.6; font-size: clamp(0.85rem, 1vw, 0.95rem);">
             负责技术架构设计与团队管理，曾主导多个大型企业IT项目实施。
@@ -269,49 +436,143 @@
         </p>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: clamp(20px, 3vw, 32px);">
-        <!-- 证书1 -->
-        <div style="background: #f9fafb; border-radius: 16px; padding: clamp(24px, 4vw, 36px); text-align: center; border: 1px solid #e5e7eb; transition: all 0.3s;">
-          <div style="width: clamp(60px, 8vw, 80px); height: clamp(60px, 8vw, 80px); background: linear-gradient(135deg, #0A4DA2, #2563eb); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto clamp(16px, 2.5vh, 24px);">
-            <i class="fa fa-certificate" style="font-size: clamp(26px, 4vw, 36px); color: white;"></i>
+      <!-- 技术认证 -->
+      <div style="margin-bottom: clamp(48px, 8vh, 72px);">
+        <div style="display: flex; align-items: center; margin-bottom: clamp(24px, 4vw, 36px); gap: 12px;">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #0A4DA2, #2563eb); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+            <i class="fa fa-certificate" style="font-size: 22px; color: white;"></i>
           </div>
-          <h4 style="font-size: clamp(1rem, 1.3vw, 1.15rem); font-weight: 700; color: #1a202c; margin-bottom: clamp(8px, 1.5vh, 12px);">VMware认证</h4>
-          <p style="color: #6b7280; font-size: clamp(0.85rem, 1vw, 0.95rem); line-height: 1.6;">
-            VMware Certified Professional
-          </p>
+          <div>
+            <h3 style="font-size: clamp(1.4rem, 2.2vw, 1.7rem); font-weight: 700; color: #0A4DA2; margin: 0; line-height: 1.2;">技术认证</h3>
+            <p style="color: #6b7280; font-size: clamp(0.85rem, 1.05vw, 0.95rem); margin: 4px 0 0;">Technical Certifications</p>
+          </div>
         </div>
-
-        <!-- 证书2 -->
-        <div style="background: #f9fafb; border-radius: 16px; padding: clamp(24px, 4vw, 36px); text-align: center; border: 1px solid #e5e7eb; transition: all 0.3s;">
-          <div style="width: clamp(60px, 8vw, 80px); height: clamp(60px, 8vw, 80px); background: linear-gradient(135deg, #A2D93D, #b8e65d); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto clamp(16px, 2.5vh, 24px);">
-            <i class="fa fa-certificate" style="font-size: clamp(26px, 4vw, 36px); color: white;"></i>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); gap: clamp(32px, 5vw, 48px); align-items: center; justify-items: center;">
+          <!-- 技术认证1 -->
+          <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/1.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
           </div>
-          <h4 style="font-size: clamp(1rem, 1.3vw, 1.15rem); font-weight: 700; color: #1a202c; margin-bottom: clamp(8px, 1.5vh, 12px);">微软认证</h4>
-          <p style="color: #6b7280; font-size: clamp(0.85rem, 1vw, 0.95rem); line-height: 1.6;">
-            Microsoft Certified Professional
-          </p>
+
+          <!-- 技术认证2 -->
+           <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/3.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+         
+
+          <!-- 技术认证3 -->
+            <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/6.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+          
+
+          <!-- 技术认证4 -->
+          <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/4.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+
+
+          <!-- 技术认证6 -->
+          <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/2.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+
+          <!-- 技术认证7 -->
+          <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/7.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+
+          <!-- 技术认证8 -->
+           <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/11.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+           <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/10.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+        
+
+          <!-- 技术认证9 -->
+          
+
+          <!-- 技术认证10 -->
+           <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/8.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+
+          <!-- 技术认证11 -->
+          <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/9.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
         </div>
+      </div>
 
-        <!-- 证书3 -->
-        <div style="background: #f9fafb; border-radius: 16px; padding: clamp(24px, 4vw, 36px); text-align: center; border: 1px solid #e5e7eb; transition: all 0.3s;">
-          <div style="width: clamp(60px, 8vw, 80px); height: clamp(60px, 8vw, 80px); background: linear-gradient(135deg, #0A4DA2, #2563eb); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto clamp(16px, 2.5vh, 24px);">
-            <i class="fa fa-certificate" style="font-size: clamp(26px, 4vw, 36px); color: white;"></i>
+      <!-- 厂商资质 -->
+      <div>
+        <div style="display: flex; align-items: center; margin-bottom: clamp(24px, 4vw, 36px); gap: 12px;">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #A2D93D, #b8e65d); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+            <i class="fa fa-building" style="font-size: 22px; color: white;"></i>
           </div>
-          <h4 style="font-size: clamp(1rem, 1.3vw, 1.15rem); font-weight: 700; color: #1a202c; margin-bottom: clamp(8px, 1.5vh, 12px);">华为认证</h4>
-          <p style="color: #6b7280; font-size: clamp(0.85rem, 1vw, 0.95rem); line-height: 1.6;">
-            Huawei Certified Professional
-          </p>
+          <div>
+            <h3 style="font-size: clamp(1.4rem, 2.2vw, 1.7rem); font-weight: 700; color: #A2D93D; margin: 0; line-height: 1.2;">厂商资质</h3>
+            <p style="color: #6b7280; font-size: clamp(0.85rem, 1.05vw, 0.95rem); margin: 4px 0 0;">Vendor Certifications</p>
+          </div>
         </div>
-
-        <!-- 证书4 -->
-        <div style="background: #f9fafb; border-radius: 16px; padding: clamp(24px, 4vw, 36px); text-align: center; border: 1px solid #e5e7eb; transition: all 0.3s;">
-          <div style="width: clamp(60px, 8vw, 80px); height: clamp(60px, 8vw, 80px); background: linear-gradient(135deg, #A2D93D, #b8e65d); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto clamp(16px, 2.5vh, 24px);">
-            <i class="fa fa-certificate" style="font-size: clamp(26px, 4vw, 36px); color: white;"></i>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: clamp(32px, 5vw, 48px); align-items: center; justify-items: center;">
+          <!-- 厂商资质1 -->
+          <div style="text-align: center;">
+            <div style="width: clamp(200px, 25vw, 280px); height: clamp(160px, 20vw, 220px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZZ/1.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
           </div>
-          <h4 style="font-size: clamp(1rem, 1.3vw, 1.15rem); font-weight: 700; color: #1a202c; margin-bottom: clamp(8px, 1.5vh, 12px);">AWS认证</h4>
-          <p style="color: #6b7280; font-size: clamp(0.85rem, 1vw, 0.95rem); line-height: 1.6;">
-            AWS Certified Solutions Architect
-          </p>
+
+          <!-- 厂商资质2 -->
+          <div style="text-align: center;">
+            <div style="width: clamp(200px, 25vw, 280px); height: clamp(160px, 20vw, 220px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZZ/2.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+
+          <!-- 厂商资质3 -->
+          <div style="text-align: center;">
+            <div style="width: clamp(200px, 25vw, 280px); height: clamp(160px, 20vw, 220px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZZ/3.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+
+          <!-- 厂商资质4 -->
+          <div style="text-align: center;">
+            <div style="width: clamp(200px, 25vw, 280px); height: clamp(160px, 20vw, 220px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZZ/4.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+
+          <!-- 厂商资质5 -->
+          <div style="text-align: center;">
+            <div style="width: clamp(200px, 25vw, 280px); height: clamp(160px, 20vw, 220px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZZ/5.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
         </div>
       </div>
     </div>
