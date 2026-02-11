@@ -72,14 +72,33 @@
 
         <!-- 图片轮播展示 -->
         <div style="position: relative; width: 100%; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);">
-          <div id="partsCarousel" style="position: relative; width: 100%; height: 400px; overflow: hidden;">
+          <div id="partsCarousel" style="position: relative; width: 100%; min-height: 450px; max-height: 600px; overflow: hidden; background: #f9fafb;">
             <!-- 轮播图片 -->
-            <div id="carouselTrack" style="display: flex; transition: transform 0.5s ease-in-out; height: 100%;">
-              <img src="/jpg/BJ/BJ1.jpg" alt="备件库1" style="width: 100%; height: 100%; object-fit: cover; flex-shrink: 0;">
-              <img src="/jpg/BJ/BJ2.jpg" alt="备件库2" style="width: 100%; height: 100%; object-fit: cover; flex-shrink: 0;">
-              <img src="/jpg/BJ/BJ3.jpg" alt="备件库3" style="width: 100%; height: 100%; object-fit: cover; flex-shrink: 0;">
-              <img src="/jpg/BJ/BJ4.jpg" alt="备件库4" style="width: 100%; height: 100%; object-fit: cover; flex-shrink: 0;">
-              <img src="/jpg/BJ/BJ5.jpg" alt="备件库5" style="width: 100%; height: 100%; object-fit: cover; flex-shrink: 0;">
+            <div id="carouselTrack" style="display: flex; transition: transform 0.5s ease-in-out; min-height: 450px; max-height: 600px; align-items: center; justify-content: center; width: 700%;">
+              <!-- 克隆的最后一张（用于无缝循环） -->
+              <div class="carousel-slide clone" style="width: 14.2857%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; min-height: 450px; max-height: 600px;">
+                <img src="{{ url_for('static', filename='home/images/BJ/BJ5.jpg') }}" alt="备件库5" style="width: 100%; height: auto; max-height: 600px; object-fit: contain;" loading="lazy" decoding="async" width="1200" height="600">
+              </div>
+              <!-- 实际图片 -->
+              <div class="carousel-slide original" style="width: 14.2857%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; min-height: 450px; max-height: 600px;">
+                <img src="{{ url_for('static', filename='home/images/BJ/BJ1.jpg') }}" alt="备件库1" style="width: 100%; height: auto; max-height: 600px; object-fit: contain;" loading="lazy" decoding="async" width="1200" height="600">
+              </div>
+              <div class="carousel-slide original" style="width: 14.2857%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; min-height: 450px; max-height: 600px;">
+                <img src="{{ url_for('static', filename='home/images/BJ/BJ2.jpg') }}" alt="备件库2" style="width: 100%; height: auto; max-height: 600px; object-fit: contain;" loading="lazy" decoding="async" width="1200" height="600">
+              </div>
+              <div class="carousel-slide original" style="width: 14.2857%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; min-height: 450px; max-height: 600px;">
+                <img src="{{ url_for('static', filename='home/images/BJ/BJ3.jpg') }}" alt="备件库3" style="width: 100%; height: auto; max-height: 600px; object-fit: contain;" loading="lazy" decoding="async" width="1200" height="600">
+              </div>
+              <div class="carousel-slide original" style="width: 14.2857%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; min-height: 450px; max-height: 600px;">
+                <img src="{{ url_for('static', filename='home/images/BJ/BJ4.jpg') }}" alt="备件库4" style="width: 100%; height: auto; max-height: 600px; object-fit: contain;" loading="lazy" decoding="async" width="1200" height="600">
+              </div>
+              <div class="carousel-slide original" style="width: 14.2857%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; min-height: 450px; max-height: 600px;">
+                <img src="{{ url_for('static', filename='home/images/BJ/BJ5.jpg') }}" alt="备件库5" style="width: 100%; height: auto; max-height: 600px; object-fit: contain;" loading="lazy" decoding="async" width="1200" height="600">
+              </div>
+              <!-- 克隆的第一张（用于无缝循环） -->
+              <div class="carousel-slide clone" style="width: 14.2857%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; min-height: 450px; max-height: 600px;">
+                <img src="{{ url_for('static', filename='home/images/BJ/BJ1.jpg') }}" alt="备件库1" style="width: 100%; height: auto; max-height: 600px; object-fit: contain;" loading="lazy" decoding="async" width="1200" height="600">
+              </div>
             </div>
             <!-- 左右箭头 -->
             <button id="prevBtn" onclick="slideTo(-1)" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; background: rgba(255, 255, 255, 0.9); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15); z-index: 10; opacity: 1;">
@@ -296,59 +315,141 @@
 {% block extra_js %}
 <script>
   (function() {
-    let currentSlide = 0;
-    const totalSlides = 5;
+    let currentSlide = 1; // 从第一张真实图片开始（索引1，因为索引0是克隆的最后一张）
     const carouselTrack = document.getElementById('carouselTrack');
     const indicators = document.querySelectorAll('#partsCarousel > div:last-child > span');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
+    const originalSlides = carouselTrack ? carouselTrack.querySelectorAll('.carousel-slide.original') : [];
+    const totalOriginalSlides = originalSlides.length;
+    const totalSlides = totalOriginalSlides + 2; // 加上两个克隆的
     let autoPlayInterval;
 
-    function updateCarousel() {
-      carouselTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+    // 检查图片是否加载成功
+    function checkImageLoading() {
+      console.log('=== 图片加载状态检查 ===');
+      console.log(`轮播轨道宽度: ${carouselTrack.offsetWidth}px`);
+      console.log(`轮播轨道样式宽度: ${getComputedStyle(carouselTrack).width}`);
+      console.log(`总图片数: ${totalSlides} (含克隆)`);
+      console.log(`真实图片数: ${totalOriginalSlides}`);
 
-      indicators.forEach((indicator, index) => {
-        if (index === currentSlide) {
-          indicator.style.background = '#fff';
-          indicator.style.width = '30px';
-        } else {
-          indicator.style.background = 'rgba(255, 255, 255, 0.7)';
-          indicator.style.width = '10px';
-        }
+      const allImages = carouselTrack.querySelectorAll('img');
+      allImages.forEach((img, index) => {
+        const isClone = img.closest('.clone') ? '克隆' : '真实';
+        console.log(`图片 ${index + 1}: ${img.alt} (${isClone}) - ${img.complete ? '已加载' : '加载中'}`);
+        console.log(`  - src: ${img.src}`);
+        console.log(`  - naturalWidth: ${img.naturalWidth}`);
+        console.log(`  - naturalHeight: ${img.naturalHeight}`);
+        console.log(`  - offsetWidth: ${img.offsetWidth}px`);
+        console.log(`  - offsetHeight: ${img.offsetHeight}px`);
+        const imgContainer = img.parentElement;
+        console.log(`  - 容器宽度: ${imgContainer.offsetWidth}px`);
+        console.log(`  - 容器显示: ${getComputedStyle(imgContainer).display}`);
+
+        // 监听加载事件
+        img.addEventListener('load', () => {
+          console.log(`✓ 图片加载成功: ${img.alt}, 尺寸: ${img.naturalWidth}x${img.naturalHeight}`);
+        });
+
+        img.addEventListener('error', () => {
+          console.error(`✗ 图片加载失败: ${img.alt}`);
+        });
       });
+    }
 
-      prevBtn.style.opacity = currentSlide === 0 ? '0.3' : '1';
-      nextBtn.style.opacity = currentSlide === totalSlides - 1 ? '0.3' : '1';
-      prevBtn.style.cursor = currentSlide === 0 ? 'not-allowed' : 'pointer';
-      nextBtn.style.cursor = currentSlide === totalSlides - 1 ? 'not-allowed' : 'pointer';
+    function updateCarousel(instant = false) {
+      if (!carouselTrack) return;
+
+      // 禁用动画实现瞬间跳转（用于循环边界）
+      if (instant) {
+        carouselTrack.style.transition = 'none';
+      } else {
+        carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+      }
+
+      // 移动轮播轨道，每个slide占 100/7 ≈ 14.2857%
+      carouselTrack.style.transform = `translateX(-${currentSlide * 14.2857}%)`;
+
+      // 更新指示器（只更新实际图片的指示器）
+      const actualSlide = currentSlide - 1; // 去掉克隆的第一张
+      if (actualSlide >= 0 && actualSlide < indicators.length) {
+        indicators.forEach((indicator, index) => {
+          if (index === actualSlide) {
+            indicator.style.background = '#fff';
+            indicator.style.width = '30px';
+            indicator.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.2)';
+          } else {
+            indicator.style.background = 'rgba(255, 255, 255, 0.5)';
+            indicator.style.width = '10px';
+            indicator.style.boxShadow = 'none';
+          }
+        });
+      }
+
+      // 左右按钮始终保持可点击状态，无边界限制
+      prevBtn.style.opacity = '1';
+      nextBtn.style.opacity = '1';
+      prevBtn.style.cursor = 'pointer';
+      nextBtn.style.cursor = 'pointer';
+
+      console.log(`轮播更新: currentSlide=${currentSlide}, 实际图片索引=${actualSlide}`);
     }
 
     function slideTo(direction) {
-      const newSlide = currentSlide + direction;
-      if (newSlide >= 0 && newSlide < totalSlides) {
-        currentSlide = newSlide;
+      if (totalSlides === 0) return;
+
+      const previousSlide = currentSlide;
+      currentSlide = currentSlide + direction;
+
+      console.log(`滑动: 方向=${direction}, 上一个=${previousSlide}, 当前=${currentSlide}`);
+
+      // 循环轮播：无缝切换
+      if (currentSlide >= totalSlides) {
+        // 从克隆的第一张（索引6）跳回真正的第一张（索引1）
+        console.log('到达末尾，跳回第一张');
+        updateCarousel(); // 先滑动到克隆的第一张
+        setTimeout(() => {
+          currentSlide = 1; // 瞬间跳到真正的第一张
+          updateCarousel(true);
+        }, 500);
+      } else if (currentSlide <= 0) {
+        // 从克隆的最后一张（索引0）跳到真正的最后一张（索引5）
+        console.log('到达开头，跳到最后一张');
+        updateCarousel(); // 先滑动到克隆的最后一张
+        setTimeout(() => {
+          currentSlide = totalSlides - 2; // 瞬间跳到真正的最后一张
+          updateCarousel(true);
+        }, 500);
+      } else {
         updateCarousel();
-        resetAutoPlay();
       }
+
+      resetAutoPlay();
     }
 
     function goToSlide(index) {
-      if (index >= 0 && index < totalSlides) {
-        currentSlide = index;
+      if (totalOriginalSlides === 0) return;
+
+      // index 是 0-4，转换为 1-5
+      if (index >= 0 && index < totalOriginalSlides) {
+        currentSlide = index + 1;
         updateCarousel();
         resetAutoPlay();
       }
     }
 
     function startAutoPlay() {
+      if (totalSlides === 0) return;
+
       autoPlayInterval = setInterval(() => {
-        currentSlide = (currentSlide + 1) % totalSlides;
-        updateCarousel();
+        slideTo(1);  // 自动播放使用 slideTo(1) 自动循环
       }, 4000);
     }
 
     function stopAutoPlay() {
-      clearInterval(autoPlayInterval);
+      if (autoPlayInterval) {
+        clearInterval(autoPlayInterval);
+      }
     }
 
     function resetAutoPlay() {
@@ -356,10 +457,18 @@
       startAutoPlay();
     }
 
-    if (carouselTrack) {
+    // 初始化
+    if (carouselTrack && originalSlides.length > 0) {
+      console.log(`初始化轮播，共 ${totalOriginalSlides} 张真实图片`);
+
+      // 检查图片加载状态
+      checkImageLoading();
+
+      // 启动自动播放
       updateCarousel();
       startAutoPlay();
 
+      // 绑定事件
       prevBtn.addEventListener('click', () => slideTo(-1));
       nextBtn.addEventListener('click', () => slideTo(1));
 
@@ -369,6 +478,30 @@
 
       carouselTrack.addEventListener('mouseenter', stopAutoPlay);
       carouselTrack.addEventListener('mouseleave', startAutoPlay);
+
+      // 监听所有图片的加载事件
+      const allImages = carouselTrack.querySelectorAll('img');
+      allImages.forEach((img, index) => {
+        img.addEventListener('load', () => {
+          console.log(`✓ 图片 ${index + 1}/${allImages.length} 加载完成: ${img.alt}`);
+        });
+
+        img.addEventListener('error', () => {
+          console.error(`✗ 图片 ${index + 1}/${allImages.length} 加载失败: ${img.alt}`);
+          console.error(`  路径: ${img.src}`);
+        });
+      });
+
+      // 页面可见性变化时控制自动播放
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          stopAutoPlay();
+        } else {
+          startAutoPlay();
+        }
+      });
+    } else {
+      console.error('轮播初始化失败：未找到轮播元素或图片');
     }
   })();
 </script>
