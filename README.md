@@ -496,6 +496,31 @@ FLASK_PORT=5001
 
 ## 📝 更新日志
 
+### 2026-02-11 (v2.0.1 - 代码统计与配置优化)
+
+#### 代码统计更新
+- 📊 完整统计所有代码文件行数：**23,873 行**
+- 📊 Python 代码：5,087 行（29 文件）
+- 📊 HTML 模板：11,143 行（20 文件）
+- 📊 CSS 样式：2,281 行（7 文件）
+- 📊 文档资料：5,796 行（17 文件）
+- 📚 更新 `CODE_STATISTICS.md` 代码统计文档
+
+#### Nginx 配置优化
+- 🔧 新增 `nginx_simple_static.conf` 简化版配置
+- 🔧 修复 `nginx_optimized.conf` 静态文件路径问题
+- 🔧 更新 `NGINX_CONFIG_COMPARISON.md` 配置选择指南
+- 🔧 添加静态文件 404 问题排查方案
+- 🔧 新增 `nginx_image_optimization.conf` 图片优化配置
+
+#### 文档更新
+- 📚 完善代码统计文档（`CODE_STATISTICS.md`）
+- 📚 更新 Nginx 配置对比文档（`NGINX_CONFIG_COMPARISON.md`）
+- 📚 新增图片优化指南（`IMAGE_OPTIMIZATION_GUIDE.md`）
+- 📚 新增 Nginx 升级指南（`NGINX_UPGRADE_GUIDE.md`）
+
+---
+
 ### 2026-02-10 (v2.0 - 架构重构)
 
 #### 架构优化
