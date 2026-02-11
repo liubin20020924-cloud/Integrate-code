@@ -8,23 +8,27 @@
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='case/css/edge_fixes.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='case/css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='case/css/mobile.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- 顶部导航栏 -->
     <nav class="navbar navbar-expand-lg navbar-custom" id="mainNavbar">
-        <div class="container">
+        <div class="container" style="position: relative;">
             <a class="navbar-brand" href="/">
                 <img src="{{ url_for('static', filename='case/images/Logo.jpg') }}" alt="云户科技" class="logo-img">
                 <span>工单管理系统</span>
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" id="mobileMenuToggle" aria-label="切换菜单">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+            <div class="navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav" style="flex-direction: column;">
                     {% if session.get('user_id') %}
                     <li class="nav-item">
                         <a class="nav-link" href="/case/submit">
@@ -46,21 +50,25 @@
                     {% endif %}
                 </ul>
 
-                <div class="d-flex align-items-center gap-2">
+                <div class="mobile-user-actions">
                     {% if session.get('user_id') %}
-                    <span class="user-info me-2">
-                        <i class="fas fa-user-circle"></i>
-                        {{ session.get('real_name') or session.get('username') }}
-                        <span class="badge" style="background: rgba(255,255,255,0.25);">{{ session.get('role') }}</span>
-                    </span>
-                    <button type="button" class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                        <i class="fas fa-key me-1"></i>修改密码
-                    </button>
-                    <button type="button" id="logoutBtn" class="btn btn-outline-light btn-sm">
-                        <i class="fas fa-sign-out-alt"></i> 退出
-                    </button>
+                    <div class="user-info-section">
+                        <span class="user-info">
+                            <i class="fas fa-user-circle"></i>
+                            {{ session.get('real_name') or session.get('username') }}
+                            <span class="badge" style="background: rgba(255,255,255,0.25);">{{ session.get('role') }}</span>
+                        </span>
+                    </div>
+                    <div class="action-buttons-section">
+                        <button type="button" class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                            <i class="fas fa-key me-1"></i>修改密码
+                        </button>
+                        <button type="button" id="logoutBtn" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-sign-out-alt"></i> 退出
+                        </button>
+                    </div>
                     {% else %}
-                    <a href="/case/" class="btn btn-primary btn-sm">
+                    <a href="/case/" class="btn btn-primary btn-sm mobile-login-btn">
                         <i class="fas fa-sign-in-alt"></i> 登录
                     </a>
                     {% endif %}
@@ -68,6 +76,197 @@
             </div>
         </div>
     </nav>
+
+    <style>
+        /* 移动端导航栏样式 */
+        @media (max-width: 768px) {
+            #navbarNav {
+                display: none !important;
+                position: absolute !important;
+                top: 100% !important;
+                left: 0 !important;
+                right: 0 !important;
+                background: white !important;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+                border-top: 1px solid var(--gray-200) !important;
+                z-index: 998 !important;
+                padding: 1rem 0 !important;
+            }
+
+            #navbarNav.show {
+                display: block !important;
+                animation: slideDown 0.3s ease-out;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* 菜单链接样式 */
+            #navbarNav .nav-link {
+                width: 100%;
+                padding: 12px 16px !important;
+                color: var(--gray-700) !important;
+                background: white !important;
+                border-bottom: 1px solid var(--gray-100) !important;
+                border-radius: 0 !important;
+            }
+
+            #navbarNav .nav-link:hover {
+                background: var(--gray-50) !important;
+                color: var(--primary-dark) !important;
+                transform: none !important;
+            }
+
+            #navbarNav .nav-link i {
+                margin-right: 10px;
+                width: 20px;
+                color: var(--primary-dark);
+            }
+
+            .mobile-user-actions {
+                flex-direction: column;
+                width: 100%;
+                align-items: stretch;
+                padding: 1rem;
+                border-top: 1px solid var(--gray-200);
+                background: var(--gray-50);
+            }
+
+            .user-info-section {
+                width: 100%;
+                padding: 0 0 1rem 0;
+                border-bottom: 1px solid var(--gray-200);
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: space-between;
+                color: var(--gray-700);
+                font-size: 0.95rem;
+            }
+
+            .user-info i {
+                color: var(--primary-dark);
+            }
+
+            .action-buttons-section {
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+                width: 100%;
+            }
+
+            .action-buttons-section .btn {
+                width: 100%;
+                padding: 0.75rem 1rem;
+                background: var(--primary-dark) !important;
+                border: none !important;
+                color: white !important;
+            }
+
+            .action-buttons-section .btn:hover {
+                background: var(--primary) !important;
+                transform: none !important;
+            }
+        }
+
+        /* 汉堡菜单按钮 */
+        .navbar-toggler {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .navbar-toggler:hover {
+            background: rgba(255,255,255,0.25);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .navbar-toggler-icon {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: white;
+            position: relative;
+        }
+
+        .navbar-toggler-icon::before,
+        .navbar-toggler-icon::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 2px;
+            background: white;
+            left: 0;
+            transition: all 0.3s;
+        }
+
+        .navbar-toggler-icon::before {
+            top: -7px;
+        }
+
+        .navbar-toggler-icon::after {
+            top: 7px;
+        }
+
+        /* X 图标样式 */
+        .navbar-toggler.active .navbar-toggler-icon {
+            background: transparent;
+        }
+
+        .navbar-toggler.active .navbar-toggler-icon::before {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .navbar-toggler.active .navbar-toggler-icon::after {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+    </style>
+
+    <script>
+        // 移动端菜单切换
+        document.getElementById('mobileMenuToggle').addEventListener('click', function() {
+            const navbarNav = document.getElementById('navbarNav');
+
+            navbarNav.classList.toggle('show');
+            this.classList.toggle('active');
+        });
+
+        // 点击菜单项后关闭移动端菜单
+        document.querySelectorAll('.nav-link').forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    document.getElementById('navbarNav').classList.remove('show');
+                    document.getElementById('mobileMenuToggle').classList.remove('active');
+                }
+            });
+        });
+
+        // 点击页面其他区域关闭菜单
+        document.addEventListener('click', function(e) {
+            const navbarNav = document.getElementById('navbarNav');
+            const toggler = document.getElementById('mobileMenuToggle');
+
+            if (window.innerWidth <= 768) {
+                if (!navbarNav.contains(e.target) && !toggler.contains(e.target)) {
+                    navbarNav.classList.remove('show');
+                    toggler.classList.remove('active');
+                }
+            }
+        });
+    </script>
+
 
     <!-- 主内容区域 -->
     <main>

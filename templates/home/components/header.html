@@ -54,7 +54,7 @@
 
   <!-- 移动端菜单 -->
   <div id="mobileMenu" style="display: none; background: white; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); position: fixed; top: clamp(60px, 8vh, 72px); left: 0; right: 0; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; z-index: 40;" class="mobile-menu">
-    <div style="width: 100%; max-width: min(1280px, 95vw); margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+    <div style="width: 100%; max-width: min(1280px, 95vw); margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; opacity: 0; transition: opacity 0.3s ease-out;" class="mobile-menu-content">
       <a href="#home" style="color: #0A4DA2; text-decoration: none; font-weight: 500; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">首页</a>
       <a href="/about" style="color: #1a202c; text-decoration: none; font-weight: 500; padding: 8px 0; border-bottom: 1px solid #f3f4f6;">关于我们</a>
       <!-- 移动端子菜单 -->
@@ -184,7 +184,13 @@
 
   /* 移动端菜单样式 */
   .mobile-menu.open {
-    max-height: 500px !important;
+    display: block !important;
+    max-height: 1000px !important;
+    overflow-y: auto !important;
+  }
+
+  .mobile-menu.open .mobile-menu-content {
+    opacity: 1 !important;
   }
 
   .mobile-menu a:hover:not([href="#contact"]) {
@@ -216,9 +222,17 @@
       mobileMenu.classList.toggle('open');
       const icon = mobileMenuBtn.querySelector('i');
       if (mobileMenu.classList.contains('open')) {
+        mobileMenu.style.display = 'block';
+        setTimeout(() => {
+          mobileMenu.style.maxHeight = '1000px';
+        }, 10);
         icon.classList.remove('fa-bars');
         icon.classList.add('fa-times');
       } else {
+        mobileMenu.style.maxHeight = '0';
+        setTimeout(() => {
+          mobileMenu.style.display = 'none';
+        }, 300);
         icon.classList.remove('fa-times');
         icon.classList.add('fa-bars');
       }
@@ -227,6 +241,10 @@
     const mobileMenuLinks = mobileMenu.querySelectorAll('a');
     mobileMenuLinks.forEach(link => {
       link.addEventListener('click', () => {
+        mobileMenu.style.maxHeight = '0';
+        setTimeout(() => {
+          mobileMenu.style.display = 'none';
+        }, 300);
         mobileMenu.classList.remove('open');
         const icon = mobileMenuBtn.querySelector('i');
         icon.classList.remove('fa-times');
@@ -236,6 +254,10 @@
 
     document.addEventListener('click', (e) => {
       if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+        mobileMenu.style.maxHeight = '0';
+        setTimeout(() => {
+          mobileMenu.style.display = 'none';
+        }, 300);
         mobileMenu.classList.remove('open');
         const icon = mobileMenuBtn.querySelector('i');
         icon.classList.remove('fa-times');
