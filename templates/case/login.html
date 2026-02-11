@@ -120,10 +120,10 @@
             <!-- 头部 -->
             <div class="login-header">
                 <img src="{{ url_for('static', filename='case/images/Logo.jpg') }}" alt="云户工单系统" class="logo-img-large mb-3">
-                <h3>工单系统</h3>
+                <h3>工单管理系统</h3>
                 <p class="mb-0">用户登录</p>
             </div>
-            
+
             <!-- 登录表单 -->
             <div class="login-body">
                 {% if error %}
@@ -132,10 +132,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
                 {% endif %}
-                
+
                 <form method="POST" action="{{ url_for('case.login') }}">
                     <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
-                    
+
                     <!-- 用户名 -->
                     <div class="mb-3">
                         <label class="form-label">用户名</label>
@@ -143,16 +143,16 @@
                             <span class="input-group-text">
                                 <i class="fas fa-user"></i>
                             </span>
-                            <input type="text" 
-                                   class="form-control" 
-                                   name="username" 
+                            <input type="text"
+                                   class="form-control"
+                                   name="username"
                                    placeholder="请输入用户名"
                                    value="{{ username if username else '' }}"
                                    required
                                    autofocus>
                         </div>
                     </div>
-                    
+
                     <!-- 密码 -->
                     <div class="mb-4">
                         <label class="form-label">密码</label>
@@ -160,21 +160,21 @@
                             <span class="input-group-text">
                                 <i class="fas fa-lock"></i>
                             </span>
-                            <input type="password" 
-                                   class="form-control" 
-                                   name="password" 
+                            <input type="password"
+                                   class="form-control"
+                                   name="password"
                                    placeholder="请输入密码"
                                    required>
                         </div>
                     </div>
-                    
+
                     <!-- 提交按钮 -->
                     <div class="d-grid gap-2 mb-3">
                         <button type="submit" class="btn btn-login btn-lg">
                             <i class="fas fa-sign-in-alt me-2"></i>登录
                         </button>
                     </div>
-                    
+
                     <!-- 登录提示 -->
                     <div class="text-center text-muted mb-4">
                         <small>
@@ -183,7 +183,7 @@
                         </small>
                     </div>
                 </form>
-                
+
                 <!-- 返回首页 -->
                 <div class="back-home">
                     <a href="/" class="text-center w-100">
@@ -192,11 +192,11 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- 系统信息 -->
         <div class="text-center text-white mt-4">
             <small>
-                <i class="fas fa-copyright me-1"></i>云户工单系统 2026
+                <i class="fas fa-copyright me-1"></i>云户工单管理系统 2026
             </small>
         </div>
     </div>
@@ -209,7 +209,7 @@
             if (usernameInput && !usernameInput.value) {
                 usernameInput.focus();
             }
-            
+
             // 监听回车键提交
             document.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
