@@ -46,15 +46,21 @@ class BaseConfig:
 FLASK_HOST = os.getenv('FLASK_HOST', '0.0.0.0')  # 监听所有网卡
 FLASK_PORT = int(os.getenv('FLASK_PORT', '5000'))  # 服务端口
 
+# ============================================
+# 网站域名配置
+# ============================================
+# 网站基础URL（用于生成链接）
+SITE_URL = os.getenv('SITE_URL', f'http://{FLASK_HOST}:{FLASK_PORT}')
+
 
 # ============================================
 # 数据库配置 - 统一使用 MariaDB
 # ============================================
 # 通用数据库配置（三个系统共用）
-DB_HOST = os.getenv('DB_HOST', '10.10.10.250')
+DB_HOST = os.getenv('DB_HOST', '127.0.0.1')
 DB_PORT = int(os.getenv('DB_PORT', '3306'))
 DB_USER = os.getenv('DB_USER', 'root')
-DB_PASSWORD = os.getenv('DB_PASSWORD', 'Nutanix/4u123!')
+DB_PASSWORD = os.getenv('DB_PASSWORD', '')
 
 # 各系统数据库名称
 DB_NAME_HOME = os.getenv('DB_NAME_HOME', 'clouddoors_db')  # 官网系统数据库
@@ -77,9 +83,9 @@ DB_POOL_MAX_SHARED = 5
 # SMTP 服务器配置（通用）
 SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.qq.com')
 SMTP_PORT = int(os.getenv('SMTP_PORT', '465'))
-SMTP_USERNAME = os.getenv('SMTP_USERNAME', '1919516011@qq.com')
+SMTP_USERNAME = os.getenv('SMTP_USERNAME', '')
 SMTP_PASSWORD = os.getenv('SMTP_PASSWORD', '')  # 必须从环境变量读取
-EMAIL_SENDER = os.getenv('EMAIL_SENDER', '1919516011@qq.com')
+EMAIL_SENDER = os.getenv('EMAIL_SENDER', '')
 
 # 官网邮件配置（如果使用Gmail）
 MAIL_SERVER = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
@@ -87,23 +93,23 @@ MAIL_PORT = int(os.getenv('MAIL_PORT', '587'))
 MAIL_USE_TLS = True
 MAIL_USERNAME = os.getenv('MAIL_USERNAME', '')  # 如需使用请填写
 MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', '')  # 如需使用请填写
-MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'noreply@cloud-doors.com')
+MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', '')
 
 # 联系邮箱
-CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', 'dora.dong@cloud-doors.com')
+CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', '')
 
 
 # ============================================
 # 知识库系统配置
 # ============================================
 # Trilium 服务器配置
-TRILIUM_SERVER_URL = os.getenv('TRILIUM_SERVER_URL', 'http://10.10.10.250:8080')
+TRILIUM_SERVER_URL = os.getenv('TRILIUM_SERVER_URL', 'http://127.0.0.1:8080')
 TRILIUM_TOKEN = os.getenv('TRILIUM_TOKEN', '')  # 必须从环境变量读取
-TRILIUM_SERVER_HOST = os.getenv('TRILIUM_SERVER_HOST', '10.10.10.250:8080')
+TRILIUM_SERVER_HOST = os.getenv('TRILIUM_SERVER_HOST', '127.0.0.1:8080')
 
 # Trilium 登录配置
 TRILIUM_LOGIN_USERNAME = os.getenv('TRILIUM_LOGIN_USERNAME', '')  # 如需认证请填写用户名
-TRILIUM_LOGIN_PASSWORD = os.getenv('TRILIUM_LOGIN_PASSWORD', 'Nutanix/4u123!')
+TRILIUM_LOGIN_PASSWORD = os.getenv('TRILIUM_LOGIN_PASSWORD', '')
 
 # 知识库登录配置
 SESSION_TIMEOUT = 180  # Session超时时间（秒），3小时
@@ -159,7 +165,51 @@ CASE_PREFIX = '/case'  # 工单系统前缀
 # CORS 配置
 # ============================================
 # 允许的跨域来源（多个来源用逗号分隔）
-ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', 'http://localhost:5000')
+ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', '*')
+
+# ============================================
+# Redis 配置（用于图片缓存）
+# ============================================
+REDIS_ENABLED = os.getenv('REDIS_ENABLED', 'False').lower() == 'true'
+REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
+REDIS_PORT = int(os.getenv('REDIS_PORT', '6379'))
+REDIS_DB = int(os.getenv('REDIS_DB', '0'))
+REDIS_PASSWORD = os.getenv('REDIS_PASSWORD', '')
+
+# ============================================
+# CDN 配置（可选）
+# ============================================
+CDN_ENABLED = os.getenv('CDN_ENABLED', 'False').lower() == 'true'
+CDN_DOMAIN = os.getenv('CDN_DOMAIN', '')
+CDN_PROTOCOL = os.getenv('CDN_PROTOCOL', 'https')
+
+# ============================================
+# 图片优化配置
+# ============================================
+IMAGE_QUALITY = int(os.getenv('IMAGE_QUALITY', '80'))
+IMAGE_ENABLE_WEBP = os.getenv('IMAGE_ENABLE_WEBP', 'True').lower() == 'true'
+IMAGE_AUTO_COMPRESS = os.getenv('IMAGE_AUTO_COMPRESS', 'True').lower() == 'true'
+IMAGE_CACHE_TTL = int(os.getenv('IMAGE_CACHE_TTL', '604800'))  # 7天
+
+# ============================================
+# 缓存配置
+# ============================================
+# 缓存类型：redis, simple, filesystem
+CACHE_TYPE = os.getenv('CACHE_TYPE', 'simple')
+CACHE_DEFAULT_TIMEOUT = int(os.getenv('CACHE_DEFAULT_TIMEOUT', '604800'))  # 7天
+CACHE_KEY_PREFIX = os.getenv('CACHE_KEY_PREFIX', 'yundour_')
+
+# ============================================
+# 日志配置
+# ============================================
+# 日志级别：DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
+# 日志文件路径
+LOG_FILE = os.getenv('LOG_FILE', 'logs/app.log')
+# 日志文件最大大小（MB）
+LOG_MAX_BYTES = int(os.getenv('LOG_MAX_BYTES', '10'))
+# 日志文件备份数量
+LOG_BACKUP_COUNT = int(os.getenv('LOG_BACKUP_COUNT', '5'))
 
 
 # ============================================
@@ -176,20 +226,26 @@ def check_config():
             errors.append('严重错误: 生产环境使用了默认SECRET_KEY，请立即修改！设置 FLASK_SECRET_KEY 环境变量')
 
     # 检查敏感配置是否从环境变量读取
-    if DB_PASSWORD == 'Nutanix/4u123!':
-        errors.append('严重错误: 数据库密码使用默认值，存在安全风险！请从环境变量 DB_PASSWORD 设置强密码')
+    if not DB_PASSWORD:
+        errors.append('严重错误: DB_PASSWORD 未设置，数据库连接将失败')
 
-    if BaseConfig.DEBUG and DB_PASSWORD == 'Nutanix/4u123!':
-        warnings.append('警告: 开发环境使用默认数据库密码，生产环境必须修改')
+    if DB_HOST == '127.0.0.1' and not BaseConfig.DEBUG:
+        warnings.append('警告: 生产环境数据库地址使用默认值 127.0.0.1，请确认 DB_HOST 配置正确')
 
-    if not SMTP_PASSWORD:
-        errors.append('严重错误: SMTP_PASSWORD 未设置，邮件功能将无法使用')
+    if not SMTP_PASSWORD and not MAIL_PASSWORD:
+        errors.append('警告: SMTP_PASSWORD 和 MAIL_PASSWORD 均未设置，邮件功能可能无法使用')
+
+    if SMTP_USERNAME and '@qq.com' in SMTP_USERNAME:
+        warnings.append('提示: 邮件配置使用QQ邮箱，确保已配置正确的授权码')
 
     if not TRILIUM_TOKEN:
         errors.append('严重错误: TRILIUM_TOKEN 未设置，知识库功能将无法使用')
 
-    if TRILIUM_LOGIN_PASSWORD == 'Nutanix/4u123!':
-        errors.append('严重错误: Trilium登录密码使用默认值，存在安全风险！请从环境变量 TRILIUM_LOGIN_PASSWORD 设置')
+    if not TRILIUM_LOGIN_PASSWORD and TRILIUM_LOGIN_USERNAME:
+        warnings.append('警告: TRILIUM_LOGIN_PASSWORD 未设置，Trilium 认证功能可能无法使用')
+
+    if TRILIUM_SERVER_URL == 'http://127.0.0.1:8080' and not BaseConfig.DEBUG:
+        warnings.append('警告: 生产环境 Trilium 地址使用默认值，请确认 TRILIUM_SERVER_URL 配置正确')
 
     # 检查默认管理员密码
     if DEFAULT_ADMIN_PASSWORD == 'YHKB@2024':
@@ -202,6 +258,18 @@ def check_config():
     # 检查 .env 文件是否存在
     if not os.path.exists('.env'):
         errors.append('严重错误: 未找到 .env 文件，请创建并配置环境变量')
+
+    # 检查 Redis 配置
+    if REDIS_ENABLED and REDIS_HOST == '127.0.0.1' and not BaseConfig.DEBUG:
+        warnings.append('警告: 生产环境 Redis 地址使用默认值，请确认 REDIS_HOST 配置正确')
+
+    # 检查网站域名配置
+    if SITE_URL == 'http://0.0.0.0:5000' and not BaseConfig.DEBUG:
+        errors.append('严重错误: 生产环境 SITE_URL 使用默认值，请设置为实际网站域名')
+
+    # 检查 CDN 配置
+    if CDN_ENABLED and not CDN_DOMAIN:
+        errors.append('严重错误: CDN_ENABLED 为 True 但未设置 CDN_DOMAIN')
 
     return warnings, errors
 
