@@ -1,401 +1,1350 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工单详情 - 工单系统</title>
-    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css?v=5.3.0" rel="stylesheet">
-    <link rel="stylesheet" href="/static/common.css?v=2.0">
-    <link rel="stylesheet" href="/static/case/css/style.css?v=2.0">
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css?v=6.4.0">
-    <style>
-        body {
-            background: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        }
-        .top-nav {
-            background: white;
-            box-shadow: var(--shadow-md);
-            padding: 1rem 2rem;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--gray-200);
-        }
-        .top-nav img {
-            height: 50px;
-            width: auto;
-        }
-        .page-title {
-            color: #1a202c;
-            font-weight: 700;
-            font-size: 1.75rem;
-        }
-        .detail-label {
-            color: #4a5568;
-            font-weight: 600;
-        }
-        .detail-value {
-            color: #1a202c;
-            font-weight: 500;
-        }
-        .content-desc {
-            background-color: #fafbfc;
-            color: #1a202c;
-            line-height: 1.8;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            color: var(--gray-700);
-        }
-        .logout-btn {
-            color: var(--gray-600);
-            cursor: pointer;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border: 2px solid var(--gray-300);
-            border-radius: var(--radius-md);
-            transition: all 0.3s ease;
-        }
-        .logout-btn:hover {
-            border-color: var(--danger);
-            color: var(--danger);
-        }
-        .main-container {
-            margin-top: 100px;
-            padding: 0 2rem 3rem;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .detail-card {
-            background: white;
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-xl);
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-        }
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 2px solid var(--gray-200);
-        }
-        .page-title {
-            color: var(--gray-800);
-            font-weight: 700;
-            font-size: 1.5rem;
-        }
-        .detail-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 1.5rem;
-            border-bottom: 2px solid var(--gray-200);
-            margin-bottom: 2rem;
-        }
-        .detail-header h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--gray-800);
-            margin: 0;
-        }
-        .detail-content {
-            display: grid;
-            grid-template-columns: 150px 1fr;
-            gap: 1.5rem 0;
-            margin-bottom: 2rem;
-        }
-        .detail-label {
-            color: var(--gray-600);
-            font-weight: 500;
-            align-self: center;
-        }
-        .detail-value {
-            color: var(--gray-700);
-            line-height: 1.6;
-        }
-        .content-desc {
-            white-space: pre-line;
-            padding: 1.5rem;
-            background-color: var(--gray-50);
-            border-radius: var(--radius-lg);
-            border-left: 4px solid #2563eb;
-            line-height: 1.8;
-            font-size: 1rem;
-        }
-        .status-tag {
-            padding: 0.5rem 1.25rem;
-            border-radius: var(--radius-full);
-            font-size: 0.875rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .status-pending { background: var(--warning); color: white; }
-        .status-processing { background: var(--info); color: white; }
-        .status-completed { background: var(--success); color: white; }
-        .status-closed { background: var(--gray-500); color: white; }
-        .badge {
-            padding: 0.375rem 0.75rem;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-        .badge-urgent { background: var(--danger); color: white; }
-        .badge-high { background: var(--warning); color: white; }
-        .badge-medium { background: var(--info); color: white; }
-        .badge-low { background: var(--success); color: white; }
-        .admin-only, .user-only { display: none; }
-        .admin-only.visible, .user-only.visible { display: inline-block; }
-        .btn {
-            padding: 0.625rem 1.25rem;
-            border-radius: var(--radius-md);
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #1a5c9e 0%, #2563eb 100%);
-            border: none;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #1550a0 0%, #1d5be0 100%);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        .btn-secondary {
-            background: var(--gray-200);
-            color: var(--gray-700);
-            border: none;
-        }
-        .btn-secondary:hover {
-            background: var(--gray-300);
-        }
-    </style>
-</head>
-<body>
-    <!-- 顶部导航 -->
-    <div class="top-nav">
-        <img src="/static/home/images/Logo1.jpg" alt="云户科技" style="display: block; margin: 0 auto;">
-        <div class="user-info">
-            <span id="welcomeText"></span>
-            <a href="/case/" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-2"></i>返回列表
-            </a>
-            <a href="/case/login.html" class="logout-btn">
-                <i class="fas fa-sign-out-alt me-2"></i>退出
-            </a>
+{% extends "case/base.html" %}
+
+{% block title %}工单详情 - 云户科技工单系统{% endblock %}
+
+{% block content %}
+<div class="container" id="ticketDetailPage">
+  <!-- 工单信息头部 -->
+  <div class="ticket-header-section">
+    <div class="back-btn">
+      <a href="/case/my-tickets" class="btn btn-secondary">
+        <i class="fa fa-arrow-left"></i> 返回工单列表
+      </a>
+    </div>
+    <div class="ticket-info" id="ticketInfo">
+      <div class="loading">
+        <i class="fa fa-spinner fa-spin"></i> 加载中...
+      </div>
+    </div>
+  </div>
+
+  <!-- 工单详情内容 -->
+  <div class="detail-container">
+    <!-- 左侧：工单详情 -->
+    <div class="detail-main">
+      <div class="detail-card">
+        <h2><i class="fa fa-file-alt"></i> 工单详情</h2>
+        
+        <div class="detail-section">
+          <h3>基本信息</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>工单编号</label>
+              <span class="ticket-id" id="ticketNumber">--</span>
+            </div>
+            <div class="info-item">
+              <label>工单标题</label>
+              <span id="ticketTitle">--</span>
+            </div>
+            <div class="info-item">
+              <label>工单类型</label>
+              <span id="ticketType">--</span>
+            </div>
+            <div class="info-item">
+              <label>优先级</label>
+              <span id="ticketPriority">--</span>
+            </div>
+          </div>
         </div>
+
+        <div class="detail-section">
+          <h3>客户信息</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>客户名称</label>
+              <span id="customerName">--</span>
+            </div>
+            <div class="info-item">
+              <label>联系电话</label>
+              <span id="customerPhone">--</span>
+            </div>
+            <div class="info-item">
+              <label>联系邮箱</label>
+              <span id="customerEmail">--</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>工单内容</h3>
+          <div class="description-box" id="ticketDescription">
+            --
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>时间信息</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>创建时间</label>
+              <span id="createTime">--</span>
+            </div>
+            <div class="info-item">
+              <label>更新时间</label>
+              <span id="updateTime">--</span>
+            </div>
+            <div class="info-item">
+              <label>当前状态</label>
+              <span id="ticketStatus" class="status-badge">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 管理员操作区域 -->
+        {% if session.get('role') == 'admin' or session.get('role') == 'user' %}
+        <div class="detail-section admin-actions">
+          <h3>管理员操作</h3>
+          <div class="action-buttons">
+            <div class="action-group">
+              <label>更新状态：</label>
+              <select id="statusSelect" class="status-select">
+                <option value="">请选择状态</option>
+                <option value="pending">待处理</option>
+                <option value="processing">处理中</option>
+                <option value="completed">已解决</option>
+                <option value="closed">已关闭</option>
+              </select>
+              <button onclick="updateStatus()" class="btn btn-primary">
+                <i class="fa fa-save"></i> 更新
+              </button>
+            </div>
+            <div class="action-group">
+              <label>分配工单：</label>
+              <input type="text" id="assigneeInput" class="assignee-input" placeholder="输入处理人姓名">
+              <button onclick="assignTicket()" class="btn btn-primary">
+                <i class="fa fa-user-plus"></i> 分配
+              </button>
+            </div>
+            <div class="action-group">
+              <label>关闭工单：</label>
+              <textarea id="resolutionInput" class="resolution-input" rows="3" placeholder="请输入解决方案（关闭工单时必填）"></textarea>
+              <button onclick="closeTicket()" class="btn btn-warning">
+                <i class="fa fa-check-circle"></i> 关闭
+              </button>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
     </div>
 
-    <!-- 主容器 -->
-    <div class="main-container">
-        <div class="detail-card">
-            <div class="page-header">
-                <h1 class="page-title">工单详情</h1>
-            </div>
-
-            <div class="detail-header">
-                <h3 id="ticketTitle">加载中...</h3>
-                <div>
-                    <span class="badge badge-urgent" id="priorityBadge">紧急</span>
-                    <span class="status-tag status-pending" id="statusBadge">待处理</span>
-                </div>
-            </div>
-
-            <div class="detail-content">
-                <div class="detail-label">工单编号</div>
-                <div class="detail-value" id="ticketId">-</div>
-            </div>
-
-            <div class="detail-content">
-                <div class="detail-label">客户姓名</div>
-                <div class="detail-value" id="customerName">-</div>
-            </div>
-
-            <div class="detail-content">
-                <div class="detail-label">联系电话</div>
-                <div class="detail-value" id="customerContact">-</div>
-            </div>
-
-            <div class="detail-content">
-                <div class="detail-label">客户邮箱</div>
-                <div class="detail-value" id="customerEmail">-</div>
-            </div>
-
-            <div class="detail-content">
-                <div class="detail-label">涉及产品</div>
-                <div class="detail-value" id="product">-</div>
-            </div>
-
-            <div class="detail-content">
-                <div class="detail-label">问题类型</div>
-                <div class="detail-value" id="issueType">-</div>
-            </div>
-
-            <div class="detail-content">
-                <div class="detail-label">创建时间</div>
-                <div class="detail-value" id="createTime">-</div>
-            </div>
-
-            <div style="margin-bottom: 1.5rem;">
-                <div class="detail-label" style="margin-bottom: 0.5rem;">问题详情</div>
-                <div class="content-desc" id="ticketContent">加载中...</div>
-            </div>
-
-            <div class="admin-only" id="adminActions" style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--gray-200);">
-                <div style="display: flex; gap: 1rem; justify-content: center;">
-                    <button onclick="updateStatus('processing')" class="btn btn-primary">
-                        <i class="fas fa-spinner me-2"></i>处理中
-                    </button>
-                    <button onclick="updateStatus('completed')" class="btn btn-primary">
-                        <i class="fas fa-check me-2"></i>已完成
-                    </button>
-                    <button onclick="updateStatus('closed')" class="btn btn-secondary">
-                        <i class="fas fa-times me-2"></i>已关闭
-                    </button>
-                </div>
-            </div>
+    <!-- 右侧：实时聊天 -->
+    <div class="chat-section">
+      <div class="chat-container">
+        <div class="chat-header">
+          <h2><i class="fa fa-comments"></i> 实时沟通</h2>
+          <div class="connection-status" id="connectionStatus">
+            <i class="fa fa-circle"></i> 连接中...
+          </div>
         </div>
+
+        <div class="chat-messages" id="chatMessages">
+          <div class="loading">
+            <i class="fa fa-spinner fa-spin"></i> 加载消息...
+          </div>
+        </div>
+
+        <div class="chat-input-area">
+          <div class="input-wrapper">
+            <button id="uploadBtn" class="icon-btn" title="上传附件">
+              <i class="fa fa-paperclip"></i>
+            </button>
+            <textarea id="messageInput" class="message-input" 
+                      placeholder="输入消息..." rows="1"></textarea>
+            <button id="sendBtn" class="send-btn" title="发送消息">
+              <i class="fa fa-paper-plane"></i>
+            </button>
+          </div>
+          <input type="file" id="attachmentInput" style="display: none;" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.txt,.zip,.rar">
+        </div>
+      </div>
     </div>
+  </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script>
-        let currentUser = null;
-        let currentUserRole = null;
-        let currentTicket = null;
+<!-- 附件列表模态框 -->
+<div class="modal" id="attachmentModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fa fa-file"></i> 附件列表</h3>
+      <button onclick="closeAttachmentModal()" class="close-btn">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="attachmentList" class="attachment-list">
+        <div class="loading">
+          <i class="fa fa-spinner fa-spin"></i> 加载中...
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-        // 检查登录状态
-        async function checkLogin() {
-            try {
-                const response = await axios.get('/case/api/user/info');
-                if (response.data.success) {
-                    currentUser = response.data.data;
-                    currentUserRole = currentUser.role;
-                    document.getElementById('welcomeText').textContent =
-                        currentUser.real_name || currentUser.username || currentUser.email;
-                    return true;
-                }
-            } catch (error) {
-                console.error('获取用户信息失败:', error);
-            }
-            window.location.href = '/case/';
-            return false;
-        }
+<style>
+  * {
+    box-sizing: border-box;
+  }
 
-        // 根据角色显示/隐藏管理员操作
-        function updateUIByRole() {
-            const adminActions = document.getElementById('adminActions');
-            if (currentUserRole === 'admin') {
-                adminActions.classList.add('visible');
-            }
-        }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #f5f7fa;
+    color: #1a202c;
+    margin: 0;
+    padding: 0;
+  }
 
-        // 加载工单详情
-        async function loadTicket() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const ticketId = urlParams.get('id');
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
 
-            if (!ticketId) {
-                window.location.href = '/case/';
-                return;
-            }
+  .ticket-header-section {
+    margin-bottom: 30px;
+  }
 
-            try {
-                const response = await axios.get('/case/api/ticket', { params: { ticket_id: ticketId } });
-                if (response.data.code === 200 || response.data.success) {
-                    currentTicket = response.data.data || response.data.ticket;
-                    renderTicketDetail(currentTicket);
-                } else {
-                    alert(response.data.msg || '加载工单失败');
-                }
-            } catch (error) {
-                console.error('加载工单详情失败:', error);
-                alert('加载工单详情失败');
-            }
-        }
+  .back-btn {
+    margin-bottom: 20px;
+  }
 
-        // 渲染工单详情
-        function renderTicketDetail(ticket) {
-            document.getElementById('ticketTitle').textContent = ticket.title;
-            document.getElementById('ticketId').textContent = ticket.ticket_id;
-            document.getElementById('customerName').textContent = ticket.customer_name;
-            document.getElementById('customerContact').textContent = ticket.customer_contact;
-            document.getElementById('customerEmail').textContent = ticket.customer_email;
-            document.getElementById('product').textContent = ticket.product;
-            document.getElementById('issueType').textContent = ticket.issue_type;
-            document.getElementById('createTime').textContent = ticket.create_time || ticket.created_at;
-            document.getElementById('ticketContent').textContent = ticket.content;
+  .ticket-info {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
 
-            // 更新状态标签
-            const statusBadge = document.getElementById('statusBadge');
-            statusBadge.textContent = getStatusText(ticket.status);
-            statusBadge.className = `status-tag status-${ticket.status}`;
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: #6b7280;
+  }
 
-            // 更新优先级标签
-            const priorityBadge = document.getElementById('priorityBadge');
-            priorityBadge.textContent = getPriorityText(ticket.priority);
-            priorityBadge.className = `badge badge-${ticket.priority}`;
-        }
+  .loading i {
+    font-size: 2rem;
+    margin-right: 10px;
+  }
 
-        // 获取状态文本
-        function getStatusText(status) {
-            const statusMap = {
-                'pending': '待处理',
-                'processing': '处理中',
-                'completed': '已完成',
-                'closed': '已关闭'
-            };
-            return statusMap[status] || status;
-        }
+  .detail-container {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 20px;
+    align-items: start;
+  }
 
-        // 获取优先级文本
-        function getPriorityText(priority) {
-            const priorityMap = {
-                'low': '低',
-                'medium': '中',
-                'high': '高',
-                'urgent': '紧急'
-            };
-            return priorityMap[priority] || priority;
-        }
+  .detail-main {
+    flex: 1;
+  }
 
-        // 更新工单状态
-        async function updateStatus(status) {
-            if (!confirm(`确定要将工单状态更新为"${getStatusText(status)}"吗？`)) {
-                return;
-            }
+  .detail-card {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
 
-            try {
-                const response = await axios.post('/case/api/ticket/status', {
-                    ticket_id: currentTicket.ticket_id,
-                    status: status
-                });
-                if (response.data.code === 200 || response.data.success) {
-                    alert('状态更新成功');
-                    loadTicket();
-                } else {
-                    alert(response.data.msg || '更新失败');
-                }
-            } catch (error) {
-                console.error('更新状态失败:', error);
-                alert('更新状态失败');
-            }
-        }
+  .detail-card h2 {
+    font-size: 1.5rem;
+    color: #1a202c;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-        // 初始化
-        if (checkLogin()) {
-            updateUIByRole();
-            loadTicket();
-        }
-    </script>
-</body>
-</html>
+  .detail-card h2 i {
+    color: #0A4DA2;
+  }
+
+  .detail-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .detail-section:last-child {
+    border-bottom: none;
+  }
+
+  .detail-section h3 {
+    font-size: 1.1rem;
+    color: #374151;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px 20px;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .info-item label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+
+  .info-item span {
+    font-size: 1rem;
+    color: #1a202c;
+    font-weight: 500;
+  }
+
+  .ticket-id {
+    font-family: monospace;
+    background: #f3f4f6;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #0A4DA2;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .status-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .status-badge.processing {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .status-badge.completed {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .status-badge.closed {
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  .description-box {
+    background: #f9fafb;
+    padding: 20px;
+    border-radius: 8px;
+    line-height: 1.7;
+    color: #4b5563;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .admin-actions {
+    background: #fffbeb;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #fcd34d;
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .action-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .action-group label {
+    font-weight: 600;
+    color: #374151;
+    min-width: 80px;
+  }
+
+  .status-select, .assignee-input {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    flex: 1;
+  }
+
+  .resolution-input {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    flex: 1;
+    resize: vertical;
+    min-height: 60px;
+    font-family: inherit;
+  }
+
+  .chat-section {
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+    max-height: calc(100vh - 40px);
+  }
+
+  .chat-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 100px);
+  }
+
+  .chat-header {
+    padding: 20px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .chat-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #1a202c;
+  }
+
+  .chat-header h2 i {
+    color: #A2D93D;
+    margin-right: 8px;
+  }
+
+  .connection-status {
+    font-size: 0.85rem;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .connection-status.connected {
+    color: #10b981;
+  }
+
+  .connection-status.disconnected {
+    color: #ef4444;
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f9fafb;
+  }
+
+  .message {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 12px;
+  }
+
+  .message.system {
+    justify-content: center;
+  }
+
+  .message.system .message-bubble {
+    background: #e5e7eb;
+    color: #6b7280;
+    font-size: 0.85rem;
+    padding: 8px 16px;
+    border-radius: 20px;
+    max-width: 80%;
+  }
+
+  .message.customer {
+    justify-content: flex-end;
+  }
+
+  .message.admin {
+    justify-content: flex-start;
+  }
+
+  .message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .message.customer .message-avatar {
+    background: linear-gradient(135deg, #0A4DA2, #2563eb);
+    color: white;
+  }
+
+  .message.admin .message-avatar {
+    background: linear-gradient(135deg, #A2D93D, #b8e65d);
+    color: white;
+  }
+
+  .message-content {
+    max-width: 60%;
+    flex: 1;
+  }
+
+  .message-bubble {
+    padding: 12px 16px;
+    border-radius: 12px;
+    position: relative;
+    line-height: 1.6;
+  }
+
+  .message.customer .message-bubble {
+    background: linear-gradient(135deg, #0A4DA2, #2563eb);
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+
+  .message.admin .message-bubble {
+    background: white;
+    color: #1a202c;
+    border: 1px solid #e5e7eb;
+    border-bottom-left-radius: 4px;
+  }
+
+  .message-sender {
+    font-size: 0.75rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .message.customer .message-sender {
+    color: #6b7280;
+    justify-content: flex-end;
+  }
+
+  .message.admin .message-sender {
+    color: #6b7280;
+    justify-content: flex-start;
+  }
+
+  .message-time {
+    font-size: 0.75rem;
+    color: #9ca3af;
+  }
+
+  .message-attachment {
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+  }
+
+  .message-attachment a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #0A4DA2;
+    text-decoration: none;
+  }
+
+  .message-attachment a:hover {
+    text-decoration: underline;
+  }
+
+  .chat-input-area {
+    padding: 15px;
+    border-top: 1px solid #e5e7eb;
+    background: white;
+  }
+
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f9fafb;
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: white;
+    border-radius: 8px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icon-btn:hover {
+    background: #e5e7eb;
+    color: #0A4DA2;
+  }
+
+  .message-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.95rem;
+    resize: none;
+    outline: none;
+    font-family: inherit;
+    line-height: 1.5;
+    min-height: 40px;
+  }
+
+  .message-input::placeholder {
+    color: #9ca3af;
+  }
+
+  .send-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: linear-gradient(135deg, #0A4DA2, #2563eb);
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .send-btn:hover:not(:disabled) {
+    transform: scale(1.1);
+  }
+
+  .send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+  }
+
+  .btn i {
+    font-size: 0.85rem;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #0A4DA2, #2563eb);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(10, 77, 162, 0.3);
+  }
+
+  .btn-secondary {
+    background: white;
+    color: #0A4DA2;
+    border: 1px solid #0A4DA2;
+  }
+
+  .btn-secondary:hover {
+    background: #f0f9ff;
+  }
+
+  .btn-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+  }
+
+  .btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  }
+
+  /* 模态框样式 */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal.show {
+    display: flex;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #1a202c;
+  }
+
+  .modal-header h3 i {
+    color: #A2D93D;
+    margin-right: 8px;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+
+  .close-btn:hover {
+    background: #f3f4f6;
+    color: #ef4444;
+  }
+
+  .modal-body {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .attachment-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+  }
+
+  .attachment-item {
+    padding: 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s;
+  }
+
+  .attachment-item:hover {
+    background: #f9fafb;
+    border-color: #0A4DA2;
+  }
+
+  .attachment-item i {
+    font-size: 2rem;
+    color: #0A4DA2;
+  }
+
+  .attachment-item .attachment-name {
+    flex: 1;
+    font-weight: 500;
+    color: #1a202c;
+  }
+
+  .attachment-item .attachment-size {
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 1024px) {
+    .detail-container {
+      grid-template-columns: 1fr;
+    }
+
+    .chat-section {
+      position: static;
+      height: auto;
+      max-height: none;
+      margin-top: 20px;
+    }
+
+    .chat-container {
+      height: 500px;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .action-group {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .action-group label {
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 10px;
+    }
+
+    .detail-card {
+      padding: 20px;
+    }
+
+    .chat-container {
+      height: 400px;
+    }
+
+    .message-content {
+      max-width: 80%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+  const socket = io('/', {
+    transports: ['websocket', 'polling'],
+    upgrade: false
+  });
+
+  const ticketId = window.location.pathname.split('/').pop();
+  let currentUsername = null;
+  let currentRole = null;
+
+  // 页面加载完成后执行
+  document.addEventListener('DOMContentLoaded', function() {
+    loadTicketDetail();
+    loadMessages();
+    setupEventListeners();
+  });
+
+  async function loadTicketDetail() {
+    try {
+      const response = await fetch('/case/api/ticket/' + ticketId);
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        displayTicketInfo(result.data);
+      } else {
+        alert('加载工单详情失败：' + (result.message || '未知错误'));
+      }
+    } catch (error) {
+      console.error('Error loading ticket:', error);
+      alert('加载工单详情失败，请刷新页面重试');
+    }
+  }
+
+  function displayTicketInfo(ticket) {
+    document.getElementById('ticketNumber').textContent = ticket.ticket_id || '--';
+    document.getElementById('ticketTitle').textContent = ticket.title || '--';
+    document.getElementById('ticketType').textContent = translateType(ticket.issue_type);
+    document.getElementById('ticketPriority').textContent = translatePriority(ticket.priority);
+    document.getElementById('customerName').textContent = ticket.customer_name || '--';
+    document.getElementById('customerPhone').textContent = ticket.customer_contact || '--';
+    document.getElementById('customerEmail').textContent = ticket.customer_email || '--';
+    document.getElementById('ticketDescription').textContent = ticket.content || '--';
+    document.getElementById('createTime').textContent = ticket.create_time || '--';
+    document.getElementById('updateTime').textContent = ticket.update_time || '--';
+
+    const statusEl = document.getElementById('ticketStatus');
+    statusEl.textContent = translateStatus(ticket.status);
+    statusEl.className = 'status-badge ' + ticket.status;
+
+    currentUsername = '{{ session.get("username", "") }}';
+    currentRole = '{{ session.get("role", "") }}';
+
+    // 加入工单房间
+    if (typeof joinTicketRoom === 'function') {
+      joinTicketRoom();
+    }
+
+    if (ticket.assignee) {
+      document.getElementById('assigneeInput').value = ticket.assignee;
+    }
+  }
+
+  async function loadMessages() {
+    try {
+      const response = await fetch('/case/api/ticket/' + ticketId + '/messages');
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        displayMessages(result.data);
+        scrollToBottom();
+      }
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
+  }
+
+  function displayMessages(messages) {
+    const messagesContainer = document.getElementById('chatMessages');
+    messagesContainer.innerHTML = '';
+
+    if (!messages || messages.length === 0) {
+      messagesContainer.innerHTML = '<div class="loading">暂无消息</div>';
+      return;
+    }
+
+    messages.forEach(msg => {
+      const messageDiv = createMessageElement(msg);
+      messagesContainer.appendChild(messageDiv);
+    });
+  }
+
+  function createMessageElement(msg) {
+    const div = document.createElement('div');
+    const isSystem = msg.is_system || msg.sender_type === 'system';
+    const isCustomer = msg.sender_type === 'customer';
+    const isAdmin = msg.sender_type === 'admin';
+
+    div.className = 'message ' + msg.sender_type + (isSystem ? ' system' : '');
+
+    const avatarText = msg.sender_name ? msg.sender_name.charAt(0).toUpperCase() : 'S';
+
+    if (isSystem) {
+      div.innerHTML = `
+        <div class="message-bubble">
+          <i class="fa fa-info-circle"></i> ${msg.content}
+        </div>
+      `;
+    } else {
+      div.innerHTML = `
+        <div class="message-avatar">${avatarText}</div>
+        <div class="message-content">
+          <div class="message-sender">
+            ${msg.sender_name}
+            <span class="message-time">${formatTime(msg.send_time || msg.created_at)}</span>
+          </div>
+          <div class="message-bubble">${formatContent(msg.content)}</div>
+          ${msg.attachment_url ? createAttachmentElement(msg.attachment_url) : ''}
+        </div>
+      `;
+    }
+
+    return div;
+  }
+
+  function createAttachmentElement(url) {
+    const filename = url.split('/').pop();
+    return `
+      <div class="message-attachment">
+        <i class="fa fa-file"></i>
+        <a href="${url}" target="_blank" download="${filename}">${filename}</a>
+      </div>
+    `;
+  }
+
+  function formatContent(content) {
+    return content
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+      .replace(/\n/g, '<br>');
+  }
+
+  function formatTime(timeStr) {
+    try {
+      const date = new Date(timeStr);
+      const now = new Date();
+      const diff = now - date;
+
+      if (diff < 60000) {
+        return '刚刚';
+      } else if (diff < 3600000) {
+        return Math.floor(diff / 60000) + '分钟前';
+      } else if (diff < 86400000) {
+        return Math.floor(diff / 3600000) + '小时前';
+      } else {
+        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      }
+    } catch (e) {
+      return timeStr;
+    }
+  }
+
+  function scrollToBottom() {
+    const messagesContainer = document.getElementById('chatMessages');
+    setTimeout(() => {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 100);
+  }
+
+  function setupEventListeners() {
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const attachmentInput = document.getElementById('attachmentInput');
+
+    // 自动调整文本框高度
+    messageInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    // 发送消息
+    sendBtn.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // 上传附件
+    uploadBtn.addEventListener('click', () => attachmentInput.click());
+    attachmentInput.addEventListener('change', function(e) {
+      if (e.target.files.length > 0) {
+        uploadAttachment(e.target.files[0]);
+      }
+    });
+  }
+
+  async function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const content = messageInput.value.trim();
+
+    if (!content) {
+      return;
+    }
+
+    const sendBtn = document.getElementById('sendBtn');
+    sendBtn.disabled = true;
+
+    try {
+      const response = await fetch('/case/api/ticket/' + ticketId + '/message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          content: content
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        messageInput.value = '';
+        messageInput.style.height = '40px';
+        loadMessages();
+        scrollToBottom();
+      } else {
+        alert('发送失败：' + result.message);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('发送失败，请稍后重试');
+    } finally {
+      sendBtn.disabled = false;
+    }
+  }
+
+  async function uploadAttachment(file) {
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = ['.jpg', '.jpeg', '.png', '.pdf', '.doc', '.docx', '.txt', '.zip', '.rar'];
+
+    if (file.size > maxSize) {
+      alert('文件大小超过10MB限制');
+      return;
+    }
+
+    const ext = '.' + file.name.split('.').pop().toLowerCase();
+    if (!allowedTypes.includes(ext)) {
+      alert('文件格式不支持');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetch('/case/api/ticket/' + ticketId + '/attachment', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        loadMessages();
+        scrollToBottom();
+      } else {
+        alert('上传失败：' + result.message);
+      }
+    } catch (error) {
+      console.error('Error uploading attachment:', error);
+      alert('上传失败，请稍后重试');
+    }
+  }
+
+  async function updateStatus() {
+    const statusSelect = document.getElementById('statusSelect');
+    const newStatus = statusSelect.value;
+
+    if (!newStatus) {
+      alert('请选择新的状态');
+      return;
+    }
+
+    try {
+      const response = await fetch('/case/api/ticket/' + ticketId + '/status', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          status: newStatus
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert('状态更新成功');
+        loadTicketDetail();
+      } else {
+        alert('更新失败：' + result.message);
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('更新失败，请稍后重试');
+    }
+  }
+
+  async function assignTicket() {
+    const assignee = document.getElementById('assigneeInput').value.trim();
+
+    if (!assignee) {
+      alert('请输入处理人姓名');
+      return;
+    }
+
+    try {
+      const response = await fetch('/case/api/ticket/' + ticketId + '/assign', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          assignee: assignee
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert('工单分配成功');
+        loadTicketDetail();
+      } else {
+        alert('分配失败：' + result.message);
+      }
+    } catch (error) {
+      console.error('Error assigning ticket:', error);
+      alert('分配失败，请稍后重试');
+    }
+  }
+
+  async function closeTicket() {
+    const resolution = document.getElementById('resolutionInput').value.trim();
+
+    if (!resolution) {
+      alert('请输入解决方案');
+      return;
+    }
+
+    if (!confirm('确定要关闭此工单吗？')) {
+      return;
+    }
+
+    try {
+      const response = await fetch('/case/api/ticket/' + ticketId + '/close', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          resolution: resolution
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert('工单已关闭');
+        window.location.href = '/case/my-tickets';
+      } else {
+        alert('关闭失败：' + result.message);
+      }
+    } catch (error) {
+      console.error('Error closing ticket:', error);
+      alert('关闭失败，请稍后重试');
+    }
+  }
+
+  function showAttachmentModal() {
+    document.getElementById('attachmentModal').classList.add('show');
+    loadAttachments();
+  }
+
+  function closeAttachmentModal() {
+    document.getElementById('attachmentModal').classList.remove('show');
+  }
+
+  async function loadAttachments() {
+    try {
+      const response = await fetch('/case/api/ticket/' + ticketId + '/attachments');
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        const listContainer = document.getElementById('attachmentList');
+        listContainer.innerHTML = result.data.map(att => `
+          <div class="attachment-item">
+            <i class="fa fa-file"></i>
+            <span class="attachment-name">${att.filename}</span>
+            <span class="attachment-size">${formatFileSize(att.filesize)}</span>
+            <a href="${att.url}" download="${att.filename}">
+              <i class="fa fa-download"></i>
+            </a>
+          </div>
+        `).join('');
+      }
+    } catch (error) {
+      console.error('Error loading attachments:', error);
+    }
+  }
+
+  function formatFileSize(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  }
+
+  // 辅助翻译函数
+  function translateType(type) {
+    const types = {
+      'technical': '技术支持',
+      'service': '产品咨询',
+      'complaint': '售后投诉',
+      'other': '其他问题'
+    };
+    return types[type] || type;
+  }
+
+  function translatePriority(priority) {
+    const priorities = {
+      'low': '低',
+      'medium': '中',
+      'high': '高',
+      'urgent': '紧急'
+    };
+    return priorities[priority] || priority;
+  }
+
+  function translateStatus(status) {
+    const statuses = {
+      'pending': '待处理',
+      'processing': '处理中',
+      'completed': '已解决',
+      'closed': '已关闭'
+    };
+    return statuses[status] || status;
+  }
+
+  // WebSocket 连接管理
+  socket.on('connect', function() {
+    console.log('Connected to case server');
+    const statusEl = document.getElementById('connectionStatus');
+    statusEl.className = 'connection-status connected';
+    statusEl.innerHTML = '<i class="fa fa-circle"></i> 已连接';
+  });
+
+  socket.on('disconnect', function() {
+    console.log('Disconnected from case server');
+    const statusEl = document.getElementById('connectionStatus');
+    statusEl.className = 'connection-status disconnected';
+    statusEl.innerHTML = '<i class="fa fa-circle"></i> 已断开';
+  });
+
+  socket.on('notification', function(data) {
+    console.log('Notification:', data.message);
+  });
+
+  socket.on('new_message', function(data) {
+    if (data.ticket_id === ticketId) {
+      loadMessages();
+      scrollToBottom();
+    }
+  });
+
+  socket.on('ticket_update', function(data) {
+    if (data.ticket_id === ticketId) {
+      loadTicketDetail();
+    }
+  });
+
+  // 加入工单房间 - 在用户信息加载后调用
+  function joinTicketRoom() {
+    socket.emit('join', {
+      ticket_id: ticketId,
+      username: currentUsername,
+      role: currentRole
+    });
+  }
+
+  // 页面离开时断开连接
+  window.addEventListener('beforeunload', function() {
+    socket.emit('leave', { ticket_id: ticketId });
+  });
+</script>
+{% endblock %}

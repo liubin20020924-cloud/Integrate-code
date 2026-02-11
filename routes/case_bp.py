@@ -65,7 +65,11 @@ def login():
     """
     try:
         log_request(logger, request)
-        data = request.get_json()
+        # 支持两种提交方式：JSON 和 表单
+        if request.is_json:
+            data = request.get_json()
+        else:
+            data = request.form.to_dict()
         username = data.get('username', '').strip()
         password = data.get('password', '').strip()
         
@@ -372,7 +376,14 @@ def update_ticket_status(ticket_id):
             update_sql = "UPDATE tickets SET status = %s, update_time = %s WHERE ticket_id = %s"
             cursor.execute(update_sql, (new_status, now, ticket_id))
             conn.commit()
-        
+
+        # 发送 WebSocket 更新通知
+        try:
+            from services.socketio_service import emit_ticket_update
+            emit_ticket_update(ticket_id)
+        except ImportError:
+            pass
+
         logger.info(f"工单状态更新: {ticket_id} -> {new_status}")
         return success_response(message='工单状态更新成功')
     except Exception as e:
@@ -402,3 +413,212 @@ def get_messages(ticket_id):
     except Exception as e:
         log_exception(logger, "查询工单消息失败")
         return server_error_response(message=f'查询失败：{str(e)}')
+
+
+@case_bp.route('/submit', methods=['GET'])
+def submit_ticket_page():
+    """工单提交页面"""
+    return render_template('case/submit_ticket.html')
+
+
+@case_bp.route('/my-tickets', methods=['GET'])
+def my_tickets_page():
+    """我的工单列表页面"""
+    return render_template('case/ticket_list.html')
+
+
+@case_bp.route('/admin/tickets', methods=['GET'])
+def admin_tickets_page():
+    """管理员工单列表页面"""
+    return render_template('case/ticket_list.html')
+
+
+@case_bp.route('/ticket/<ticket_id>', methods=['GET'])
+def ticket_detail_page(ticket_id):
+    """工单详情页面"""
+    return render_template('case/ticket_detail.html', ticket_id=ticket_id)
+
+
+@case_bp.route('/api/ticket/<ticket_id>/message', methods=['POST'])
+def send_message(ticket_id):
+    """发送消息"""
+    try:
+        log_request(logger, request, f'/case/api/ticket/{ticket_id}/message')
+        
+        user_id = session.get('user_id')
+        if not user_id:
+            return unauthorized_response(message='未登录')
+        
+        data = request.get_json()
+        content = data.get('content', '').strip()
+        
+        if not content:
+            return error_response(message='消息内容不能为空')
+        
+        sender = session.get('role')
+        sender_name = session.get('real_name') or session.get('username', '匿名用户')
+        
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        with db_connection('case') as conn:
+            cursor = conn.cursor()
+            insert_sql = """
+                INSERT INTO messages (ticket_id, sender, sender_name, content, send_time)
+                VALUES (%s, %s, %s, %s, %s)
+            """
+            cursor.execute(insert_sql, (ticket_id, sender, sender_name, content, now))
+            conn.commit()
+        
+        logger.info(f"工单 {ticket_id} 新消息: {sender_name}")
+        return success_response(message='消息发送成功')
+    except Exception as e:
+        log_exception(logger, "发送消息失败")
+        return server_error_response(message=f'发送失败：{str(e)}')
+
+
+@case_bp.route('/api/ticket/<ticket_id>/attachment', methods=['POST'])
+def upload_attachment(ticket_id):
+    """上传附件"""
+    try:
+        log_request(logger, request, f'/case/api/ticket/{ticket_id}/attachment')
+        
+        user_id = session.get('user_id')
+        if not user_id:
+            return unauthorized_response(message='未登录')
+        
+        if 'file' not in request.files:
+            return error_response(message='未选择文件')
+        
+        file = request.files['file']
+        if file.filename == '':
+            return error_response(message='未选择文件')
+        
+        import os
+        from werkzeug.utils import secure_filename
+        
+        allowed_extensions = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx', 'xls', 'xlsx'}
+        
+        def allowed_file(filename):
+            return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+        
+        if not allowed_file(file.filename):
+            return error_response(message='不支持的文件类型')
+        
+        filename = secure_filename(file.filename)
+        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        saved_filename = f"{timestamp}_{filename}"
+        
+        upload_dir = os.path.join('static', 'uploads', 'case')
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        file_path = os.path.join(upload_dir, saved_filename)
+        file.save(file_path)
+        
+        logger.info(f"工单 {ticket_id} 附件上传: {saved_filename}")
+        return success_response(data={'filename': saved_filename}, message='附件上传成功')
+    except Exception as e:
+        log_exception(logger, "附件上传失败")
+        return server_error_response(message=f'上传失败：{str(e)}')
+
+
+@case_bp.route('/api/ticket/<ticket_id>/attachments', methods=['GET'])
+def get_attachments(ticket_id):
+    """获取附件列表"""
+    try:
+        import os
+        
+        upload_dir = os.path.join('static', 'uploads', 'case')
+        
+        if not os.path.exists(upload_dir):
+            return success_response(data=[], message='查询成功')
+        
+        files = []
+        for filename in os.listdir(upload_dir):
+            if filename.startswith(f"{ticket_id}_"):
+                file_path = os.path.join(upload_dir, filename)
+                if os.path.isfile(file_path):
+                    files.append({
+                        'filename': filename,
+                        'url': f'/static/uploads/case/{filename}',
+                        'size': os.path.getsize(file_path)
+                    })
+        
+        return success_response(data=files, message='查询成功')
+    except Exception as e:
+        log_exception(logger, "获取附件列表失败")
+        return server_error_response(message=f'查询失败：{str(e)}')
+
+
+@case_bp.route('/api/ticket/<ticket_id>/assign', methods=['POST'])
+def assign_ticket(ticket_id):
+    """分配工单"""
+    try:
+        log_request(logger, request, f'/case/api/ticket/{ticket_id}/assign')
+        
+        user_role = session.get('role')
+        if not user_role or user_role != 'admin':
+            from common.response import forbidden_response
+            return forbidden_response(message='无权执行此操作')
+        
+        data = request.get_json()
+        assignee = data.get('assignee', '').strip()
+        
+        if not assignee:
+            return error_response(message='请选择处理人')
+        
+        with db_connection('case') as conn:
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT id FROM tickets WHERE ticket_id = %s", (ticket_id,))
+            if not cursor.fetchone():
+                from common.response import not_found_response
+                return not_found_response(message='工单不存在')
+            
+            now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            update_sql = "UPDATE tickets SET assignee = %s, update_time = %s WHERE ticket_id = %s"
+            cursor.execute(update_sql, (assignee, now, ticket_id))
+            conn.commit()
+
+        # 发送 WebSocket 更新通知
+        try:
+            from services.socketio_service import emit_ticket_update
+            emit_ticket_update(ticket_id)
+        except ImportError:
+            pass
+
+        logger.info(f"工单分配: {ticket_id} -> {assignee}")
+        return success_response(message='工单分配成功')
+    except Exception as e:
+        log_exception(logger, "分配工单失败")
+        return server_error_response(message=f'分配失败：{str(e)}')
+
+
+@case_bp.route('/api/ticket/<ticket_id>/close', methods=['POST'])
+def close_ticket(ticket_id):
+    """关闭工单"""
+    try:
+        log_request(logger, request, f'/case/api/ticket/{ticket_id}/close')
+        
+        user_role = session.get('role')
+        if not user_role or user_role != 'admin':
+            from common.response import forbidden_response
+            return forbidden_response(message='无权执行此操作')
+        
+        with db_connection('case') as conn:
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT id FROM tickets WHERE ticket_id = %s", (ticket_id,))
+            if not cursor.fetchone():
+                from common.response import not_found_response
+                return not_found_response(message='工单不存在')
+            
+            now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            update_sql = "UPDATE tickets SET status = 'closed', update_time = %s WHERE ticket_id = %s"
+            cursor.execute(update_sql, (now, ticket_id))
+            conn.commit()
+        
+        logger.info(f"工单关闭: {ticket_id}")
+        return success_response(message='工单关闭成功')
+    except Exception as e:
+        log_exception(logger, "关闭工单失败")
+        return server_error_response(message=f'关闭失败：{str(e)}')
