@@ -6,7 +6,8 @@ from common.unified_auth import login_required, get_current_user
 from common.response import success_response, error_response, validation_error_response, server_error_response
 from common.validators import validate_required
 from common.logger import logger, log_exception
-from common.kb_utils import fetch_record_by_id, fetch_records_with_pagination, get_total_count, fetch_all_records
+from common.kb_utils import fetch_record_by_id, fetch_records_with_pagination, get_total_count, fetch_all_records, serialize_records
+from common.database_context import db_connection
 from datetime import datetime
 
 kb_management_bp = Blueprint('kb_management', __name__, url_prefix='/kb/MGMT')
@@ -21,15 +22,25 @@ def management():
     """管理页面"""
     user = get_current_user()
     try:
+        username = user.get('username') if user else 'unknown'
+        logger.info(f"用户 {username} 访问知识库管理页面")
         page = request.args.get('page', 1, type=int)
         per_page = 20
+        logger.info(f"分页参数: page={page}, per_page={per_page}")
+
         records, total_count = fetch_records_with_pagination(page, per_page)
-        
+        logger.info(f"获取到 records={len(records)} 条, total_count={total_count}")
+
+        # 序列化 datetime 对象为字符串（用于 JavaScript）
+        records_json = serialize_records(records) if records else []
+
         total_pages = (total_count + per_page - 1) // per_page
         showing_start = (page - 1) * per_page + 1
         showing_end = min(page * per_page, total_count)
-        
+
+        logger.info(f"渲染管理页面，传递 total_count={total_count}, records_json length={len(records_json)}")
         return render_template('kb/management.html', records=records,
+                             records_json=records_json,
                              total_count=total_count,
                              showing_count=showing_end - showing_start + 1 if records else 0,
                              page=page,
@@ -41,7 +52,10 @@ def management():
                              debug_mode=False)
     except Exception as e:
         logger.error(f"加载知识库管理页面失败: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         return render_template('kb/management.html', records=[],
+                             records_json=[],
                              error=str(e),
                              total_count=0,
                              page=1,
@@ -53,7 +67,7 @@ def management():
 @login_required(roles=['admin'])
 def add_record():
     """添加记录
-    
+
     添加新的知识库记录
     ---
     tags:
@@ -92,20 +106,37 @@ def add_record():
     try:
         data = request.get_json()
 
-        # 验证必填字段
-        is_valid, errors = validate_required(data, ['KB_Number', 'KB_Name'])
-        if not is_valid:
-            return validation_error_response(errors)
+        # 验证必填字段 - KB_Name 是必填的，KB_Number 可以为空（自动分配）
+        if not data.get('KB_Name'):
+            return error_response('知识库名称不能为空', 400)
 
+        # 如果用户没有提供 KB_Number，自动分配（使用最大编号+1）
+        if not data.get('KB_Number'):
+            with db_connection('kb') as conn:
+                cursor = conn.cursor()
+                # 获取最大编号
+                cursor.execute("SELECT MAX(KB_Number) as max_number FROM `KB-info`")
+                result = cursor.fetchone()
+                max_number = result['max_number'] if result and result['max_number'] else 0
+
+                # 新编号 = 最大编号 + 1
+                data['KB_Number'] = max_number + 1
+                logger.info(f"自动分配编号: {data['KB_Number']} (最大编号: {max_number})")
+
+        # 检查编号是否已存在
         existing = fetch_record_by_id(data['KB_Number'])
         if existing:
             return error_response(f"编号 {data['KB_Number']} 已存在", 400)
 
-        from common.database_context import db_connection
+        # 截断过长的名称（避免数据库错误）
+        kb_name = str(data['KB_Name'])[:500]  # 数据库字段最大长度
+        if len(data['KB_Name']) > 500:
+            logger.warning(f"知识库名称过长，已截断：{len(data['KB_Name'])} -> 500，编号：{data['KB_Number']}")
+
         with db_connection('kb') as conn:
             cursor = conn.cursor()
             sql = "INSERT INTO `KB-info` (KB_Number, KB_Name, KB_link) VALUES (%s, %s, %s)"
-            cursor.execute(sql, (data['KB_Number'], data['KB_Name'], data.get('KB_link', '')))
+            cursor.execute(sql, (data['KB_Number'], kb_name, data.get('KB_link', '')))
             conn.commit()
             affected_rows = cursor.rowcount
 
@@ -117,6 +148,195 @@ def add_record():
     except Exception as e:
         log_exception(logger, "添加知识库记录失败")
         return server_error_response(f"添加记录时发生错误: {str(e)}")
+
+
+@kb_management_bp.route('/api/next-number', methods=['GET'])
+@login_required(roles=['admin'])
+def get_next_available_number():
+    """获取下一个可用的编号
+
+    查找第一个未被使用的知识库编号
+    ---
+    tags:
+      - 知识库-管理
+    responses:
+      200:
+        description: 获取成功
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+            next_number:
+              type: integer
+              description: 下一个可用编号
+            used_numbers:
+              type: array
+              description: 已使用的编号列表
+    """
+    try:
+        with db_connection('kb') as conn:
+            cursor = conn.cursor()
+            # 获取最大编号
+            cursor.execute("SELECT MAX(KB_Number) as max_number FROM `KB-info`")
+            result = cursor.fetchone()
+            max_number = result['max_number'] if result and result['max_number'] else 0
+
+        # 下一个可用编号 = 最大编号 + 1
+        next_number = max_number + 1
+
+        return success_response(
+            data={
+                'next_number': next_number,
+                'used_numbers': []  # 不再返回已使用编号列表
+            },
+            message=f'找到下一个可用编号：{next_number} (当前最大编号: {max_number})'
+        )
+    except Exception as e:
+        log_exception(logger, "获取下一个可用编号失败")
+        return server_error_response(f"获取编号失败: {str(e)}")
+
+
+@kb_management_bp.route('/api/batch-add', methods=['POST'])
+@login_required(roles=['admin'])
+def batch_add_records():
+    """批量添加记录
+
+    批量添加知识库记录，用于Trilium笔记导入
+    ---
+    tags:
+      - 知识库-管理
+    security:
+      - CookieAuth: []
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          required:
+            - records
+          properties:
+            records:
+              type: array
+              description: 要添加的记录列表
+              items:
+                type: object
+                properties:
+                  noteId:
+                    type: string
+                    description: Trilium笔记ID
+                  title:
+                    type: string
+                    description: 笔记标题
+            start_number:
+              type: integer
+              description: 起始编号（可选，默认使用下一个可用编号）
+    responses:
+      200:
+        description: 批量添加成功
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+            message:
+              type: string
+            data:
+              type: object
+              properties:
+                success_count:
+                  type: integer
+                  description: 成功添加的数量
+                fail_count:
+                  type: integer
+                  description: 失败的数量
+                failed_items:
+                  type: array
+                  description: 失败的记录详情
+                  items:
+                    type: object
+                    properties:
+                      noteId:
+                        type: string
+                      title:
+                        type: string
+                      reason:
+                        type: string
+    """
+    try:
+        data = request.get_json()
+        records = data.get('records', [])
+        start_number = data.get('start_number')
+
+        if not records:
+            return error_response('没有要添加的记录', 400)
+
+        # 获取起始编号
+        if start_number is None:
+            with db_connection('kb') as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT MAX(KB_Number) as max_number FROM `KB-info`")
+                result = cursor.fetchone()
+                max_number = result['max_number'] if result and result['max_number'] else 0
+                current_number = max_number + 1
+        else:
+            current_number = start_number
+
+        success_count = 0
+        fail_count = 0
+        failed_items = []
+
+        # 批量插入
+        with db_connection('kb') as conn:
+            cursor = conn.cursor()
+
+            for record in records:
+                note_id = record.get('noteId', '')
+                title = record.get('title', '')
+
+                # 检查编号是否已存在
+                while True:
+                    cursor.execute("SELECT KB_Number FROM `KB-info` WHERE KB_Number = %s", (current_number,))
+                    if cursor.fetchone():
+                        current_number += 1
+                    else:
+                        break
+
+                # 截断过长的名称
+                kb_name = str(title)[:500]
+
+                try:
+                    sql = "INSERT INTO `KB-info` (KB_Number, KB_Name, KB_link) VALUES (%s, %s, %s)"
+                    kb_link = f"{request.host_url}#/root/{note_id}" if note_id else ""
+                    cursor.execute(sql, (current_number, kb_name, kb_link))
+                    success_count += 1
+                    logger.info(f"批量导入成功: KB_Number={current_number}, title={title}")
+                    current_number += 1
+                except Exception as e:
+                    fail_count += 1
+                    failed_items.append({
+                        'noteId': note_id,
+                        'title': title,
+                        'reason': str(e)
+                    })
+                    logger.error(f"批量导入失败: noteId={note_id}, title={title}, error={e}")
+                    # 跳过冲突的编号
+                    current_number += 1
+
+            conn.commit()
+
+        return success_response(
+            message=f'批量导入完成，成功 {success_count} 条，失败 {fail_count} 条',
+            data={
+                'success_count': success_count,
+                'fail_count': fail_count,
+                'failed_items': failed_items
+            }
+        )
+    except Exception as e:
+        log_exception(logger, "批量添加知识库记录失败")
+        return server_error_response(f"批量添加记录时发生错误: {str(e)}")
 
 
 @kb_management_bp.route('/api/trilium/search', methods=['GET'])
@@ -195,7 +415,7 @@ def search_trilium_notes():
 @login_required(roles=['admin'])
 def get_trilium_note():
     """获取Trilium笔记信息
-    
+
     获取指定Trilium笔记的详细信息
     ---
     tags:
@@ -290,6 +510,114 @@ def get_trilium_note():
         return server_error_response(f"获取笔记失败: {str(e)}")
 
 
+@kb_management_bp.route('/api/trilium/unimported', methods=['GET'])
+@login_required(roles=['admin'])
+def get_unimported_notes():
+    """获取未导入的Trilium笔记
+
+    获取Trilium中所有笔记，排除已导入到知识库的笔记
+    ---
+    tags:
+      - 知识库-管理
+    parameters:
+      - in: query
+        name: search
+        type: string
+        required: false
+        description: 筛选关键词
+      - in: query
+        name: limit
+        type: integer
+        default: 100
+        description: 返回结果数量限制
+    responses:
+      200:
+        description: 获取成功
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+            results:
+              type: array
+              description: 未导入的笔记列表
+    """
+    try:
+        search = request.args.get('search', '').strip()
+        limit = request.args.get('limit', 100, type=int)
+
+        logger.info(f"获取未导入笔记: search='{search}', limit={limit}")
+
+        # 获取知识库中已导入的笔记ID
+        imported_note_ids = set()
+        try:
+            import pymysql
+            with db_connection('kb') as conn:
+                cursor = conn.cursor(pymysql.cursors.DictCursor)
+                cursor.execute("SELECT KB_link FROM `KB-info` WHERE KB_link IS NOT NULL AND KB_link != ''")
+                rows = cursor.fetchall()
+
+                for row in rows:
+                    kb_link = row.get('KB_link')
+                    if kb_link and '/#/root/' in kb_link:
+                        # 从链接中提取noteId
+                        note_id = kb_link.split('/#/root/')[-1].split('?')[0]
+                        imported_note_ids.add(note_id)
+        except Exception as db_err:
+            logger.error(f"获取已导入笔记ID失败: {db_err}")
+            # 即使获取已导入笔记失败，也继续执行，只是无法过滤
+
+        # 获取 Trilium 中的所有笔记
+        from common.trilium_helper import get_trilium_helper
+        trilium = get_trilium_helper()
+
+        logger.info("开始获取 Trilium 所有笔记...")
+        success, all_trilium_notes, message = trilium.get_all_notes()
+
+        if not success:
+            logger.error(f"获取 Trilium 所有笔记失败: {message}")
+            return error_response(f"获取 Trilium 笔记失败: {message}")
+
+        logger.info(f"Trilium 共有 {len(all_trilium_notes)} 条笔记，已导入 {len(imported_note_ids)} 条")
+
+        # 过滤出未导入的笔记
+        all_unimported = []
+        for note in all_trilium_notes:
+            if note['noteId'] not in imported_note_ids:
+                all_unimported.append(note)
+
+        logger.info(f"过滤后未导入笔记: {len(all_unimported)} 条")
+
+        # 如果有搜索关键词，进一步过滤
+        if search:
+            search_lower = search.lower()
+            all_unimported = [
+                note for note in all_unimported
+                if search_lower in note.get('title', '').lower()
+                or search_lower in note.get('noteId', '').lower()
+            ]
+            logger.info(f"应用搜索关键词 '{search}' 后: {len(all_unimported)} 条")
+
+        # 限制返回数量
+        unimported = all_unimported[:limit]
+        total_count = len(all_unimported)
+
+        logger.info(f"最终返回: {len(unimported)} 条未导入笔记（共 {total_count} 条可用）")
+
+        return success_response(
+            message='获取成功',
+            data={
+                'results': unimported,
+                'total': total_count,
+                'imported_count': len(imported_note_ids)
+            }
+        )
+
+    except Exception as e:
+        log_exception(logger, "获取未导入笔记失败")
+        return server_error_response(f"获取未导入笔记失败: {str(e)}")
+
+
 @kb_management_bp.route('/api/update/<int:record_id>', methods=['PUT'])
 @login_required(roles=['admin'])
 def update_record(record_id):
@@ -299,15 +627,14 @@ def update_record(record_id):
         existing = fetch_record_by_id(record_id)
         if not existing:
             return error_response(f"记录 {record_id} 不存在", 404)
-        
-        from common.database_context import db_connection
+
         with db_connection('kb') as conn:
             cursor = conn.cursor()
             sql = "UPDATE `KB-info` SET KB_Name = %s, KB_link = %s WHERE KB_Number = %s"
             cursor.execute(sql, (data.get('KB_Name', existing['KB_Name']), data.get('KB_link', existing['KB_link']), record_id))
             conn.commit()
             affected_rows = cursor.rowcount
-        
+
         if affected_rows > 0:
             logger.info(f"更新知识库记录 {record_id} 成功")
             return success_response(message='记录更新成功')
@@ -326,15 +653,14 @@ def delete_record(record_id):
         existing = fetch_record_by_id(record_id)
         if not existing:
             return error_response(f"记录 {record_id} 不存在", 404)
-        
-        from common.database_context import db_connection
+
         with db_connection('kb') as conn:
             cursor = conn.cursor()
             sql = "DELETE FROM `KB-info` WHERE KB_Number = %s"
             cursor.execute(sql, (record_id,))
             conn.commit()
             affected_rows = cursor.rowcount
-        
+
         if affected_rows > 0:
             logger.info(f"删除知识库记录 {record_id} 成功")
             return success_response(message='记录删除成功')
@@ -450,19 +776,18 @@ def system_status():
     """获取系统状态"""
     try:
         total_records = get_total_count()
-        
-        from common.database_context import db_connection
+
         user_count = 0
         latest_record_time = None
         database_connected = True
-        
+
         with db_connection('kb') as conn:
             try:
                 import pymysql
                 cursor = conn.cursor(pymysql.cursors.DictCursor)
                 cursor.execute("SELECT COUNT(*) as count FROM `users`")
                 user_count = cursor.fetchone()['count']
-                
+
                 if total_records > 0:
                     cursor.execute("SELECT MAX(KB_UpdateTime) as max_time FROM `KB-info`")
                     result = cursor.fetchone()
@@ -471,9 +796,9 @@ def system_status():
             except Exception as e:
                 logger.error(f"获取知识库系统状态失败: {e}")
                 database_connected = False
-        
+
         system_health = 'database_error' if not database_connected else ('connected_no_data' if total_records == 0 else 'healthy')
-        
+
         return success_response(
             data={
                 'system_health': system_health,

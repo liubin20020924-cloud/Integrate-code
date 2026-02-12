@@ -111,7 +111,10 @@ def index():
         total_pages = (total_count + per_page - 1) // per_page
         showing_start = (page - 1) * per_page + 1
         showing_end = min(page * per_page, total_count)
-        
+
+        # 获取Trilium基础URL
+        trilium_base_url = getattr(config, 'TRILIUM_SERVER_URL', '').rstrip('/')
+
         return render_template('kb/index.html', records=records,
                              total_count=total_count,
                              showing_count=showing_end - showing_start + 1 if records else 0,
@@ -121,10 +124,15 @@ def index():
                              showing_start=showing_start,
                              showing_end=showing_end,
                              is_search=False,
-                             current_user=user)
+                             current_user=user,
+                             trilium_base_url=trilium_base_url)
     except Exception as e:
         from common.response import error_response
         logger.error(f"加载知识库首页失败: {e}")
+
+        # 获取Trilium基础URL
+        trilium_base_url = getattr(config, 'TRILIUM_SERVER_URL', '').rstrip('/')
+
         return render_template('kb/index.html', records=[],
                              error=str(e),
                              total_count=0,
@@ -133,7 +141,8 @@ def index():
                              per_page=15,
                              total_pages=1,
                              is_search=False,
-                             current_user=user)
+                             current_user=user,
+                             trilium_base_url=trilium_base_url)
 
 
 @kb_bp.route('/search', methods=['GET'])
@@ -142,7 +151,10 @@ def search():
     """搜索知识库"""
     search_id = request.args.get('id', '').strip()
     page = request.args.get('page', 1, type=int)
-    
+
+    # 获取Trilium基础URL
+    trilium_base_url = getattr(config, 'TRILIUM_SERVER_URL', '').rstrip('/')
+
     if not search_id:
         return render_template('kb/index.html', records=[],
                              error="请输入搜索ID",
@@ -152,12 +164,13 @@ def search():
                              per_page=15,
                              total_pages=1,
                              is_search=True,
-                             search_id="")
-    
+                             search_id="",
+                             trilium_base_url=trilium_base_url)
+
     try:
         record_id = int(search_id)
         record = fetch_record_by_id(record_id)
-        
+
         if record:
             logger.info(f"搜索知识库记录: {record_id}")
             return render_template('kb/index.html', records=[record],
@@ -167,7 +180,8 @@ def search():
                                  per_page=15,
                                  total_pages=1,
                                  search_id=search_id,
-                                 is_search=True)
+                                 is_search=True,
+                                 trilium_base_url=trilium_base_url)
         else:
             return render_template('kb/index.html', records=[],
                                  error=f"未找到ID为 {search_id} 的记录",
@@ -177,7 +191,8 @@ def search():
                                  per_page=15,
                                  total_pages=1,
                                  search_id=search_id,
-                                 is_search=True)
+                                 is_search=True,
+                                 trilium_base_url=trilium_base_url)
     except ValueError:
         return render_template('kb/index.html', records=[],
                              error="请输入有效的数字ID",
@@ -187,7 +202,8 @@ def search():
                              per_page=15,
                              total_pages=1,
                              search_id=search_id,
-                             is_search=True)
+                             is_search=True,
+                             trilium_base_url=trilium_base_url)
 
 
 @kb_bp.route('/api/all')

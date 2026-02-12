@@ -503,7 +503,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/kb/js/bootstrap.bundle.min.js"></script>
     <script>
         // 图片加载错误处理函数
         function handleImageError(img) {
@@ -738,8 +738,8 @@
                 if (searchContent) {
                     const resultsDiv = document.getElementById('contentSearchResults');
                     resultsDiv.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x"></i><p>正在搜索Trilium笔记内容...</p></div>';
-                    
-                    fetch(`/api/trilium/search?q=${encodeURIComponent(searchContent)}`)
+
+                    fetch(`/kb/MGMT/api/trilium/search?query=${encodeURIComponent(searchContent)}&limit=20`)
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -1160,7 +1160,7 @@
             
             // 初始化：检查API端点是否存在
             function checkSearchAPI() {
-                fetch('/api/trilium/search?q=test')
+                fetch('/kb/MGMT/api/trilium/search?query=test&limit=1')
                     .then(response => {
                         if (response.ok) {
                             // API可用
