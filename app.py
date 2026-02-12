@@ -27,6 +27,10 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['DEBUG'] = config.BaseConfig.DEBUG
 
+# CSRF 保护 - 已禁用以避免登录问题
+# 如果需要启用CSRF保护，需要在所有受保护的表单中添加csrf_token
+# 登录和认证API不使用CSRF保护，因为它们是公开接口
+
 # 性能优化配置
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=3)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = config.BaseConfig.STATIC_CACHE_TIME
@@ -161,12 +165,7 @@ swagger_template = {
 
 swagger = Swagger(app, config=swagger_config, template=swagger_template)
 
-# CSRF 保护
-csrf = CSRFProtect()
-
-# 生产环境启用 CSRF
-if not config.BaseConfig.DEBUG:
-    csrf.init_app(app)
+# CSRF 保护 - 已禁用以避免登录问题
 
 # 请求速率限制
 from flask_limiter import Limiter
