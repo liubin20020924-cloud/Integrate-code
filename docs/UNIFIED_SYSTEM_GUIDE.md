@@ -406,7 +406,7 @@ common/
             "id": 1,
             "user_id": 1,
             "username": "admin",
-            "ip_address": "192.168.1.100",
+            "ip_address": "192.168.X.X",
             "user_agent": "Mozilla/5.0...",
             "status": "success",
             "created_at": "2026-02-06 10:00:00"

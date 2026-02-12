@@ -9,14 +9,14 @@
 ### 错误日志
 
 ```
-Feb 11 16:27:14 VM-16-8-opencloudos python3[1918597]: 139.227.62.151,127.0.0.1 - - [11/Feb/2026 16:27:14] "GET /kb/api/attachments/KG4pRMe1gA7R/image/files%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%9A%E4%BD%8D%E6%89%8B%E5%86%8C_f6f83bfe35c17.png HTTP/1.1" 429 330 0.001117
+Feb 11 16:27:14 VM-16-8-opencloudos python3[1918597]: YOUR_PUBLIC_IP,127.0.0.1 - - [11/Feb/2026 16:27:14] "GET /kb/api/attachments/your-note-id HTTP/1.1" 429 330 0.001117
 ```
 
 **错误代码**: `429 Too Many Requests`
 
 ### 问题原因
 
-1. **内网地址配置**: `.env` 中 `TRILIUM_SERVER_URL=http://10.10.10.250:8080` 是内网地址
+1. **内网地址配置**: `.env` 中 `TRILIUM_SERVER_URL=http://YOUR_INTERNAL_IP:8080` 是内网地址
 2. **公网无法访问**: Flask 应用运行在公网，无法访问内网的 Trilium 服务器
 3. **连接超时**: 连接 `127.0.0.1:51520` 失败（这是 Flask-Caching 使用的端口）
 4. **请求积压**: 连接失败导致请求积压，触发 429 错误
@@ -62,12 +62,12 @@ TRILIUM_SERVER_HOST=YOUR_PUBLIC_IP:8080
 TRILIUM_SERVER_URL=http://trilium.yundour.com:8080
 TRILIUM_SERVER_HOST=trilium.yundour.com:8080
 
-# Token 保持不变
-TRILIUM_TOKEN=CAdIBlRbkihf_vZGsEocvjR7xMjb0HdSqXaDR+MBpTRUNdX+W99NnWxw=
+# Token 保持不变（使用你自己的 Token）
+TRILIUM_TOKEN=your-trilium-token-here
 
 # 登录信息
 TRILIUM_LOGIN_USERNAME=
-TRILIUM_LOGIN_PASSWORD=Nutanix/4u123!
+TRILIUM_LOGIN_PASSWORD=your-trilium-password
 ```
 
 **步骤 3**: 重启 Flask 应用
@@ -107,13 +107,13 @@ curl http://YOUR_PUBLIC_IP:8080/etapi/tree
 
 ```bash
 # 在 Flask 应用服务器上执行
-# 假设 Trilium 在 10.10.10.250:8080
+# 假设 Trilium 在 YOUR_INTERNAL_IP:8080
 
 # 方式1: 本地转发
-ssh -L 8080:127.0.0.1:8080 user@10.10.10.250
+ssh -L 8080:127.0.0.1:8080 user@YOUR_INTERNAL_IP
 
 # 方式2: 后台转发
-ssh -fN -L 8080:127.0.0.1:8080 user@10.10.10.250
+ssh -fN -L 8080:127.0.0.1:8080 user@YOUR_INTERNAL_IP
 
 # 然后修改 .env
 TRILIUM_SERVER_URL=http://127.0.0.1:8080
@@ -128,12 +128,12 @@ TRILIUM_SERVER_HOST=127.0.0.1:8080
 
 ```env
 # 使用内网地址
-TRILIUM_SERVER_URL=http://10.10.10.250:8080
-TRILIUM_SERVER_HOST=10.10.10.250:8080
+TRILIUM_SERVER_URL=http://YOUR_INTERNAL_IP:8080
+TRILIUM_SERVER_HOST=YOUR_INTERNAL_IP:8080
 ```
 
 **前提条件**:
-- Flask 应用服务器能访问内网 `10.10.10.250:8080`
+- Flask 应用服务器能访问内网 `YOUR_INTERNAL_IP:8080`
 - 网络配置允许访问
 
 ---
@@ -234,12 +234,12 @@ if not config.TRILIUM_TOKEN:
 
 ```env
 # Flask 应用 .env
-TRILIUM_SERVER_URL=https://trilium.yundour.com
-TRILIUM_SERVER_HOST=trilium.yundour.com
-TRILIUM_TOKEN=CAdIBlRbkihf_vZGsEocvjR7xMjb0HdSqXaDR+MBpTRUNdX+W99NnWxw=
+TRILIUM_SERVER_URL=https://trilium.your-domain.com
+TRILIUM_SERVER_HOST=trilium.your-domain.com
+TRILIUM_TOKEN=your-trilium-token-here
 
 # 网站配置
-SITE_URL=https://www.yundour.com
+SITE_URL=https://www.your-domain.com
 ```
 
 ### 测试环境
@@ -267,8 +267,8 @@ curl http://127.0.0.1:8080
 ### 检查 2: 网络连通性
 
 ```bash
-# 从 Flask 应用服务器测试
-curl http://10.10.10.250:8080
+# 从 Flask 应用服务器测试内网
+curl http://YOUR_INTERNAL_IP:8080
 
 # 如果超时，检查:
 # - 防火墙规则
@@ -325,9 +325,9 @@ tail -f logs/app.log | grep trilium
 
 | 配置项 | 错误配置 | 正确配置（公网） |
 |--------|---------|-----------------|
-| `TRILIUM_SERVER_URL` | `http://10.10.10.250:8080` | `http://trilium.yundour.com` 或 `http://YOUR_PUBLIC_IP:8080` |
-| `TRILIUM_SERVER_HOST` | `10.10.10.250:8080` | `trilium.yundour.com` 或 `YOUR_PUBLIC_IP:8080` |
-| `SITE_URL` | `http://10.10.10.250:5000` | `https://www.yundour.com` |
+| `TRILIUM_SERVER_URL` | `http://YOUR_INTERNAL_IP:8080` | `http://trilium.your-domain.com` 或 `http://YOUR_PUBLIC_IP:8080` |
+| `TRILIUM_SERVER_HOST` | `YOUR_INTERNAL_IP:8080` | `trilium.your-domain.com` 或 `YOUR_PUBLIC_IP:8080` |
+| `SITE_URL` | `http://YOUR_INTERNAL_IP:5000` | `https://www.your-domain.com` |
 | `ALLOWED_ORIGINS` | `*` | `https://www.yundour.com,https://yundour.com` |
 
 ---
