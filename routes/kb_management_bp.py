@@ -91,16 +91,16 @@ def add_record():
     """
     try:
         data = request.get_json()
-        
+
         # 验证必填字段
         is_valid, errors = validate_required(data, ['KB_Number', 'KB_Name'])
         if not is_valid:
             return validation_error_response(errors)
-        
+
         existing = fetch_record_by_id(data['KB_Number'])
         if existing:
             return error_response(f"编号 {data['KB_Number']} 已存在", 400)
-        
+
         from common.database_context import db_connection
         with db_connection('kb') as conn:
             cursor = conn.cursor()
@@ -108,7 +108,7 @@ def add_record():
             cursor.execute(sql, (data['KB_Number'], data['KB_Name'], data.get('KB_link', '')))
             conn.commit()
             affected_rows = cursor.rowcount
-        
+
         if affected_rows > 0:
             logger.info(f"添加知识库记录 {data['KB_Number']} 成功")
             return success_response(message='记录添加成功', data={'id': data['KB_Number']})
@@ -117,6 +117,177 @@ def add_record():
     except Exception as e:
         log_exception(logger, "添加知识库记录失败")
         return server_error_response(f"添加记录时发生错误: {str(e)}")
+
+
+@kb_management_bp.route('/api/trilium/search', methods=['GET'])
+@login_required(roles=['admin'])
+def search_trilium_notes():
+    """搜索Trilium笔记
+    
+    搜索Trilium笔记，用于快速添加到知识库
+    ---
+    tags:
+      - 知识库-管理
+    parameters:
+      - in: query
+        name: query
+        type: string
+        required: true
+        description: 搜索关键词
+      - in: query
+        name: limit
+        type: integer
+        default: 20
+        description: 返回结果数量限制
+    responses:
+      200:
+        description: 搜索成功
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+            results:
+              type: array
+              items:
+                type: object
+                properties:
+                  noteId:
+                    type: string
+                    description: 笔记ID
+                  title:
+                    type: string
+                    description: 笔记标题
+                  type:
+                    type: string
+                    description: 笔记类型
+                  dateModified:
+                    type: string
+                    description: 修改时间
+    """
+    try:
+        query = request.args.get('query', '').strip()
+        limit = request.args.get('limit', 20, type=int)
+
+        if not query:
+            return error_response('搜索关键词不能为空', 400)
+
+        # 使用TriliumHelper搜索笔记
+        from common.trilium_helper import get_trilium_helper
+        trilium = get_trilium_helper()
+
+        success, results, message = trilium.search_note(query, limit)
+
+        if success:
+            return success_response(
+                message='搜索成功',
+                data={'results': results}
+            )
+        else:
+            return error_response(message, 500)
+
+    except Exception as e:
+        log_exception(logger, "搜索Trilium笔记失败")
+        return server_error_response(f"搜索失败: {str(e)}")
+
+
+@kb_management_bp.route('/api/trilium/note/<note_id>', methods=['GET'])
+@login_required(roles=['admin'])
+def get_trilium_note():
+    """获取Trilium笔记信息
+    
+    获取指定Trilium笔记的详细信息
+    ---
+    tags:
+      - 知识库-管理
+    parameters:
+      - in: path
+        name: note_id
+        type: string
+        required: true
+        description: 笔记ID
+    responses:
+      200:
+        description: 获取成功
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+            note:
+              type: object
+              properties:
+                noteId:
+                  type: string
+                title:
+                  type: string
+                content:
+                  type: string
+    """
+    try:
+        note_id = request.args.get('note_id', '').strip()
+
+        if not note_id:
+            return error_response('笔记ID不能为空', 400)
+
+        # 使用TriliumHelper获取笔记内容
+        from common.trilium_helper import get_trilium_helper
+        trilium = get_trilium_helper()
+
+        # 构建笔记URL
+        note_url = f"#root/{note_id}"
+        success, content, message = trilium.get_note_content(note_url)
+
+        if success:
+            # 获取笔记基本信息
+            try:
+                from trilium_py.client import ETAPI
+                import config
+
+                server_url = config.TRILIUM_SERVER_URL.rstrip('/')
+                token = config.TRILIUM_TOKEN
+
+                if token:
+                    ea = ETAPI(server_url, token)
+                    note_info = ea.get_note(note_id)
+
+                    note_data = {
+                        'noteId': note_id,
+                        'title': note_info.get('title', ''),
+                        'content': content,
+                        'type': note_info.get('type', 'text'),
+                        'dateModified': note_info.get('utcDateModified', '')
+                    }
+                else:
+                    note_data = {
+                        'noteId': note_id,
+                        'title': note_id,
+                        'content': content
+                    }
+            except ImportError:
+                note_data = {
+                    'noteId': note_id,
+                    'title': note_id,
+                    'content': content
+                }
+            except Exception as e:
+                logger.warning(f"获取笔记元数据失败: {e}")
+                note_data = {
+                    'noteId': note_id,
+                    'title': note_id,
+                    'content': content
+                }
+
+            return success_response(
+                message='获取成功',
+                data={'note': note_data}
+            )
+        else:
+            return error_response(message, 404)
+
+    except Exception as e:
+        log_exception(logger, "获取Trilium笔记失败")
+        return server_error_response(f"获取笔记失败: {str(e)}")
 
 
 @kb_management_bp.route('/api/update/<int:record_id>', methods=['PUT'])

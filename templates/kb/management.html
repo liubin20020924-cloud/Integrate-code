@@ -20,20 +20,20 @@
             --shadow: 0 2px 8px rgba(0,0,0,0.08);
             --shadow-hover: 0 4px 16px rgba(0,0,0,0.12);
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background-color: #f0f2f5;
             color: var(--text-primary);
             line-height: 1.6;
         }
-        
+
         .navbar-custom {
             background: linear-gradient(135deg, var(--primary-color), #6b7c93);
             padding: 1rem 2rem;
@@ -42,17 +42,17 @@
             top: 0;
             z-index: 1000;
         }
-        
+
         .navbar-brand {
             color: white !important;
             font-weight: 600;
             font-size: 1.2rem;
         }
-        
+
         .navbar-brand i {
             margin-right: 0.5rem;
         }
-        
+
         .nav-link-custom {
             color: rgba(255,255,255,0.9) !important;
             margin: 0 0.5rem;
@@ -60,25 +60,25 @@
             border-radius: 6px;
             transition: all 0.3s ease;
         }
-        
+
         .nav-link-custom:hover {
             background: rgba(255,255,255,0.1);
             color: white !important;
         }
-        
+
         .main-content {
             padding: 2rem;
             max-width: 1400px;
             margin: 0 auto;
         }
-        
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
-        
+
         .stat-card {
             background: white;
             border-radius: 12px;
@@ -89,12 +89,12 @@
             align-items: center;
             gap: 1rem;
         }
-        
+
         .stat-card:hover {
             transform: translateY(-4px);
             box-shadow: var(--shadow-hover);
         }
-        
+
         .stat-icon {
             width: 56px;
             height: 56px;
@@ -104,29 +104,29 @@
             justify-content: center;
             font-size: 1.5rem;
         }
-        
+
         .stat-icon.primary { background: rgba(74,144,226,0.1); color: var(--primary-color); }
         .stat-icon.success { background: rgba(82,196,26,0.1); color: var(--success-color); }
         .stat-icon.warning { background: rgba(250,173,20,0.1); color: var(--warning-color); }
         .stat-icon.danger { background: rgba(245,34,45,0.1); color: var(--danger-color); }
         .stat-icon.info { background: rgba(24,144,255,0.1); color: var(--info-color); }
-        
+
         .stat-info {
             flex: 1;
         }
-        
+
         .stat-label {
             font-size: 0.875rem;
             color: var(--text-secondary);
             margin-bottom: 0.25rem;
         }
-        
+
         .stat-value {
             font-size: 1.75rem;
             font-weight: 700;
             color: var(--text-primary);
         }
-        
+
         .toolbar {
             background: white;
             border-radius: 12px;
@@ -139,26 +139,26 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
-        
+
         .toolbar-left {
             display: flex;
             gap: 1rem;
             align-items: center;
             flex: 1;
         }
-        
+
         .toolbar-right {
             display: flex;
             gap: 0.75rem;
             align-items: center;
         }
-        
+
         .search-box {
             flex: 1;
             max-width: 400px;
             position: relative;
         }
-        
+
         .search-box input {
             width: 100%;
             padding: 0.75rem 1rem 0.75rem 2.5rem;
@@ -167,13 +167,13 @@
             font-size: 0.9rem;
             transition: all 0.3s ease;
         }
-        
+
         .search-box input:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(74,144,226,0.1);
         }
-        
+
         .search-box i {
             position: absolute;
             left: 1rem;
@@ -181,7 +181,7 @@
             transform: translateY(-50%);
             color: var(--text-secondary);
         }
-        
+
         .btn-custom {
             padding: 0.625rem 1.25rem;
             border-radius: 8px;
@@ -193,41 +193,44 @@
             align-items: center;
             gap: 0.5rem;
         }
-        
+
         .btn-custom:hover {
             transform: translateY(-1px);
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
-        
+
         .btn-primary { background: var(--primary-color); color: white; }
         .btn-primary:hover { background: #357abd; }
-        
+
         .btn-success { background: var(--success-color); color: white; }
         .btn-success:hover { background: #389e0d; }
-        
+
         .btn-danger { background: var(--danger-color); color: white; }
         .btn-danger:hover { background: #cf1322; }
-        
+
+        .btn-info { background: var(--info-color); color: white; }
+        .btn-info:hover { background: #0e7ce5; }
+
         .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-primary); }
         .btn-outline:hover { border-color: var(--primary-color); color: var(--primary-color); background: rgba(74,144,226,0.05); }
-        
+
         .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none !important;
         }
-        
+
         .data-table-container {
             background: white;
             border-radius: 12px;
             box-shadow: var(--shadow);
             overflow: hidden;
         }
-        
+
         .table {
             margin: 0;
         }
-        
+
         .table thead th {
             background: #f8f9fa;
             padding: 1rem 1.25rem;
@@ -239,29 +242,29 @@
             border-bottom: 2px solid var(--border-color);
             white-space: nowrap;
         }
-        
+
         .table tbody td {
             padding: 1rem 1.25rem;
             vertical-align: middle;
             border-bottom: 1px solid var(--border-color);
             transition: background 0.2s ease;
         }
-        
+
         .table tbody tr:hover td {
             background: #f8f9fa;
         }
-        
+
         .table tbody tr:last-child td {
             border-bottom: none;
         }
-        
+
         .badge-custom {
             padding: 0.375rem 0.75rem;
             border-radius: 6px;
             font-size: 0.75rem;
             font-weight: 500;
         }
-        
+
         .pagination-container {
             display: flex;
             justify-content: space-between;
@@ -274,11 +277,11 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
-        
+
         .pagination {
             margin: 0;
         }
-        
+
         .pagination .page-link {
             color: var(--text-primary);
             border: 1px solid var(--border-color);
@@ -287,62 +290,62 @@
             border-radius: 6px;
             transition: all 0.2s ease;
         }
-        
+
         .pagination .page-link:hover {
             background: var(--primary-color);
             border-color: var(--primary-color);
             color: white;
         }
-        
+
         .pagination .page-item.active .page-link {
             background: var(--primary-color);
             border-color: var(--primary-color);
             color: white;
         }
-        
+
         .pagination .page-item.disabled .page-link {
             opacity: 0.5;
             cursor: not-allowed;
         }
-        
+
         .modal-custom {
             border-radius: 16px;
             overflow: hidden;
         }
-        
+
         .modal-custom .modal-header {
             background: linear-gradient(135deg, var(--primary-color), #6b7c93);
             color: white;
             border: none;
             padding: 1.25rem 1.5rem;
         }
-        
+
         .modal-custom .modal-title {
             font-weight: 600;
         }
-        
+
         .modal-custom .modal-body {
             padding: 2rem;
         }
-        
+
         .modal-custom .form-label {
             font-weight: 500;
             color: var(--text-primary);
             margin-bottom: 0.5rem;
         }
-        
+
         .modal-custom .form-control {
             border-radius: 8px;
             border: 1px solid var(--border-color);
             padding: 0.625rem 0.875rem;
             transition: all 0.3s ease;
         }
-        
+
         .modal-custom .form-control:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(74,144,226,0.1);
         }
-        
+
         .loading-spinner {
             display: inline-block;
             width: 1rem;
@@ -352,11 +355,11 @@
             border-top-color: transparent;
             animation: spin 0.6s linear infinite;
         }
-        
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
+
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -369,13 +372,13 @@
             justify-content: center;
             z-index: 9999;
         }
-        
+
         .loading-spinner-large {
             width: 3rem;
             height: 3rem;
             border-width: 3px;
         }
-        
+
         .toast-container-custom {
             position: fixed;
             top: 1rem;
@@ -385,49 +388,88 @@
             flex-direction: column;
             gap: 0.75rem;
         }
-        
+
         .toast-custom {
             min-width: 300px;
             border-radius: 12px;
             box-shadow: var(--shadow-hover);
             overflow: hidden;
         }
-        
+
         .toast-custom .toast-header {
             padding: 0.75rem 1rem;
             border: none;
             color: white;
             font-weight: 500;
         }
-        
+
         .toast-custom .toast-body {
             padding: 0.75rem 1rem;
         }
-        
+
+        /* Trilium批量导入样式 */
+        .import-results-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .import-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s ease;
+        }
+
+        .import-item:last-child {
+            border-bottom: none;
+        }
+
+        .import-item:hover {
+            background: #f8f9fa;
+        }
+
+        .import-item.selected {
+            background: #e6f0ff;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .import-item .form-check {
+            margin: 0;
+        }
+
+        .batch-import-stats {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
         @media (max-width: 768px) {
             .main-content {
                 padding: 1rem;
             }
-            
+
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .toolbar {
                 flex-direction: column;
                 align-items: stretch;
             }
-            
+
             .toolbar-left,
             .toolbar-right {
                 flex-direction: column;
                 width: 100%;
             }
-            
+
             .search-box {
                 max-width: 100%;
             }
-            
+
             .table-responsive {
                 font-size: 0.875rem;
             }
@@ -496,6 +538,19 @@
                 </div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon info">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-label">批量导入</div>
+                    <div class="stat-value">
+                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#triliumImportModal">
+                            批量导入
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
                 <div class="stat-icon warning">
                     <i class="fas fa-file-export"></i>
                 </div>
@@ -504,19 +559,6 @@
                     <div class="stat-value">
                         <button class="btn btn-warning btn-sm" id="exportDataBtn">
                             导出
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon danger">
-                    <i class="fas fa-trash-alt"></i>
-                </div>
-                <div class="stat-info">
-                    <div class="stat-label">批量删除</div>
-                    <div class="stat-value">
-                        <button class="btn btn-danger btn-sm" id="batchDeleteBtn" disabled>
-                            删除
                         </button>
                     </div>
                 </div>
@@ -570,12 +612,12 @@
                     </tbody>
                 </table>
             </div>
-            
+
             <!-- 空状态 -->
             <div id="emptyState" class="text-center py-5" style="display: none;">
                 <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
                 <h5 class="text-muted">暂无数据</h5>
-                <p class="text-secondary">点击"添加记录"开始添加知识库条目</p>
+                <p class="text-secondary">点击"添加记录"或"批量导入"开始添加知识库条目</p>
             </div>
         </div>
 
@@ -632,6 +674,79 @@
         </div>
     </div>
 
+    <!-- Trilium批量导入模态框 -->
+    <div class="modal fade" id="triliumImportModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content modal-custom">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-cloud-upload-alt me-2"></i>从Trilium批量导入笔记
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 搜索区域 -->
+                    <div class="mb-4">
+                        <label class="form-label">搜索Trilium笔记</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="triliumSearchInput"
+                                   placeholder="输入关键词搜索笔记（支持标题、内容搜索）...">
+                            <button class="btn btn-primary" type="button" id="triliumSearchBtn">
+                                <i class="fas fa-search me-1"></i>搜索
+                            </button>
+                        </div>
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            支持最多返回 50 条笔记，可以使用空格分隔多个关键词
+                        </small>
+                    </div>
+
+                    <!-- 统计信息 -->
+                    <div class="batch-import-stats" id="importStats" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>搜索结果：</strong>
+                                <span class="badge bg-info" id="searchCount">0</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>已选择：</strong>
+                                <span class="badge bg-success" id="selectedCount">0</span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>起始编号：</strong>
+                                <span id="startNumber">0</span>
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-sm btn-primary" id="selectAllImportBtn">
+                                    <i class="fas fa-check-double me-1"></i>全选
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 搜索结果列表 -->
+                    <div class="import-results-container" id="triliumResults">
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-search fa-3x mb-3"></i>
+                            <p>输入关键词搜索Trilium笔记</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="me-auto">
+                        <button type="button" class="btn btn-outline-secondary" id="clearSearchBtn">
+                            <i class="fas fa-eraser me-1"></i>清空搜索
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-success" id="saveBatchImportBtn" disabled>
+                        <i class="fas fa-check me-1"></i>批量导入 (<span id="importCount">0</span>)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 编辑记录模态框 -->
     <div class="modal fade" id="editModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -662,38 +777,6 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                     <button type="button" class="btn btn-primary" id="saveEditBtn">
                         <i class="fas fa-save me-1"></i>保存
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 批量添加模态框 -->
-    <div class="modal fade" id="batchAddModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content modal-custom">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-layer-group me-2"></i>批量添加
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-info mb-3">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>格式说明：</strong>每行一条记录，格式为：编号,名称,链接（用逗号分隔）
-                    </div>
-                    <textarea class="form-control" id="batchAddData" rows="10"
-                              placeholder="1001,常见问题,https://trilium.example.com/#root/abc
-1002,系统配置,https://trilium.example.com/#root/def"></textarea>
-                    <div class="mt-2 text-secondary">
-                        <small><i class="fas fa-lightbulb me-1"></i>支持从 Excel 复制数据后直接粘贴</small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-success" id="saveBatchAddBtn">
-                        <i class="fas fa-check me-1"></i>添加
                     </button>
                 </div>
             </div>
@@ -743,6 +826,8 @@
         let currentRecords = [];
         let selectedIds = new Set();
         let searchQuery = '';
+        let triliumResults = [];  // Trilium搜索结果
+        let selectedTriliumNotes = new Set();  // 选中的Trilium笔记ID
 
         // DOM 元素
         const dataTableBody = document.getElementById('dataTableBody');
@@ -769,14 +854,14 @@
                 warning: 'fa-exclamation-triangle',
                 info: 'fa-info-circle'
             };
-            
+
             const colors = {
                 success: 'bg-success',
                 error: 'bg-danger',
                 warning: 'bg-warning',
                 info: 'bg-info'
             };
-            
+
             const toastHtml = `
                 <div class="toast toast-custom" role="alert">
                     <div class="toast-header ${colors[type]}">
@@ -787,12 +872,12 @@
                     <div class="toast-body">${message}</div>
                 </div>
             `;
-            
+
             toastContainer.insertAdjacentHTML('beforeend', toastHtml);
             const toastElement = toastContainer.lastElementChild;
             const toast = new bootstrap.Toast(toastElement);
             toast.show();
-            
+
             toastElement.addEventListener('hidden.bs.toast', () => {
                 toastElement.remove();
             });
@@ -813,11 +898,13 @@
         function updateSelectionUI() {
             const count = selectedIds.size;
             selectedCountEl.textContent = count;
-            
+
             // 更新批量删除按钮状态
             const batchDeleteBtn = document.getElementById('batchDeleteBtn');
-            batchDeleteBtn.disabled = count === 0;
-            
+            if (batchDeleteBtn) {
+                batchDeleteBtn.disabled = count === 0;
+            }
+
             // 更新全选框状态
             if (currentRecords.length > 0) {
                 selectAllCheckbox.checked = count === currentRecords.length;
@@ -827,20 +914,20 @@
 
         function renderTable(records) {
             console.log('渲染表格，记录数:', records ? records.length : 0);
-            
+
             if (!records || records.length === 0) {
                 dataTableBody.innerHTML = '';
                 emptyState.style.display = 'block';
                 return;
             }
-            
+
             emptyState.style.display = 'none';
-            
+
             const html = records.map(record => `
                 <tr data-id="${record.KB_Number}">
                     <td>
-                        <input type="checkbox" class="row-checkbox form-check-input" 
-                               value="${record.KB_Number}" 
+                        <input type="checkbox" class="row-checkbox form-check-input"
+                               value="${record.KB_Number}"
                                ${selectedIds.has(String(record.KB_Number)) ? 'checked' : ''}>
                     </td>
                     <td>
@@ -848,13 +935,13 @@
                     </td>
                     <td>${record.KB_Name}</td>
                     <td>
-                        ${record.KB_link && record.KB_link !== 'None' ? 
+                        ${record.KB_link && record.KB_link !== 'None' ?
                             `<a href="${record.KB_link}" target="_blank" class="text-decoration-none">
                                 <i class="fas fa-external-link-alt me-1"></i>
                                 <span class="text-truncate" style="max-width: 200px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                     ${record.KB_link}
                                 </span>
-                            </a>` : 
+                            </a>` :
                             '<span class="text-muted">-</span>'}
                     </td>
                     <td>${formatDate(record.KB_UpdateTime)}</td>
@@ -870,7 +957,7 @@
                     </td>
                 </tr>
             `).join('');
-            
+
             dataTableBody.innerHTML = html;
             currentRecords = records;
             bindTableEvents();
@@ -889,7 +976,7 @@
                     updateSelectionUI();
                 });
             });
-            
+
             // 编辑按钮事件
             dataTableBody.querySelectorAll('.btn-edit').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -897,7 +984,7 @@
                     openEditModal(id);
                 });
             });
-            
+
             // 删除按钮事件
             dataTableBody.querySelectorAll('.btn-delete').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -911,13 +998,13 @@
             const totalPages = Math.ceil(totalRecords / perPage);
             const showingStart = (currentPage - 1) * perPage + 1;
             const showingEnd = Math.min(currentPage * perPage, totalRecords);
-            
+
             document.getElementById('showingStart').textContent = showingStart;
             document.getElementById('showingEnd').textContent = showingEnd;
             document.getElementById('totalCount').textContent = totalRecords;
-            
+
             let html = '';
-            
+
             // 上一页
             html += `
                 <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
@@ -926,7 +1013,7 @@
                     </a>
                 </li>
             `;
-            
+
             // 页码
             for (let i = 1; i <= totalPages; i++) {
                 if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
@@ -943,7 +1030,7 @@
                     `;
                 }
             }
-            
+
             // 下一页
             html += `
                 <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
@@ -952,9 +1039,9 @@
                     </a>
                 </li>
             `;
-            
+
             document.getElementById('pagination').innerHTML = html;
-            
+
             // 绑定分页事件
             document.querySelectorAll('#pagination .page-link[data-page]').forEach(link => {
                 link.addEventListener('click', function(e) {
@@ -974,7 +1061,7 @@
             fetch(`/kb/MGMT/api/records?page=${page}&per_page=${perPage}&search=${encodeURIComponent(search)}`)
                 .then(response => {
                     console.log('收到响应，状态:', response.status, response.statusText);
-                    
+
                     // 处理认证错误
                     if (response.status === 401 || response.status === 403) {
                         showToast('登录已过期或权限不足，请重新登录', 'error');
@@ -983,7 +1070,7 @@
                         }, 2000);
                         throw new Error('认证失败');
                     }
-                    
+
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
@@ -994,10 +1081,10 @@
                     if (data.success) {
                         console.log('记录数量:', data.records ? data.records.length : 0);
                         console.log('总记录数:', data.total_count);
-                        
+
                         renderTable(data.records);
                         totalRecords = data.total_count;
-                        
+
                         // 更新统计卡片中的总记录数
                         const totalRecordsEl = document.getElementById('totalRecords');
                         if (totalRecordsEl) {
@@ -1006,7 +1093,7 @@
                         } else {
                             console.error('找不到 totalRecords 元素');
                         }
-                        
+
                         renderPagination();
                         selectedIds.clear();
                         updateSelectionUI();
@@ -1029,11 +1116,11 @@
         function openEditModal(id) {
             const record = currentRecords.find(r => r.KB_Number == id);
             if (!record) return;
-            
+
             document.getElementById('editKBNumber').value = record.KB_Number;
             document.getElementById('editKBName').value = record.KB_Name;
             document.getElementById('editKBLink').value = record.KB_link || '';
-            
+
             const modal = new bootstrap.Modal(document.getElementById('editModal'));
             modal.show();
         }
@@ -1042,19 +1129,285 @@
             document.getElementById('deleteCount').textContent = ids.length;
             const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
             modal.show();
-            
+
             // 保存要删除的 ID
             document.getElementById('confirmDeleteBtn').dataset.ids = JSON.stringify(ids);
         }
 
-        // 事件绑定
+        // ==================== Trilium批量导入功能 ====================
+
+        // 搜索Trilium笔记
+        document.getElementById('triliumSearchBtn').addEventListener('click', searchTriliumNotes);
+        document.getElementById('triliumSearchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchTriliumNotes();
+            }
+        });
+
+        // 清空搜索
+        document.getElementById('clearSearchBtn').addEventListener('click', function() {
+            document.getElementById('triliumSearchInput').value = '';
+            document.getElementById('triliumResults').innerHTML = `
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-search fa-3x mb-3"></i>
+                    <p>输入关键词搜索Trilium笔记</p>
+                </div>
+            `;
+            document.getElementById('importStats').style.display = 'none';
+            triliumResults = [];
+            selectedTriliumNotes.clear();
+            updateImportUI();
+        });
+
+        // 全选Trilium结果
+        document.getElementById('selectAllImportBtn').addEventListener('click', function() {
+            const allChecked = this.textContent.includes('取消');
+            document.querySelectorAll('.import-item input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = !allChecked;
+                if (!allChecked) {
+                    selectedTriliumNotes.add(checkbox.value);
+                } else {
+                    selectedTriliumNotes.delete(checkbox.value);
+                }
+                updateImportItemUI(checkbox.closest('.import-item'));
+            });
+            updateImportUI();
+        });
+
+        // 批量导入
+        document.getElementById('saveBatchImportBtn').addEventListener('click', batchImportTriliumNotes);
+
+        function searchTriliumNotes() {
+            const query = document.getElementById('triliumSearchInput').value.trim();
+            if (!query) {
+                showToast('请输入搜索关键词', 'warning');
+                return;
+            }
+
+            showLoading();
+            const resultsContainer = document.getElementById('triliumResults');
+            resultsContainer.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"></div></div>';
+
+            fetch(`/kb/MGMT/api/trilium/search?query=${encodeURIComponent(query)}&limit=50`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data.results && data.data.results.length > 0) {
+                        triliumResults = data.data.results;
+                        renderTriliumSearchResults(triliumResults);
+                        showToast(`找到 ${triliumResults.length} 条笔记`, 'success');
+                    } else {
+                        resultsContainer.innerHTML = `
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-search-minus fa-3x mb-3"></i>
+                                <p>未找到匹配的笔记</p>
+                            </div>
+                        `;
+                        triliumResults = [];
+                        document.getElementById('importStats').style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Trilium搜索失败:', error);
+                    resultsContainer.innerHTML = `
+                        <div class="text-center text-danger py-5">
+                            <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+                            <p>搜索失败，请稍后重试</p>
+                            <p class="text-muted">${error.message || ''}</p>
+                        </div>
+                    `;
+                    showToast('搜索失败', 'error');
+                })
+                .finally(() => {
+                    hideLoading();
+                });
+        }
+
+        function renderTriliumSearchResults(results) {
+            const container = document.getElementById('triliumResults');
+            document.getElementById('importStats').style.display = 'block';
+
+            const html = results.map(result => `
+                <div class="import-item" data-note-id="${result.noteId}">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="${result.noteId}"
+                               id="trilium-check-${result.noteId}">
+                        <label class="form-check-label" for="trilium-check-${result.noteId}" style="width: 100%;">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <strong>${result.title || '无标题'}</strong>
+                                    <div class="text-muted small">
+                                        <i class="fas fa-id-card me-1"></i>${result.noteId}
+                                        <span class="ms-3">
+                                            <i class="fas fa-tag me-1"></i>${result.type || 'text'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="text-muted small">
+                                    ${result.dateModified ? formatDate(result.dateModified) : '未知'}
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            `).join('');
+            container.innerHTML = html;
+
+            // 绑定复选框事件
+            container.querySelectorAll('.import-item input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const noteId = this.value;
+                    if (this.checked) {
+                        selectedTriliumNotes.add(noteId);
+                    } else {
+                        selectedTriliumNotes.delete(noteId);
+                    }
+                    updateImportItemUI(this.closest('.import-item'));
+                    updateImportUI();
+                });
+            });
+
+            // 初始统计
+            updateImportUI();
+        }
+
+        function updateImportItemUI(item) {
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            if (checkbox.checked) {
+                item.classList.add('selected');
+            } else {
+                item.classList.remove('selected');
+            }
+        }
+
+        function updateImportUI() {
+            const count = selectedTriliumNotes.size;
+            document.getElementById('searchCount').textContent = triliumResults.length;
+            document.getElementById('selectedCount').textContent = count;
+            document.getElementById('importCount').textContent = count;
+
+            // 更新按钮状态
+            const importBtn = document.getElementById('saveBatchImportBtn');
+            importBtn.disabled = count === 0;
+
+            // 更新全选按钮文本
+            const selectAllBtn = document.getElementById('selectAllImportBtn');
+            if (count > 0 && count === triliumResults.length) {
+                selectAllBtn.innerHTML = '<i class="fas fa-times me-1"></i>取消全选';
+            } else {
+                selectAllBtn.innerHTML = '<i class="fas fa-check-double me-1"></i>全选';
+            }
+
+            // 计算起始编号
+            if (count > 0) {
+                fetch(`/kb/MGMT/api/records?page=1&per_page=1`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.data) {
+                            // 获取当前最大编号
+                            const currentMax = Math.max(...currentRecords.map(r => r.KB_Number), 0);
+                            const startNumber = currentMax + 1;
+                            document.getElementById('startNumber').textContent = startNumber;
+                        }
+                    })
+                    .catch(err => {
+                        console.error('获取起始编号失败:', err);
+                    });
+            }
+        }
+
+        function batchImportTriliumNotes() {
+            const selectedNotes = Array.from(selectedTriliumNotes);
+            if (selectedNotes.length === 0) {
+                showToast('请先选择要导入的笔记', 'warning');
+                return;
+            }
+
+            showLoading();
+            let successCount = 0;
+            let failCount = 0;
+            let currentStartNumber = parseInt(document.getElementById('startNumber').textContent) || 1;
+
+            // 获取当前最大编号
+            const currentMax = Math.max(...currentRecords.map(r => r.KB_Number), 0);
+            let nextNumber = currentMax + 1;
+
+            // 批量导入
+            const importPromises = [];
+            selectedNotes.forEach((noteId, index) => {
+                const note = triliumResults.find(r => r.noteId === noteId);
+                if (!note) return;
+
+                const promise = fetch('/kb/MGMT/api/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        KB_Number: nextNumber + index,
+                        KB_Name: note.title || note.noteId,
+                        KB_link: `${window.location.origin}/#/root/${noteId}`
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        successCount++;
+                    } else {
+                        failCount++;
+                        console.error(`导入笔记 ${noteId} 失败:`, data.message);
+                    }
+                })
+                .catch(error => {
+                    failCount++;
+                    console.error(`导入笔记 ${noteId} 出错:`, error);
+                });
+
+                importPromises.push(promise);
+            });
+
+            Promise.all(importPromises)
+                .then(() => {
+                    hideLoading();
+                    if (successCount > 0) {
+                        showToast(`成功导入 ${successCount} 条记录，失败 ${failCount} 条`, successCount === selectedNotes.length ? 'success' : 'warning');
+
+                        // 关闭模态框
+                        bootstrap.Modal.getInstance(document.getElementById('triliumImportModal')).hide();
+
+                        // 刷新列表
+                        searchQuery = '';
+                        searchInput.value = '';
+                        loadPage(1, '');
+
+                        // 清空搜索结果
+                        document.getElementById('triliumSearchInput').value = '';
+                        document.getElementById('triliumResults').innerHTML = `
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-search fa-3x mb-3"></i>
+                                <p>输入关键词搜索Trilium笔记</p>
+                            </div>
+                        `;
+                        document.getElementById('importStats').style.display = 'none';
+                        triliumResults = [];
+                        selectedTriliumNotes.clear();
+                    } else {
+                        showToast('导入失败，请稍后重试', 'error');
+                    }
+                })
+                .catch(error => {
+                    hideLoading();
+                    console.error('批量导入失败:', error);
+                    showToast('导入失败', 'error');
+                });
+        }
+
+        // ==================== 事件绑定 ====================
+
         document.addEventListener('DOMContentLoaded', function() {
             // 初始加载 - 延迟执行确保页面完全渲染
             setTimeout(() => {
                 console.log('页面初始化，开始加载数据');
                 loadPage(1);
             }, 100);
-            
+
             // 搜索
             let searchTimeout;
             searchInput.addEventListener('input', function() {
@@ -1063,12 +1416,12 @@
                     loadPage(1, this.value.trim());
                 }, 300);
             });
-            
+
             // 刷新
             document.getElementById('refreshBtn').addEventListener('click', function() {
                 loadPage(currentPage, searchQuery);
             });
-            
+
             // 全选
             selectAllCheckbox.addEventListener('change', function() {
                 const checked = this.checked;
@@ -1083,7 +1436,7 @@
                 });
                 updateSelectionUI();
             });
-            
+
             // 反选
             document.getElementById('selectInverseBtn').addEventListener('click', function() {
                 dataTableBody.querySelectorAll('.row-checkbox').forEach(checkbox => {
@@ -1097,7 +1450,7 @@
                 });
                 updateSelectionUI();
             });
-            
+
             // 添加记录
             document.getElementById('saveAddBtn').addEventListener('click', function() {
                 const KBNumber = document.getElementById('addKBNumber').value.trim();
@@ -1146,18 +1499,18 @@
                     hideLoading();
                 });
             });
-            
+
             // 编辑记录
             document.getElementById('saveEditBtn').addEventListener('click', function() {
                 const KBNumber = document.getElementById('editKBNumber').value;
                 const KBName = document.getElementById('editKBName').value.trim();
                 const KBLink = document.getElementById('editKBLink').value.trim();
-                
+
                 if (!KBName) {
                     showToast('知识库名称不能为空', 'warning');
                     return;
                 }
-                
+
                 showLoading();
                 fetch(`/kb/MGMT/api/update/${KBNumber}`, {
                     method: 'PUT',
@@ -1184,19 +1537,22 @@
                     hideLoading();
                 });
             });
-            
+
             // 批量删除
-            document.getElementById('batchDeleteBtn').addEventListener('click', function() {
-                if (selectedIds.size === 0) {
-                    showToast('请先选择要删除的记录', 'warning');
-                    return;
-                }
-                openDeleteModal(Array.from(selectedIds));
-            });
-            
+            const batchDeleteBtn = document.getElementById('batchDeleteBtn');
+            if (batchDeleteBtn) {
+                batchDeleteBtn.addEventListener('click', function() {
+                    if (selectedIds.size === 0) {
+                        showToast('请先选择要删除的记录', 'warning');
+                        return;
+                    }
+                    openDeleteModal(Array.from(selectedIds));
+                });
+            }
+
             document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
                 const ids = JSON.parse(this.dataset.ids);
-                
+
                 showLoading();
                 fetch('/kb/MGMT/api/batch-delete', {
                     method: 'POST',
@@ -1222,7 +1578,7 @@
                     hideLoading();
                 });
             });
-            
+
             // 导出数据
             document.getElementById('exportDataBtn').addEventListener('click', function() {
                 showLoading();
@@ -1230,7 +1586,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            const blob = new Blob([JSON.stringify(data.data, null, 2)], 
+                            const blob = new Blob([JSON.stringify(data.data, null, 2)],
                                            { type: 'application/json' });
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement('a');
