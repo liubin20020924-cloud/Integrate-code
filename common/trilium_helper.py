@@ -29,15 +29,15 @@ class TriliumHelper:
         搜索Trilium笔记
 
         Args:
-            query: 搜索关键词
+            query: 搜索关键词（空字符串表示获取所有笔记）
             limit: 返回结果数量限制
 
         Returns:
             tuple: (success: bool, results: list, message: str)
         """
         try:
-            if not query:
-                return False, [], '请输入搜索关键词'
+            # 如果查询为空，使用通配符获取所有笔记
+            search_query = query if query else "*"
 
             # 尝试使用 trilium-py 模块
             try:
@@ -58,7 +58,9 @@ class TriliumHelper:
                 # 执行搜索
                 # 注意：根据 trilium-py 文档，limit 只有在使用 orderBy 时才有效
                 # 对于简单搜索，我们获取所有结果后再截取
-                results = ea.search_note(search=query)
+                logger.info(f"Trilium搜索: query='{search_query}', limit={limit}")
+                results = ea.search_note(search=search_query, limit=limit)
+                logger.info(f"Trilium搜索原始结果: {results}")
 
                 # 格式化结果并限制数量
                 formatted_results = []
@@ -73,15 +75,16 @@ class TriliumHelper:
                             'dateModified': result.get('utcDateModified', '')
                         })
 
+                logger.info(f"Trilium搜索返回 {len(formatted_results)} 条结果")
                 return True, formatted_results, '搜索成功'
 
             except ImportError:
                 logger.warning("trilium-py 模块未安装，回退到基础API模式")
                 # 回退方案：直接调用Trilium API
-                return self._search_via_api(query, limit)
+                return self._search_via_api(search_query, limit)
 
         except Exception as e:
-            logger.error(f"搜索Trilium笔记异常: {e}")
+            logger.error(f"搜索Trilium笔记异常: {e}", exc_info=True)
             return False, [], f'搜索失败: {str(e)}'
 
     def _search_via_api(self, query, limit=30):
@@ -157,9 +160,14 @@ class TriliumHelper:
                     ea = ETAPI(server_url, token)
 
                 # 从URL中提取noteId
-                # URL格式可能是: http://server/#root/noteId 或 /#root/noteId
+                # URL格式可能是: http://server/#root/noteId 或 http://server/#/root/noteId
                 # 注意：noteId可能是克隆笔记，格式为 parent_child
-                note_id = note_url.split('#root/')[-1].split('?')[0] if '#root/' in note_url else None
+                if '#/root/' in note_url:
+                    note_id = note_url.split('#/root/')[-1].split('?')[0]
+                elif '#root/' in note_url:
+                    note_id = note_url.split('#root/')[-1].split('?')[0]
+                else:
+                    note_id = None
 
                 logger.info(f"尝试获取Trilium笔记内容: note_id={note_id}, url={note_url}")
 
@@ -283,7 +291,12 @@ class TriliumHelper:
         """
         try:
             # 从URL中提取noteId
-            note_id = note_url.split('#root/')[-1].split('?')[0] if '#root/' in note_url else None
+            if '#/root/' in note_url:
+                note_id = note_url.split('#/root/')[-1].split('?')[0]
+            elif '#root/' in note_url:
+                note_id = note_url.split('#root/')[-1].split('?')[0]
+            else:
+                note_id = None
 
             if not note_id:
                 return False, '', '无法解析笔记ID'
@@ -418,6 +431,230 @@ class TriliumHelper:
             cleaned_html = meta_tag + cleaned_html
 
         return cleaned_html
+
+    def get_all_notes(self):
+        """
+        获取 Trilium 中的所有笔记
+        使用分页策略获取所有笔记，避免 Trilium API 的返回数量限制
+
+        Returns:
+            tuple: (success: bool, results: list, message: str)
+        """
+        try:
+            # 尝试使用 trilium-py 模块
+            try:
+                from trilium_py.client import ETAPI
+
+                server_url = self.server_url.rstrip('/')
+                token = self.token
+
+                if not token:
+                    logger.info("使用密码模式连接Trilium")
+                    ea = ETAPI(server_url)
+                else:
+                    ea = ETAPI(server_url, token)
+
+                # 使用分页策略获取所有笔记
+                logger.info("开始分页获取 Trilium 所有笔记...")
+                all_results = []
+                page_size = 1000  # Trilium API 的最大限制
+                max_iterations = 100  # 最多尝试100次
+
+                for iteration in range(max_iterations):
+                    # 使用 orderBy 和 offset 来分页
+                    # 添加各种参数以确保获取所有类型的笔记
+                    results = ea.search_note(
+                        search="*",
+                        limit=page_size,
+                        orderBy="noteId",
+                        offset=iteration * page_size,
+                        # 其他可能的参数
+                        ancestorNoteId=None,  # 不限制祖先笔记
+                        type=None  # 不限制笔记类型
+                    )
+
+                    if 'results' in results and results['results']:
+                        all_results.extend(results['results'])
+                        logger.info(f"第 {iteration + 1} 页: 获取到 {len(results['results'])} 条笔记，累计 {len(all_results)} 条")
+
+                        # 如果返回的数量少于 page_size，说明已经获取完所有笔记
+                        if len(results['results']) < page_size:
+                            logger.info("已获取所有笔记")
+                            break
+                    else:
+                        logger.info(f"第 {iteration + 1} 页: 没有更多笔记")
+                        break
+
+                # 格式化结果
+                formatted_results = []
+                for result in all_results:
+                    formatted_results.append({
+                        'noteId': result.get('noteId', ''),
+                        'title': result.get('title', ''),
+                        'type': result.get('type', 'text'),
+                        'dateModified': result.get('utcDateModified', '')
+                    })
+
+                logger.info(f"成功获取 Trilium 所有笔记: {len(formatted_results)} 条")
+
+                # 如果通过分页获取的笔记数量很少（少于 2000），尝试使用递归方法获取更完整的结果
+                # 这可能是因为搜索 API 对某些笔记类型有限制
+                if len(all_results) < 2000:
+                    logger.warning(f"通过搜索 API 只获取到 {len(all_results)} 条笔记，尝试使用递归方法获取更完整的结果")
+                    success_recursive, recursive_results, msg_recursive = self.get_all_notes_recursive()
+                    if success_recursive and len(recursive_results) > len(formatted_results):
+                        logger.info(f"递归方法获取到更多笔记: {len(recursive_results)} 条，将使用递归结果")
+                        return success_recursive, recursive_results, msg_recursive
+                    else:
+                        logger.info(f"递归方法获取到的笔记数量相同或更少，继续使用搜索结果")
+
+                return True, formatted_results, '获取成功'
+
+            except ImportError:
+                logger.warning("trilium-py 模块未安装，回退到基础API模式")
+                # 回退方案：直接调用 Trilium API
+                return self._get_all_notes_via_api()
+
+        except Exception as e:
+            logger.error(f"获取 Trilium 所有笔记异常: {e}", exc_info=True)
+            return False, [], f'获取失败: {str(e)}'
+
+    def get_all_notes_recursive(self):
+        """
+        通过递归方式获取 Trilium 中的所有笔记
+        从根节点开始，递归获取所有子笔记
+
+        Returns:
+            tuple: (success: bool, results: list, message: str)
+        """
+        try:
+            from trilium_py.client import ETAPI
+
+            server_url = self.server_url.rstrip('/')
+            token = self.token
+
+            if not token:
+                logger.info("使用密码模式连接Trilium")
+                ea = ETAPI(server_url)
+            else:
+                ea = ETAPI(server_url, token)
+
+            logger.info("开始递归获取 Trilium 所有笔记...")
+            all_results = []
+
+            # 获取根节点
+            try:
+                root_note = ea.get_note('root')
+                logger.info(f"获取到根节点: {root_note.get('noteId', 'root')}")
+            except Exception as e:
+                logger.error(f"获取根节点失败: {e}")
+                return False, [], f'获取根节点失败: {str(e)}'
+
+            # 递归获取所有笔记
+            def collect_notes(note_id):
+                """递归收集笔记"""
+                try:
+                    note_info = ea.get_note(note_id)
+
+                    if not note_info:
+                        return
+
+                    # 添加当前笔记（排除根节点）
+                    if note_id != 'root':
+                        all_results.append({
+                            'noteId': note_info.get('noteId', note_id),
+                            'title': note_info.get('title', ''),
+                            'type': note_info.get('type', 'text'),
+                            'dateModified': note_info.get('utcDateModified', '')
+                        })
+                        logger.debug(f"收集笔记: {note_id} - {note_info.get('title', '')}")
+
+                    # 递归处理子笔记
+                    child_note_ids = note_info.get('childNoteIds', [])
+                    for child_id in child_note_ids:
+                        collect_notes(child_id)
+
+                except Exception as e:
+                    logger.warning(f"获取笔记 {note_id} 失败: {e}")
+
+            # 从根节点开始递归
+            collect_notes('root')
+
+            logger.info(f"递归获取完成，共获取 {len(all_results)} 条笔记")
+            return True, all_results, '获取成功'
+
+        except Exception as e:
+            logger.error(f"递归获取 Trilium 所有笔记异常: {e}", exc_info=True)
+            return False, [], f'获取失败: {str(e)}'
+
+    def _get_all_notes_via_api(self):
+        """
+        通过基础 API 获取所有笔记（备用方案）
+        使用分页策略获取所有笔记，避免 Trilium API 的返回数量限制
+
+        Returns:
+            tuple: (success: bool, results: list, message: str)
+        """
+        try:
+            # 构建搜索URL
+            search_url = f"{self.server_url.rstrip('/')}/api/notes/search"
+
+            headers = {}
+            if self.token:
+                headers['Authorization'] = f'Bearer {self.token}'
+
+            # 使用分页策略获取所有笔记
+            logger.info("通过基础 API 分页获取所有笔记...")
+            all_results = []
+            page_size = 1000  # Trilium API 的最大限制
+            max_iterations = 100  # 最多尝试100次
+
+            for iteration in range(max_iterations):
+                params = {
+                    'search': '*',
+                    'limit': page_size,
+                    'orderBy': 'noteId',
+                    'offset': iteration * page_size
+                }
+
+                logger.info(f"获取第 {iteration + 1} 页，offset={iteration * page_size}")
+                response = self.session.get(search_url, headers=headers, params=params, timeout=30)
+
+                if response.status_code == 200:
+                    data = response.json()
+                    results = data.get('results', [])
+
+                    if results:
+                        all_results.extend(results)
+                        logger.info(f"第 {iteration + 1} 页: 获取到 {len(results)} 条笔记，累计 {len(all_results)} 条")
+
+                        # 如果返回的数量少于 page_size，说明已经获取完所有笔记
+                        if len(results) < page_size:
+                            logger.info("已获取所有笔记")
+                            break
+                    else:
+                        logger.info(f"第 {iteration + 1} 页: 没有更多笔记")
+                        break
+                else:
+                    logger.error(f"获取第 {iteration + 1} 页失败: {response.status_code}")
+                    break
+
+            # 格式化结果
+            formatted_results = []
+            for result in all_results:
+                formatted_results.append({
+                    'noteId': result.get('noteId', ''),
+                    'title': result.get('title', ''),
+                    'type': result.get('type', 'text'),
+                    'dateModified': result.get('utcDateModified', '')
+                })
+
+            logger.info(f"基础 API 成功获取所有笔记: {len(formatted_results)} 条")
+            return True, formatted_results, '获取成功'
+
+        except Exception as e:
+            logger.error(f"基础 API 获取所有笔记失败: {e}")
+            return False, [], f'获取失败: {str(e)}'
 
     def check_connection(self):
         """

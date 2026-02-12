@@ -36,7 +36,7 @@ USE `YHKB`;
 -- 知识库信息表
 CREATE TABLE IF NOT EXISTS `KB-info` (
     `KB_Number` INT AUTO_INCREMENT PRIMARY KEY COMMENT '知识库编号',
-    `KB_Name` VARCHAR(200) NOT NULL COMMENT '知识库名称',
+    `KB_Name` VARCHAR(500) NOT NULL COMMENT '知识库名称',
     `KB_link` VARCHAR(500) COMMENT '知识库链接',
     `KB_Description` TEXT COMMENT '知识库描述',
     `KB_Category` VARCHAR(50) COMMENT '知识库分类',

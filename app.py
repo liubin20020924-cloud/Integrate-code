@@ -6,7 +6,6 @@
 from flask import Flask, request, jsonify
 from flask_socketio import SocketIO
 from flasgger import Swagger
-from flask_wtf.csrf import CSRFProtect
 import jinja2
 import config
 from common.db_manager import get_pool
