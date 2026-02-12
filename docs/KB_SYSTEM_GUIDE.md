@@ -325,9 +325,9 @@ DB_PASSWORD = 'your-password'
 
 ```python
 # Trilium 服务器配置
-TRILIUM_SERVER_URL = 'http://10.10.10.254:8080'
+TRILIUM_SERVER_URL = 'http://127.0.0.1:8080'
 TRILIUM_TOKEN = 'your-trilium-token'
-TRILIUM_SERVER_HOST = '10.10.10.254:8080'
+TRILIUM_SERVER_HOST = '127.0.0.1:8080'
 
 # Trilium 登录配置
 TRILIUM_LOGIN_USERNAME = ''

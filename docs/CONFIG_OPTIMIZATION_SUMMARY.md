@@ -18,14 +18,14 @@
 
 | 优化项 | 修改前 | 修改后 |
 |--------|--------|--------|
-| 数据库地址 | 硬编码 `10.10.10.250` | 从环境变量 `DB_HOST` 读取 |
-| 数据库密码 | 硬编码 `Nutanix/4u123!` | 从环境变量 `DB_PASSWORD` 读取 |
-| SMTP 用户名 | 硬编码 `1919516011@qq.com` | 从环境变量 `SMTP_USERNAME` 读取 |
+| 数据库地址 | 硬编码内网IP | 从环境变量 `DB_HOST` 读取 |
+| 数据库密码 | 硬编码密码 | 从环境变量 `DB_PASSWORD` 读取 |
+| SMTP 用户名 | 硬编码邮箱地址 | 从环境变量 `SMTP_USERNAME` 读取 |
 | SMTP 密码 | 从环境读取 | 从环境变量 `SMTP_PASSWORD` 读取 |
-| 联系邮箱 | 硬编码 `dora.dong@cloud-doors.com` | 从环境变量 `CONTACT_EMAIL` 读取 |
-| Trilium 地址 | 硬编码 `10.10.10.250:8080` | 从环境变量读取 |
-| Trilium 密码 | 硬编码 `Nutanix/4u123!` | 从环境变量读取 |
-| 邮件默认发送者 | 硬编码 `noreply@cloud-doors.com` | 从环境变量读取 |
+| 联系邮箱 | 硬编码邮箱地址 | 从环境变量 `CONTACT_EMAIL` 读取 |
+| Trilium 地址 | 硬编码内网IP | 从环境变量读取 |
+| Trilium 密码 | 硬编码密码 | 从环境变量读取 |
+| 邮件默认发送者 | 硬编码邮箱地址 | 从环境变量读取 |
 | CORS 配置 | 硬编码 `http://localhost:5000` | 默认改为 `*` |
 
 ---
@@ -40,7 +40,7 @@
 ```python
 # 修改前
 DB_HOST = os.getenv('DB_HOST', '10.10.10.250')
-DB_PASSWORD = os.getenv('DB_PASSWORD', 'Nutanix/4u123!')
+DB_PASSWORD = os.getenv('DB_PASSWORD', 'your-db-password')
 
 # 修改后
 DB_HOST = os.getenv('DB_HOST', '127.0.0.1')
@@ -50,9 +50,9 @@ DB_PASSWORD = os.getenv('DB_PASSWORD', '')
 #### 1.2 移除硬编码的邮件配置
 ```python
 # 修改前
-SMTP_USERNAME = os.getenv('SMTP_USERNAME', '1919516011@qq.com')
-EMAIL_SENDER = os.getenv('EMAIL_SENDER', '1919516011@qq.com')
-CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', 'dora.dong@cloud-doors.com')
+SMTP_USERNAME = os.getenv('SMTP_USERNAME', 'your-email@qq.com')
+EMAIL_SENDER = os.getenv('EMAIL_SENDER', 'your-email@qq.com')
+CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', 'contact@your-domain.com')
 
 # 修改后
 SMTP_USERNAME = os.getenv('SMTP_USERNAME', '')
@@ -65,7 +65,7 @@ CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', '')
 # 修改前
 TRILIUM_SERVER_URL = os.getenv('TRILIUM_SERVER_URL', 'http://10.10.10.250:8080')
 TRILIUM_SERVER_HOST = os.getenv('TRILIUM_SERVER_HOST', '10.10.10.250:8080')
-TRILIUM_LOGIN_PASSWORD = os.getenv('TRILIUM_LOGIN_PASSWORD', 'Nutanix/4u123!')
+TRILIUM_LOGIN_PASSWORD = os.getenv('TRILIUM_LOGIN_PASSWORD', 'your-trilium-password')
 
 # 修改后
 TRILIUM_SERVER_URL = os.getenv('TRILIUM_SERVER_URL', 'http://127.0.0.1:8080')
@@ -132,19 +132,19 @@ if CDN_ENABLED and not CDN_DOMAIN:
 
 ```env
 # Flask 基础配置
-FLASK_SECRET_KEY=yihu-website-secret-key-2024-CHANGE-ME
+FLASK_SECRET_KEY=your-secret-key-here-CHANGE-ME
 FLASK_DEBUG=False
 
 # 服务器配置
 FLASK_HOST=0.0.0.0
 FLASK_PORT=5000
-SITE_URL=http://10.10.10.250:5000
+SITE_URL=http://127.0.0.1:5000
 
 # 数据库配置
-DB_HOST=10.10.10.250
+DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_USER=root
-DB_PASSWORD=Nutanix/4u123!
+DB_PASSWORD=your-db-password
 DB_NAME_HOME=clouddoors_db
 DB_NAME_KB=YHKB
 DB_NAME_CASE=casedb
@@ -152,24 +152,24 @@ DB_NAME_CASE=casedb
 # 邮件配置
 SMTP_SERVER=smtp.qq.com
 SMTP_PORT=465
-SMTP_USERNAME=1919516011@qq.com
-SMTP_PASSWORD=xrbvyjjfkpdmcfbj
-EMAIL_SENDER=1919516011@qq.com
+SMTP_USERNAME=your-email@qq.com
+SMTP_PASSWORD=your-smtp-password
+EMAIL_SENDER=your-email@qq.com
 
 MAIL_SERVER=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=
 MAIL_PASSWORD=
-MAIL_DEFAULT_SENDER=noreply@cloud-doors.com
+MAIL_DEFAULT_SENDER=noreply@your-domain.com
 
-CONTACT_EMAIL=dora.dong@cloud-doors.com
+CONTACT_EMAIL=contact@your-domain.com
 
 # Trilium 配置
-TRILIUM_SERVER_URL=http://10.10.10.250:8080
-TRILIUM_TOKEN=CAdIBlRbkihf_vZGsEocvjR7xMjb0HdSqXaDR+MBpTRUNdX+W99NnWxw=
-TRILIUM_SERVER_HOST=10.10.10.250:8080
+TRILIUM_SERVER_URL=http://127.0.0.1:8080
+TRILIUM_TOKEN=your-trilium-token-here
+TRILIUM_SERVER_HOST=127.0.0.1:8080
 TRILIUM_LOGIN_USERNAME=
-TRILIUM_LOGIN_PASSWORD=Nutanix/4u123!
+TRILIUM_LOGIN_PASSWORD=your-trilium-password
 
 # CORS 配置
 ALLOWED_ORIGINS=*
@@ -322,8 +322,8 @@ SITE_URL=http://localhost:5000
 
 # 生产环境
 FLASK_DEBUG=False
-DB_HOST=10.10.10.250
-SITE_URL=http://10.10.10.250:5000
+DB_HOST=your-production-db-host
+SITE_URL=https://your-domain.com
 ```
 
 ---

@@ -36,6 +36,7 @@
 | [安全改进文档](./SECURITY_IMPROVEMENTS.md) | 安全特性和最佳实践 | 安全审计 |
 | [优化计划](./OPTIMIZATION_PLAN.md) | 性能优化和架构改进 | 开发者 |
 | [代码统计](./CODE_STATISTICS.md) | 代码量和技术栈分析 | 项目评估 |
+| [知识库管理优化](./KB_MANAGEMENT_OPTIMIZATION.md) | 知识库管理功能更新和修复 | 知识库开发者 |
 
 ---
 
@@ -52,7 +53,8 @@ docs/
 ├── trilium-py-README.md     # Trilium 集成文档
 ├── OPTIMIZATION_PLAN.md       # 优化计划文档
 ├── SECURITY_IMPROVEMENTS.md  # 安全特性说明
-└── CODE_STATISTICS.md         # 代码统计信息
+├── CODE_STATISTICS.md         # 代码统计信息
+└── KB_MANAGEMENT_OPTIMIZATION.md  # 知识库管理优化
 ```
 
 ---
@@ -107,6 +109,16 @@ docs/
 
 ## 📝 文档更新记录
 
+### 2026-02-12
+
+#### 知识库管理优化
+- ✅ 更新知识库管理功能说明
+- ✅ 添加 Trilium 获取全部笔记方法文档
+- ✅ 添加批量导入功能更新说明（支持 150 条）
+- ✅ 添加管理界面修复记录
+
+---
+
 ### 2026-02-10
 
 #### 架构重构更新
@@ -154,6 +166,6 @@ docs/
 
 <div align="center">
 
-**文档版本: v2.0** | 最后更新: 2026-02-10
+**文档版本: v2.0.2** | 最后更新: 2026-02-12
 
 </div>

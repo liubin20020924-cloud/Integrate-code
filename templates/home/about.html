@@ -26,7 +26,7 @@
           <div style="position: relative;">
             <div style="position: absolute; inset: -10px; background: linear-gradient(135deg, rgba(10, 77, 162, 0.08), rgba(162, 217, 61, 0.08)); border-radius: 20px; transform: rotate(-2deg);"></div>
             <picture>
-              <source srcset="{{ url_for('static', filename='home/images/optimized/Logo6.webp') }}" type="image/webp">
+              <source srcset="{{ url_for('static', filename='home/images/Logo6.jpg') }}" type="image/webp">
               <img src="{{ url_for('static', filename='home/images/Logo6.jpg') }}" alt="云户科技" style="position: relative; width: 100%; height: auto; border-radius: 20px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); display: block;" loading="lazy" decoding="async" width="700" height="500">
             </picture>
           </div>
@@ -53,19 +53,19 @@
               <div style="width: 40px; height: 40px; background: #A2D93D; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0;">
                 <i class="fa fa-users" style="color: white; font-size: 16px;"></i>
               </div>
-              <span style="font-weight: 600; color: #1a202c; font-size: clamp(0.9rem, 1.1vw, 1rem);">5+ 专业技术人员</span>
+              <span style="font-weight: 600; color: #1a202c; font-size: clamp(0.9rem, 1.1vw, 1rem);">10+ 专业技术人员</span>
             </div>
             <div style="display: flex; align-items: center; padding: clamp(14px, 2vw, 20px); background: rgba(10, 77, 162, 0.05); border-radius: 12px;">
               <div style="width: 40px; height: 40px; background: #0A4DA2; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0;">
                 <i class="fa fa-certificate" style="color: white; font-size: 16px;"></i>
               </div>
-              <span style="font-weight: 600; color: #1a202c; font-size: clamp(0.9rem, 1.1vw, 1rem);">多项原厂认证</span>
+              <span style="font-weight: 600; color: #1a202c; font-size: clamp(0.9rem, 1.1vw, 1rem);">工程师具备多项原厂认证</span>
             </div>
             <div style="display: flex; align-items: center; padding: clamp(14px, 2vw, 20px); background: rgba(162, 217, 61, 0.1); border-radius: 12px;">
               <div style="width: 40px; height: 40px; background: #A2D93D; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0;">
                 <i class="fa fa-book" style="color: white; font-size: 16px;"></i>
               </div>
-              <span style="font-weight: 600; color: #1a202c; font-size: clamp(0.9rem, 1.1vw, 1rem);">完善知识库</span>
+              <span style="font-weight: 600; color: #1a202c; font-size: clamp(0.9rem, 1.1vw, 1rem);">完善的知识库体系</span>
             </div>
           </div>
         </div>
@@ -127,7 +127,7 @@
               <div style="background: white; border-radius: 16px; padding: clamp(18px, 3vw, 28px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06); position: relative; transition: all 0.3s;">
                 <div style="position: absolute; left: -28px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: #0A4DA2; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(10, 77, 162, 0.3);"></div>
                 <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
-                  <span style="background: linear-gradient(135deg, #0A4DA2, #2563eb); color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2023.11</span>
+                  <span style="background: linear-gradient(135deg, #0A4DA2, #2563eb); color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: clamp(0.85rem, 1.1vw, 0.95rem);">2023.12</span>
                 </div>
                 <p style="color: #374151; line-height: 1.7; font-size: clamp(0.9rem, 1.1vw, 1rem); margin: 0;">
                   签约首位客户，完成首个项目交付，成功实现<span style="font-weight: 700; color: #0A4DA2;">0到1</span>的突破
@@ -476,56 +476,77 @@
           
 
           <!-- 技术认证4 -->
-          <div style="text-align: center;">
-            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
-              <img src="{{ url_for('static', filename='home/images/ZS/4.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
-            </div>
-          </div>
-
-
-          <!-- 技术认证6 -->
-          <div style="text-align: center;">
-            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
-              <img src="{{ url_for('static', filename='home/images/ZS/2.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
-            </div>
-          </div>
-
-          <!-- 技术认证7 -->
-          <div style="text-align: center;">
+           <div style="text-align: center;">
             <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
               <img src="{{ url_for('static', filename='home/images/ZS/7.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
             </div>
           </div>
-
-          <!-- 技术认证8 -->
-           <div style="text-align: center;">
+          
+          <!-- 技术认证5 -->
+          <div style="text-align: center;">
             <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
               <img src="{{ url_for('static', filename='home/images/ZS/11.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
             </div>
           </div>
-           <div style="text-align: center;">
+
+          <!-- 技术认证6 -->
+         <div style="text-align: center;">
             <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
               <img src="{{ url_for('static', filename='home/images/ZS/10.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
             </div>
           </div>
-        
 
-          <!-- 技术认证9 -->
+          <!-- 技术认证7 -->
+           <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/2.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
           
 
-          <!-- 技术认证10 -->
+          <!-- 技术认证8 -->
            <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/4.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+           
+
+          <!-- 技术认证9 -->
+          <div style="text-align: center;">
             <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
               <img src="{{ url_for('static', filename='home/images/ZS/8.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
             </div>
           </div>
 
-          <!-- 技术认证11 -->
-          <div style="text-align: center;">
+          <!-- 技术认证10 -->
+           <div style="text-align: center;">
             <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
               <img src="{{ url_for('static', filename='home/images/ZS/9.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
             </div>
           </div>
+          <!-- 技术认证11 -->
+          <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/5.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+          <!-- 技术认证12 -->
+           <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/12.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+
+
+          <!-- 技术认证14 -->
+          <div style="text-align: center;">
+            <div style="width: clamp(180px, 22vw, 240px); height: clamp(140px, 18vw, 190px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZS/14.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+
+
         </div>
       </div>
 
@@ -574,6 +595,12 @@
           <div style="text-align: center;">
             <div style="width: clamp(200px, 25vw, 280px); height: clamp(160px, 20vw, 220px); display: flex; align-items: center; justify-content: center;">
               <img src="{{ url_for('static', filename='home/images/ZZ/5.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
+            </div>
+          </div>
+          <!-- 厂商资质5 -->
+           <div style="text-align: center;">
+            <div style="width: clamp(200px, 25vw, 280px); height: clamp(160px, 20vw, 220px); display: flex; align-items: center; justify-content: center;">
+              <img src="{{ url_for('static', filename='home/images/ZZ/6.svg') }}"  style="max-width: 100%; max-height: 100%; object-fit: contain;">
             </div>
           </div>
         </div>

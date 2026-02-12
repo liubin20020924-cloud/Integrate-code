@@ -229,9 +229,9 @@ CDN_PROTOCOL=https
 
 ```env
 # ❌ 不要使用默认值
-FLASK_SECRET_KEY=yihu-website-secret-key-2024-CHANGE-ME
-DB_PASSWORD=Nutanix/4u123!
-TRILIUM_LOGIN_PASSWORD=Nutanix/4u123!
+FLASK_SECRET_KEY=your-secret-key-here-CHANGE-ME
+DB_PASSWORD=your-db-password-here
+TRILIUM_LOGIN_PASSWORD=your-trilium-password-here
 
 # ✅ 生产环境必须修改为强密码
 FLASK_SECRET_KEY=your-random-secret-key-here-at-least-32-chars
@@ -307,13 +307,13 @@ python -c "import secrets; print(secrets.token_hex(32))"
 
 ```env
 # 示例1：使用域名
-SITE_URL=https://www.yundour.com
+SITE_URL=https://www.your-domain.com
 
 # 示例2：使用IP和端口
-SITE_URL=http://10.10.10.250:5000
+SITE_URL=http://YOUR_PUBLIC_IP:5000
 
 # 示例3：使用HTTPS（推荐）
-SITE_URL=https://yundour.com
+SITE_URL=https://your-domain.com
 ```
 
 ### Q5: 如何启用 Redis？
@@ -347,8 +347,8 @@ SITE_URL=http://localhost:5000
 
 # 生产环境
 FLASK_DEBUG=False
-DB_HOST=10.10.10.250
-SITE_URL=https://www.yundour.com
+DB_HOST=your-production-db-host
+SITE_URL=https://www.your-domain.com
 ```
 
 ### Q7: 配置修改后如何生效？
@@ -394,15 +394,15 @@ FLASK_DEBUG=False
 FLASK_HOST=0.0.0.0
 FLASK_PORT=5000
 
-DB_HOST=10.10.10.250
+DB_HOST=your-db-host
 DB_USER=root
 DB_PASSWORD=strong-database-password
 
-TRILIUM_SERVER_URL=http://10.10.10.250:8080
+TRILIUM_SERVER_URL=http://your-trilium-host:8080
 TRILIUM_TOKEN=your-prod-trilium-token
 
-SITE_URL=http://10.10.10.250:5000
-ALLOWED_ORIGINS=http://10.10.10.250:5000
+SITE_URL=http://your-site-url:5000
+ALLOWED_ORIGINS=http://your-site-url:5000
 ```
 
 ### 生产环境（公网部署）
@@ -412,22 +412,22 @@ FLASK_DEBUG=False
 FLASK_HOST=0.0.0.0
 FLASK_PORT=5000
 
-DB_HOST=db.yundour.com
+DB_HOST=your-db-host.your-domain.com
 DB_USER=website_user
 DB_PASSWORD=strong-database-password
 
-TRILIUM_SERVER_URL=http://trilium.yundour.com:8080
+TRILIUM_SERVER_URL=http://trilium.your-domain.com:8080
 TRILIUM_TOKEN=your-prod-trilium-token
 
 SMTP_SERVER=smtp.exmail.qq.com
-SMTP_USERNAME=official@yundour.com
+SMTP_USERNAME=official@your-domain.com
 SMTP_PASSWORD=your-qq-authorization-code
-EMAIL_SENDER=official@yundour.com
+EMAIL_SENDER=official@your-domain.com
 
-SITE_URL=https://www.yundour.com
-ALLOWED_ORIGINS=https://www.yundour.com,https://yundour.com
+SITE_URL=https://www.your-domain.com
+ALLOWED_ORIGINS=https://www.your-domain.com,https://your-domain.com
 
-CONTACT_EMAIL=contact@yundour.com
+CONTACT_EMAIL=contact@your-domain.com
 ```
 
 ---
