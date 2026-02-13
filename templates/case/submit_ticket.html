@@ -11,6 +11,7 @@
 
   <div class="form-container">
     <form id="ticketForm" class="ticket-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <!-- 客户信息 -->
       <div class="form-section">
         <h3><i class="fa fa-user"></i> 客户信息</h3>

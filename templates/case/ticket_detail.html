@@ -1132,6 +1132,40 @@
   let currentUsername = null;
   let currentRole = null;
 
+  // CSRF Token 获取函数
+  function getCSRFToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    if (meta) {
+      return meta.getAttribute('content');
+    }
+    // 尝试从表单中获取
+    const input = document.querySelector('input[name="csrf_token"]');
+    if (input) {
+      return input.value;
+    }
+    return '';
+  }
+
+  // 增强的 fetch 函数，自动添加 CSRF token
+  async function fetchWithCSRF(url, options = {}) {
+    const csrfToken = getCSRFToken();
+
+    if (!options.headers) {
+      options.headers = {};
+    }
+
+    // 对于 JSON 请求，将 CSRF token 添加到请求头
+    if (options.headers['Content-Type'] === 'application/json') {
+      options.headers['X-CSRF-Token'] = csrfToken;
+    }
+    // 对于表单请求，可以添加到表单数据中
+    else if (options.body instanceof FormData) {
+      options.body.append('csrf_token', csrfToken);
+    }
+
+    return fetch(url, options);
+  }
+
   // 页面加载完成后执行
   document.addEventListener('DOMContentLoaded', function() {
     loadTicketDetail();
@@ -1337,7 +1371,7 @@
     sendBtn.disabled = true;
 
     try {
-      const response = await fetch('/case/api/ticket/' + ticketId + '/message', {
+      const response = await fetchWithCSRF('/case/api/ticket/' + ticketId + '/message', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -1413,7 +1447,7 @@
     }
 
     try {
-      const response = await fetch('/case/api/ticket/' + ticketId + '/status', {
+      const response = await fetchWithCSRF('/case/api/ticket/' + ticketId + '/status', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -1472,7 +1506,7 @@
     }
 
     try {
-      const response = await fetch('/case/api/ticket/' + ticketId + '/assign', {
+      const response = await fetchWithCSRF('/case/api/ticket/' + ticketId + '/assign', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -1509,7 +1543,7 @@
     }
 
     try {
-      const response = await fetch('/case/api/ticket/' + ticketId + '/close', {
+      const response = await fetchWithCSRF('/case/api/ticket/' + ticketId + '/close', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -9,6 +9,7 @@
 """
 
 import os
+import secrets
 from dotenv import load_dotenv
 
 # 尝试加载 .env 文件（可选，不影响默认配置）
@@ -21,7 +22,8 @@ load_dotenv()
 class BaseConfig:
     """基础配置类"""
     # Flask 安全密钥 - 生产环境请必须修改！
-    SECRET_KEY = os.getenv('FLASK_SECRET_KEY', 'yihu-website-secret-key-2024-CHANGE-ME')
+    # 优先从环境变量读取，否则自动生成随机密钥
+    SECRET_KEY = os.getenv('FLASK_SECRET_KEY') or secrets.token_hex(32)
 
     # 调试模式
     DEBUG = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'  # 生产环境默认为 False
@@ -29,9 +31,13 @@ class BaseConfig:
     # JSON 中文支持
     JSON_AS_ASCII = False
 
-    # Session 配置
-    SESSION_COOKIE_SAMESITE = 'Lax'
+    # Session 配置（已加固）
+    SESSION_COOKIE_NAME = 'cloud_doors_session'
+    SESSION_COOKIE_SAMESITE = 'Lax'  # HTTPS 后改为 'Strict'
     SESSION_COOKIE_HTTPONLY = True
+    # SESSION_COOKIE_SECURE = True  # 启用 HTTPS 后取消注释
+    SESSION_COOKIE_MAX_AGE = 10800  # 3 小时
+    PERMANENT_SESSION_LIFETIME = 10800  # 3 小时
 
     # 最大上传大小
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB
@@ -60,7 +66,15 @@ SITE_URL = os.getenv('SITE_URL', f'http://{FLASK_HOST}:{FLASK_PORT}')
 DB_HOST = os.getenv('DB_HOST', '127.0.0.1')
 DB_PORT = int(os.getenv('DB_PORT', '3306'))
 DB_USER = os.getenv('DB_USER', 'root')
-DB_PASSWORD = os.getenv('DB_PASSWORD', '')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+
+# 数据库密码安全检查
+if not DB_PASSWORD:
+    import warnings
+    warnings.warn(
+        "⚠️ 警告: 数据库密码为空！请设置 DB_PASSWORD 环境变量。"
+        "生产环境请务必设置数据库密码以确保安全。"
+    )
 
 # 各系统数据库名称
 DB_NAME_HOME = os.getenv('DB_NAME_HOME', 'clouddoors_db')  # 官网系统数据库
@@ -114,7 +128,19 @@ TRILIUM_LOGIN_PASSWORD = os.getenv('TRILIUM_LOGIN_PASSWORD', '')
 # 知识库登录配置
 SESSION_TIMEOUT = 180  # Session超时时间（秒），3小时
 DEFAULT_ADMIN_USERNAME = 'admin'
-DEFAULT_ADMIN_PASSWORD = 'YHKB@2024'  # ⚠️ 安全警告：请在生产环境中立即修改此默认密码！管理员密码要求至少10位，包含大小写字母、数字和特殊字符
+
+# ⚠️ 安全警告：默认管理员密码（仅在开发环境使用）
+# 生产环境请务必通过环境变量 DEFAULT_ADMIN_PASSWORD 设置强密码
+DEFAULT_ADMIN_PASSWORD = os.getenv('DEFAULT_ADMIN_PASSWORD', 'YHKB@2024')
+
+# 密码安全检查
+if DEFAULT_ADMIN_PASSWORD == 'YHKB@2024' and not os.getenv('DEFAULT_ADMIN_PASSWORD'):
+    import warnings
+    warnings.warn(
+        "⚠️ 警告: 使用默认管理员密码 'YHKB@2024'！"
+        "生产环境请立即修改默认密码，设置环境变量 DEFAULT_ADMIN_PASSWORD。"
+        "密码要求至少10位，包含大小写字母、数字和特殊字符。"
+    )
 
 # 内容查看配置
 ENABLE_CONTENT_VIEW = True

@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS `mgmt_login_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='知识库登录日志表';
 
 -- 插入默认管理员用户
+-- 注意：生产环境部署后请立即修改默认密码！
 INSERT INTO `users` (username, password_hash, password_type, display_name, role, status, system, created_by)
 VALUES (
     'admin',
@@ -106,20 +107,6 @@ ON DUPLICATE KEY UPDATE
     status = 'active',
     display_name = VALUES(display_name),
     role = VALUES(role);
-
--- 插入示例知识库数据
-INSERT INTO `KB-info` (KB_Number, KB_Name, KB_link, KB_Description, KB_Category, KB_Author)
-VALUES
-    (1001, '云户科技官网', 'https://www.cloud-doors.com', '云户科技官方网站，提供企业级云计算解决方案', '公司介绍', '系统管理员'),
-    (1002, '云户CRM系统使用指南', 'https://www.cloud-doors.com/crm-guide', '云户CRM系统详细使用教程和最佳实践', '产品文档', '产品团队'),
-    (1003, '云户ERP系统安装手册', 'https://www.cloud-doors.com/erp-install', '云户ERP系统环境要求和安装步骤', '产品文档', '技术团队'),
-    (1004, '常见问题解答', 'https://www.cloud-doors.com/faq', '云户产品常见问题及解决方案', '帮助文档', '客服团队'),
-    (1005, 'API接口文档', 'https://www.cloud-doors.com/api-docs', '云户平台API接口详细说明', '开发文档', '技术团队')
-ON DUPLICATE KEY UPDATE
-    KB_Name = VALUES(KB_Name),
-    KB_link = VALUES(KB_link),
-    KB_Description = VALUES(KB_Description),
-    KB_Category = VALUES(KB_Category);
 
 
 -- =====================================================
@@ -159,21 +146,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
     INDEX idx_send_time (`send_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='工单聊天消息表';
 
--- 插入示例工单数据
-INSERT INTO `tickets` (ticket_id, customer_name, customer_contact, customer_email, product, issue_type, priority, title, content, status, create_time, update_time)
-VALUES
-    ('TK-2026020800001', '张三', '13800138000', 'zhangsan@example.com', '云户CRM', 'technical', 'high', 'CRM系统登录失败', '用户反馈在登录CRM系统时出现网络错误，无法正常访问系统。', 'pending', NOW(), NOW()),
-    ('TK-2026020800002', '李四', '13900139000', 'lisi@example.com', '云户ERP', 'service', 'medium', '数据导出功能咨询', '想了解ERP系统是否支持批量导出客户数据，以及导出的格式。', 'pending', NOW(), NOW())
-ON DUPLICATE KEY UPDATE
-    update_time = NOW();
-
--- 插入示例消息数据
-INSERT INTO `messages` (ticket_id, sender, sender_name, content, send_time)
-VALUES
-    ('TK-2026020800001', 'admin', '客服人员', '您好，已收到您的工单，我们正在排查问题，请稍候。', NOW()),
-    ('TK-2026020800002', 'customer', '李四', '请问数据导出支持哪些格式？', NOW())
-ON DUPLICATE KEY UPDATE
-    send_time = VALUES(send_time);
+-- 工单数据由用户通过前端界面创建
 
 
 -- =====================================================
@@ -193,13 +166,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
     INDEX idx_status (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='官网留言表';
 
--- 插入示例留言数据
-INSERT INTO `messages` (name, email, message, status)
-VALUES
-    ('王五', 'wangwu@example.com', '想了解更多关于云户CRM系统的信息，请发送产品手册到我的邮箱。', 'pending'),
-    ('赵六', 'zhaoliu@example.com', '咨询云户ERP系统的价格和部署方案。', 'pending')
-ON DUPLICATE KEY UPDATE
-    created_at = VALUES(created_at);
+-- 留言数据由用户通过前端界面提交
 
 
 -- =====================================================
@@ -213,10 +180,6 @@ SELECT '知识库系统数据库 (YHKB) 表结构' AS info;
 SELECT '=================================================' AS info;
 SHOW TABLES;
 
--- 查看知识库数据
-SELECT '知识库数据示例' AS info;
-SELECT KB_Number, KB_Name, KB_Category FROM `KB-info` LIMIT 5;
-
 -- 查看用户数据
 SELECT '用户数据' AS info;
 SELECT id, username, display_name, role, status, password_type FROM `users`;
@@ -228,9 +191,7 @@ SELECT '工单系统数据库 (casedb) 表结构' AS info;
 SELECT '=================================================' AS info;
 SHOW TABLES;
 
--- 查看工单数据
-SELECT '工单数据示例' AS info;
-SELECT ticket_id, customer_name, product, issue_type, priority, status FROM `tickets` LIMIT 5;
+
 
 -- 查看官网数据库表
 USE `clouddoors_db`;
@@ -239,9 +200,7 @@ SELECT '官网系统数据库 (clouddoors_db) 表结构' AS info;
 SELECT '=================================================' AS info;
 SHOW TABLES;
 
--- 查看留言数据
-SELECT '留言数据示例' AS info;
-SELECT name, email, LEFT(message, 50) AS message_preview, status FROM `messages` LIMIT 5;
+
 
 -- =====================================================
 -- 6. 初始化完成提示

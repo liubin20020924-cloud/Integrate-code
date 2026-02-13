@@ -42,8 +42,9 @@
 
 | 文档 | 说明 | 适用场景 |
 |--------|------|----------|
+| [优化建议](./OPTIMIZATION_RECOMMENDATIONS.md) | 全面的代码分析和优化建议 | 开发者/运维 |
 | [安全改进文档](./SECURITY_IMPROVEMENTS.md) | 安全特性和最佳实践 | 安全审计 |
-| [优化计划](./OPTIMIZATION_PLAN.md) | 性能优化和架构改进 | 开发者 |
+| [优化计划](./OPTIMIZATION_PLAN.md) | 历史优化记录（已过时） | 参考 |
 | [代码统计](./CODE_STATISTICS.md) | 代码量和技术栈分析 | 项目评估 |
 | [知识库管理优化](./KB_MANAGEMENT_OPTIMIZATION.md) | 知识库管理功能更新和修复 | 知识库开发者 |
 
