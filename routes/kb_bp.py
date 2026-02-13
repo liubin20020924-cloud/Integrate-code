@@ -1,7 +1,7 @@
 """
 知识库系统路由蓝图 - 认证和浏览
 """
-from flask import Blueprint, request, redirect, url_for, session, render_template, Response
+from flask import Blueprint, request, redirect, url_for, session, render_template, Response, current_app
 from datetime import datetime
 import requests
 from common.unified_auth import get_current_user, login_required
@@ -18,7 +18,7 @@ kb_bp = Blueprint('kb', __name__, url_prefix='/kb')
 @kb_bp.route('/auth/login', methods=['GET', 'POST'])
 def login():
     """知识库系统登录
-    
+
     用户登录知识库系统
     ---
     tags:

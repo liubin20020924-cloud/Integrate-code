@@ -152,6 +152,7 @@
                 {% endif %}
                 
                 <form method="POST" action="{{ url_for('kb.login') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
                     
                     <!-- 用户名 -->

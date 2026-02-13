@@ -38,3 +38,9 @@ flask-limiter==3.5.0
 # 图片优化
 Pillow==10.0.0
 
+# 开发和测试依赖
+pytest==7.4.3
+pytest-cov==4.1.0
+coverage==7.2.7
+
+

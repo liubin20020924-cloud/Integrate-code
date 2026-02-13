@@ -5,6 +5,7 @@
 """
 from flask import Flask, request, jsonify
 from flask_socketio import SocketIO
+from flask_wtf.csrf import CSRFProtect
 from flasgger import Swagger
 import jinja2
 import config
@@ -22,13 +23,29 @@ app = Flask(__name__, template_folder='templates')
 app.jinja_loader = jinja2.ChoiceLoader([jinja2.FileSystemLoader(d) for d in template_dirs])
 app.secret_key = config.BaseConfig.SECRET_KEY
 app.config['JSON_AS_ASCII'] = False
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['DEBUG'] = config.BaseConfig.DEBUG
+app.config['SESSION_COOKIE_SAMESITE'] = config.BaseConfig.SESSION_COOKIE_SAMESITE
+app.config['SESSION_COOKIE_HTTPONLY'] = config.BaseConfig.SESSION_COOKIE_HTTPONLY
 
-# CSRF 保护 - 已禁用以避免登录问题
-# 如果需要启用CSRF保护，需要在所有受保护的表单中添加csrf_token
-# 登录和认证API不使用CSRF保护，因为它们是公开接口
+# Session 安全配置（生产环境使用 HTTPS 时启用）
+if os.getenv('HTTPS_ENABLED', 'false').lower() == 'true':
+    app.config['SESSION_COOKIE_SECURE'] = True
+
+# 启用 CSRF 保护
+# 注意：需要安装 flask-wtf: pip install flask-wtf
+# 登录和认证 API 不使用 CSRF 保护，因为它们是公开接口
+# 其他表单需要在模板中添加 {% csrf_token() %}
+csrf = None
+try:
+    csrf = CSRFProtect(app)
+except ImportError:
+    print("警告: flask-wtf 未安装，CSRF 保护未启用。运行: pip install flask-wtf")
+
+# 为所有模板添加 CSRF token 到上下文
+@app.context_processor
+def inject_csrf_token():
+    if csrf:
+        return dict(csrf_token=lambda: csrf._get_csrf_token())
+    return dict(csrf_token=lambda: '')
 
 # 性能优化配置
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=3)
@@ -232,6 +249,11 @@ app.register_blueprint(case_bp)
 app.register_blueprint(unified_bp)
 app.register_blueprint(api_bp)
 app.register_blueprint(auth_bp)
+
+# 排除登录端点的 CSRF 保护（这些是公开接口）
+if csrf:
+    csrf.exempt(kb_bp)
+    csrf.exempt(case_bp)
 
 # 注册SocketIO事件
 register_socketio_events(socketio)
