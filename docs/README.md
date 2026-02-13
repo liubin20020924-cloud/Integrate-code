@@ -10,8 +10,8 @@
 
 | 文档 | 说明 | 适用场景 |
 |--------|------|----------|
-| [快速开始指南](../README.md) | 项目简介、安装配置、快速上手 | 新用户入门 |
-| [更新日志](./SYSTEM_UPDATE_NOTES.md) | 版本更新历史 | 了解最新功能 |
+| [更新日志](./CHANGELOG.md) | 版本更新历史、功能改进、问题修复 | 了解最新功能 |
+| [数据库快速开始](../database/QUICK_START.md) | 数据库初始化和配置 | 环境搭建 |
 
 ### 系统指南
 
@@ -24,8 +24,8 @@
 
 ### API 文档
 
-| 文档 | 说明 | 端口 |
-|--------|------|------|
+| 文档 | 说明 | 目标读者 |
+|--------|------|----------|
 | [API 文档](./API_DOCS.md) | RESTful API 接口说明 | 开发者 |
 | [Trilium 集成](./trilium-py-README.md) | Trilium 笔记服务集成 | 知识库开发者 |
 
@@ -36,6 +36,7 @@
 | [官网开发指南](./HOMEPAGE_DEV_GUIDE.md) | 官网前端开发修改指南 | 前端开发者 |
 | [数据库设置](./DATABASE_SETUP.md) | 数据库初始化和配置 | 开发者/运维 |
 | [项目优化总结](./PROJECT_OPTIMIZATION_SUMMARY.md) | 项目架构和优化记录 | 开发者 |
+| [配置指南](./CONFIGURATION_GUIDE.md) | 系统配置详细说明 | 开发者/运维 |
 
 ### 安全与优化
 
@@ -61,6 +62,13 @@
 | [Trilium 快速添加](./TRILIUM_QUICK_ADD.md) | 快速添加 Trilium 笔记 | 知识库管理员 |
 | [Trilium 搜索指南](./TRILIUM_SEARCH_GUIDE.md) | Trilium 搜索功能说明 | 知识库用户 |
 
+### 图片优化记录
+
+| 文档 | 说明 | 适用场景 |
+|--------|------|----------|
+| [图片优化报告](./IMAGE_OPTIMIZATION_REPORT.md) | 图片压缩和优化详情 | 性能优化 |
+| [图片替换完成](./IMAGE_REPLACEMENT_COMPLETE.md) | 图片优化部署记录 | 前端开发 |
+
 ---
 
 ## 🗂 文档结构
@@ -68,29 +76,43 @@
 ```
 docs/
 ├── README.md                              # 本文件 - 文档索引
+├── CHANGELOG.md                           # 更新日志（主要）
+│
 ├── 快速开始和安装
 │   ├── DATABASE_SETUP.md                   # 数据库初始化指南
-│   └── SYSTEM_UPDATE_NOTES.md              # 系统更新日志
+│   └── database/
+│       ├── QUICK_START.md                  # 数据库快速开始
+│       └── README.md                      # 数据库文档索引
+│
 ├── 系统指南
 │   ├── HOME_SYSTEM_GUIDE.md                # 官网系统完整指南
 │   ├── KB_SYSTEM_GUIDE.md                  # 知识库系统完整指南
 │   ├── CASE_SYSTEM_GUIDE.md                # 工单系统完整指南
 │   └── UNIFIED_SYSTEM_GUIDE.md            # 统一用户管理完整指南
+│
 ├── API 文档
 │   ├── API_DOCS.md                        # RESTful API 文档
 │   └── trilium-py-README.md               # Trilium 集成文档
+│
 ├── 开发指南
 │   ├── HOMEPAGE_DEV_GUIDE.md              # 官网前端开发指南
 │   ├── PROJECT_OPTIMIZATION_SUMMARY.md    # 项目优化总结
-│   └── KB_MANAGEMENT_OPTIMIZATION.md      # 知识库管理优化
+│   ├── KB_MANAGEMENT_OPTIMIZATION.md      # 知识库管理优化
+│   └── CONFIGURATION_GUIDE.md             # 配置指南
+│
 ├── 安全与优化
 │   ├── SECURITY_IMPROVEMENTS.md            # 安全特性说明
 │   ├── OPTIMIZATION_PLAN.md               # 优化计划文档
 │   └── CODE_STATISTICS.md                 # 代码统计信息
-└── 问题修复记录
-    ├── TRILIUM_429_FIX.md                 # 429 错误修复
-    ├── TRILIUM_PUBLIC_ACCESS_FIX.md       # 公开访问修复
-    └── KB_SEARCH_FIX.md                   # 知识库搜索修复
+│
+├── 问题修复记录
+│   ├── TRILIUM_429_FIX.md                 # 429 错误修复
+│   ├── TRILIUM_PUBLIC_ACCESS_FIX.md       # 公开访问修复
+│   └── KB_SEARCH_FIX.md                   # 知识库搜索修复
+│
+└── Trilium 相关文档
+    ├── TRILIUM_QUICK_ADD.md               # Trilium 快速添加
+    └── TRILIUM_SEARCH_GUIDE.md           # Trilium 搜索指南
 ```
 
 ---
@@ -99,21 +121,21 @@ docs/
 
 ### 新用户
 
-1. 阅读主项目 [README.md](../README.md)
-2. 根据 [DATABASE_SETUP.md](./DATABASE_SETUP.md) 完成数据库初始化
+1. 阅读 [更新日志](./CHANGELOG.md) 了解最新版本
+2. 根据 [数据库快速开始](../database/QUICK_START.md) 完成数据库初始化
 3. 阅读 [系统指南](#-系统指南) 了解对应系统功能
 4. 参考 [安全改进文档](./SECURITY_IMPROVEMENTS.md) 配置生产环境
 
 ### 开发者
 
-1. 阅读 [主 README](../README.md) 了解项目结构
+1. 阅读 [更新日志](./CHANGELOG.md) 了解版本历史
 2. 查阅 [API 文档](./API_DOCS.md) 了解接口规范
 3. 参考 [优化计划](./OPTIMIZATION_PLAN.md) 了解架构设计
 4. 查看 [代码统计](./CODE_STATISTICS.md) 了解技术栈
 
 ### 管理员
 
-1. 阅读 [主 README](../README.md) 了解默认账号和配置
+1. 阅读 [更新日志](./CHANGELOG.md) 了解新功能
 2. 查看 [统一用户管理指南](./UNIFIED_SYSTEM_GUIDE.md) 学习用户管理
 3. 参考 [安全改进文档](./SECURITY_IMPROVEMENTS.md) 了解安全配置
 4. 根据需要查看各系统指南
@@ -133,7 +155,8 @@ docs/
 
 | 功能 | 文档 | 章节 |
 |------|--------|------|
-| 安装配置 | [DATABASE_SETUP.md](./DATABASE_SETUP.md) | 数据库初始化 |
+| 版本更新 | [CHANGELOG.md](./CHANGELOG.md) | 所有版本记录 |
+| 数据库配置 | [数据库快速开始](../database/QUICK_START.md) | 数据库初始化 |
 | 用户管理 | [统一用户管理](./UNIFIED_SYSTEM_GUIDE.md) | 用户CRUD、权限控制 |
 | Trilium 集成 | [知识库指南](./KB_SYSTEM_GUIDE.md#trilium-集成) | 笔记搜索、内容获取 |
 | WebSocket 聊天 | [工单指南](./CASE_SYSTEM_GUIDE.md#websocket-实时聊天) | 实时通信 |
@@ -156,12 +179,22 @@ docs/
 
 ### 2026-02-13
 
-#### Trilium 搜索功能修复
-- ✅ 新增 [KB_SEARCH_FIX.md](./KB_SEARCH_FIX.md)
-- ✅ 记录 JavaScript 语法错误修复
-- ✅ 记录数据结构不匹配问题修复
-- ✅ 记录事件监听器重复绑定问题修复
-- ✅ 整理项目文档结构
+#### 文档结构重组
+- ✅ 创建统一的 [CHANGELOG.md](./CHANGELOG.md)
+- ✅ 删除冗余和过时的文档
+- ✅ 更新文档索引和导航
+
+#### 删除的文档
+- `CASE_SYSTEM_COMPLETION.md` - 已合并到工单系统指南
+- `CONFIG_OPTIMIZATION_SUMMARY.md` - 已合并到优化计划
+- `IMAGE_LOADING_OPTIMIZATION_PLAN.md` - 已合并到图片优化报告
+- `IMAGE_OPTIMIZATION_GUIDE.md` - 已合并到图片优化报告
+- `MD_SECURITY_CLEANUP_REPORT.md` - 已合并到安全改进文档
+- `NGINX_CONFIG_COMPARISON.md` - 过时的配置对比
+- `NGINX_UPGRADE_GUIDE.md` - 过时的升级指南
+- `QUICK_OPTIMIZE_REFERENCE.md` - 已合并到优化计划
+- `nginx_*.conf` - 示例配置文件
+- `SYSTEM_UPDATE_NOTES.md` - 已合并到 CHANGELOG.md
 
 ---
 
