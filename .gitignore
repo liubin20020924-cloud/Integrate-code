@@ -20,13 +20,23 @@ wheels/
 .installed.cfg
 *.egg
 
-# 虚拟环境
+# Virtual Environment
 venv/
-ENV/
 env/
+ENV/
+.venv
 
-# 环境变量
-.env
+# Pytest
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
 
 # IDE
 .vscode/
@@ -34,26 +44,41 @@ env/
 *.swp
 *.swo
 *~
+.DS_Store
 
-# 数据库
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Database
 *.db
 *.sqlite
 *.sqlite3
 
-# 临时文件
-*.log
+# Uploads
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Temporary files
+tmp/
+temp/
 *.tmp
-.DS_Store
 
-# 上传文件
-uploads/
+# Tests
+tests/
+test*.py
+_test.py
+*_test.py
 
-# 缓存
-.cache/
-*.cache
+# Optimization reports
+*_OPTIMIZATION_*.md
+*_FIX.md
 
-# Session
-flask_session/
-
-# 日志目录
-logs/
+# Project management
+.codebuddy/
+Directories*

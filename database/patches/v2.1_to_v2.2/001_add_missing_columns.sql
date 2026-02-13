@@ -1,11 +1,16 @@
 -- =====================================================
--- 工单系统数据库补丁脚本
--- 修复 tickets 表缺少的字段
+-- 补丁: 添加工单系统缺失字段
+-- 影响数据库: casedb
+-- 创建时间: 2026-02-13
+-- 版本范围: v2.1 -> v2.2
+-- 功能说明: 为工单系统添加处理人、解决方案、提交用户等字段
 -- =====================================================
 
 USE `casedb`;
 
--- 添加 assignee 字段
+-- =====================================================
+-- 1. 添加 assignee 字段(处理人)
+-- =====================================================
 SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
      WHERE TABLE_SCHEMA = 'casedb' AND TABLE_NAME = 'tickets' AND COLUMN_NAME = 'assignee');
 SET @sql = IF(@col_exists = 0,
@@ -15,7 +20,9 @@ PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- 添加 resolution 字段
+-- =====================================================
+-- 2. 添加 resolution 字段(解决方案)
+-- =====================================================
 SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
      WHERE TABLE_SCHEMA = 'casedb' AND TABLE_NAME = 'tickets' AND COLUMN_NAME = 'resolution');
 SET @sql = IF(@col_exists = 0,
@@ -25,7 +32,9 @@ PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- 添加 idx_assignee 索引
+-- =====================================================
+-- 3. 添加 idx_assignee 索引
+-- =====================================================
 SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
      WHERE TABLE_SCHEMA = 'casedb' AND TABLE_NAME = 'tickets' AND INDEX_NAME = 'idx_assignee');
 SET @sql = IF(@idx_exists = 0,
@@ -35,17 +44,21 @@ PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- 添加 submit_user 字段（提交工单的用户名，来自统一用户表）
+-- =====================================================
+-- 4. 添加 submit_user 字段(提交工单的用户名,来自统一用户表)
+-- =====================================================
 SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
      WHERE TABLE_SCHEMA = 'casedb' AND TABLE_NAME = 'tickets' AND COLUMN_NAME = 'submit_user');
 SET @sql = IF(@col_exists = 0,
-    'ALTER TABLE `tickets` ADD COLUMN `submit_user` VARCHAR(100) NOT NULL DEFAULT "" COMMENT "提交工单的用户名（来自统一用户表）" AFTER `customer_email`',
+    'ALTER TABLE `tickets` ADD COLUMN `submit_user` VARCHAR(100) NOT NULL DEFAULT "" COMMENT "提交工单的用户名(来自统一用户表)" AFTER `customer_email`',
     'SELECT "Column submit_user already exists" AS message');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- 添加 idx_submit_user 索引
+-- =====================================================
+-- 5. 添加 idx_submit_user 索引
+-- =====================================================
 SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
      WHERE TABLE_SCHEMA = 'casedb' AND TABLE_NAME = 'tickets' AND INDEX_NAME = 'idx_submit_user');
 SET @sql = IF(@idx_exists = 0,
@@ -55,17 +68,21 @@ PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- 添加 customer_contact_name 字段（客户联系人姓名）
+-- =====================================================
+-- 6. 添加 customer_contact_name 字段(客户联系人姓名)
+-- =====================================================
 SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
      WHERE TABLE_SCHEMA = 'casedb' AND TABLE_NAME = 'tickets' AND COLUMN_NAME = 'customer_contact_name');
 SET @sql = IF(@col_exists = 0,
-    'ALTER TABLE `tickets` ADD COLUMN `customer_contact_name` VARCHAR(100) NOT NULL DEFAULT "" COMMENT "客户联系人姓名（当前登录用户）" AFTER `customer_name`',
+    'ALTER TABLE `tickets` ADD COLUMN `customer_contact_name` VARCHAR(100) NOT NULL DEFAULT "" COMMENT "客户联系人姓名(当前登录用户)" AFTER `customer_name`',
     'SELECT "Column customer_contact_name already exists" AS message');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- 添加 idx_customer_contact_name 索引
+-- =====================================================
+-- 7. 添加 idx_customer_contact_name 索引
+-- =====================================================
 SET @idx_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
      WHERE TABLE_SCHEMA = 'casedb' AND TABLE_NAME = 'tickets' AND INDEX_NAME = 'idx_customer_contact_name');
 SET @sql = IF(@idx_exists = 0,
@@ -75,7 +92,15 @@ PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
--- 验证表结构
+-- =====================================================
+-- 8. 验证表结构
+-- =====================================================
+SELECT '=================================================' AS info;
+SELECT '工单系统数据库补丁验证' AS info;
+SELECT '=================================================' AS info;
+
 SHOW COLUMNS FROM `tickets`;
 
-SELECT '工单系统数据库补丁完成！' AS status;
+SELECT '=================================================' AS info;
+SELECT '补丁执行完成!' AS status;
+SELECT '=================================================' AS info;
