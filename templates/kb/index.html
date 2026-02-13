@@ -742,16 +742,18 @@
                     fetch(`/kb/MGMT/api/trilium/search?query=${encodeURIComponent(searchContent)}&limit=20`)
                         .then(response => response.json())
                         .then(data => {
+                            console.log('内容搜索返回数据:', data);
                             if (data.success) {
-                                if (data.data.count > 0) {
+                                const results = data.data && data.data.results ? data.data.results : [];
+                                if (results.length > 0) {
                                     let html = `
                                         <div class="search-result-header">
-                                            <h6><i class="fas fa-search me-2"></i>搜索到 ${data.data.count} 条相关笔记</h6>
+                                            <h6><i class="fas fa-search me-2"></i>搜索到 ${results.length} 条相关笔记</h6>
                                             <p class="search-meta mb-0">关键词: "${searchContent}"</p>
                                         </div>
                                         <div class="content-search-results mt-3">`;
 
-                                    data.data.results.forEach((note, index) => {
+                                    results.forEach((note, index) => {
                                         // 构建Trilium笔记的URL
                                         const triliumBaseUrl = '{{ trilium_base_url|safe }}';
                                         const noteUrl = `${triliumBaseUrl}/#root/${note.noteId}`;
@@ -817,8 +819,13 @@
                                             searchKbRecordByNoteUrl(noteUrl, noteTitle);
                                         });
                                     });
-                                    
                                 } else {
+                                    resultsDiv.innerHTML = `
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            未找到包含 "${searchContent}" 的笔记
+                                        </div>
+                                    `;
                                     resultsDiv.innerHTML = `
                                         <div class="alert alert-warning">
                                             <i class="fas fa-exclamation-triangle me-2"></i>
@@ -1108,30 +1115,6 @@
                 });
             });
 
-            // 页面加载时测试Trilium连接
-            if (window.location.pathname === '/') {
-                // 延迟测试连接，避免影响页面加载
-                setTimeout(() => {
-                    fetch('/api/trilium/test')
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                updateConnectionStatus(data.connected);
-                                if (!data.connected) {
-                                    console.warn('Trilium连接失败:', data.message);
-                                }
-                            } else {
-                                updateConnectionStatus(false);
-                                console.error('测试Trilium连接失败:', data.message);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('测试Trilium连接失败:', error);
-                            updateConnectionStatus(false);
-                        });
-                }, 1000);
-            }
-            
             // 添加一个键盘快捷键：ESC关闭模态框
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && document.getElementById('contentModal').classList.contains('show')) {
@@ -1156,21 +1139,6 @@
                 // 显示toast
                 const toast = new bootstrap.Toast(toastEl);
                 toast.show();
-            }
-            
-            // 初始化：检查API端点是否存在
-            function checkSearchAPI() {
-                fetch('/kb/MGMT/api/trilium/search?query=test&limit=1')
-                    .then(response => {
-                        if (response.ok) {
-                            // API可用
-                        } else {
-                            console.warn('内容搜索API可能不可用');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('检查搜索API失败:', error);
-                    });
             }
 
             // 密码显示/隐藏切换功能
@@ -1215,9 +1183,6 @@
                     icon.classList.add('fa-eye');
                 }
             });
-
-            // 页面加载时检查API
-            setTimeout(checkSearchAPI, 2000);
         });
     </script>
 </body>

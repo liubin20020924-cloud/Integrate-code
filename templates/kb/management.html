@@ -1293,35 +1293,7 @@
         }
 
         // ==================== Trilium批量导入功能 ====================
-
-        // 搜索Trilium笔记
-        document.getElementById('triliumSearchBtn').addEventListener('click', searchTriliumNotes);
-        document.getElementById('triliumSearchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchTriliumNotes();
-            }
-        });
-
-        // 清空搜索
-        document.getElementById('clearSearchBtn').addEventListener('click', function() {
-            document.getElementById('triliumSearchInput').value = '';
-            document.getElementById('triliumResults').innerHTML = `
-                <div class="text-center text-muted py-5">
-                    <i class="fas fa-search fa-3x mb-3"></i>
-                    <p>输入关键词搜索Trilium笔记</p>
-                </div>
-            `;
-            const importStats = document.getElementById('importStats');
-            if (importStats) {
-                importStats.style.display = 'none';
-            }
-            triliumResults = [];
-            selectedTriliumNotes.clear();
-            updateImportUI();
-        });
-
-        // 全选Trilium结果
-        document.getElementById('selectAllImportBtn').addEventListener('click', function() {
+        // 注意: Trilium搜索事件绑定已移到 DOMContentLoaded 中
             const allChecked = this.textContent.includes('取消');
             document.querySelectorAll('.import-item input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = !allChecked;
@@ -1566,25 +1538,66 @@
             // 清空之前的选择
             selectedTriliumNotes.clear();
 
-            fetch(`/kb/MGMT/api/trilium/search?query=${encodeURIComponent(query)}&limit=100`)
-                .then(response => response.json())
+            const searchUrl = `/kb/MGMT/api/trilium/search?query=${encodeURIComponent(query)}&limit=100`;
+            console.log('发起Trilium搜索:', searchUrl);
+
+            fetch(searchUrl)
+                .then(response => {
+                    console.log('收到响应, status:', response.status);
+                    return response.json();
+                })
                 .then(data => {
-                    if (data.success && data.data.results && data.data.results.length > 0) {
-                        triliumResults = data.data.results;
-                        renderTriliumSearchResults(triliumResults);
-                        showToast(`找到 ${triliumResults.length} 条笔记`, 'success');
+                    console.log('======================');
+                    console.log('搜索返回完整数据:', JSON.stringify(data, null, 2));
+                    console.log('data.success:', data.success);
+                    console.log('data对象键:', Object.keys(data));
+                    
+                    // 检查数据结构
+                    if (data.success) {
+                        if (data.data && Array.isArray(data.data.results)) {
+                            // 格式1: {success: true, data: {results: [...], message: "..."}}
+                            console.log('数据结构1: data.data.results 是数组');
+                            console.log('找到笔记数量:', data.data.results.length);
+                            triliumResults = data.data.results;
+                            renderTriliumSearchResults(triliumResults);
+                            showToast(`找到 ${triliumResults.length} 条笔记`, 'success');
+                        } else if (Array.isArray(data.results)) {
+                            // 格式2: {success: true, results: [...], message: "..."}
+                            console.log('数据结构2: data.results 是数组');
+                            console.log('找到笔记数量:', data.results.length);
+                            triliumResults = data.results;
+                            renderTriliumSearchResults(triliumResults);
+                            showToast(`找到 ${triliumResults.length} 条笔记`, 'success');
+                        } else if (data.data && data.data && data.data.data && Array.isArray(data.data.data.results)) {
+                            // 格式3: {success: true, data: {data: {results: [...]}}}
+                            console.log('数据结构3: data.data.data.results 是数组');
+                            console.log('找到笔记数量:', data.data.data.results.length);
+                            triliumResults = data.data.data.results;
+                            renderTriliumSearchResults(triliumResults);
+                            showToast(`找到 ${triliumResults.length} 条笔记`, 'success');
+                        } else {
+                            // 无法识别的数据结构
+                            console.error('无法识别的数据结构');
+                            console.log('  - data.success:', data.success);
+                            console.log('  - data.data:', data.data);
+                            console.log('  - data.results:', data.results);
+                            resultsContainer.innerHTML = `
+                                <div class="text-center text-warning py-5">
+                                    <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+                                    <p>数据结构不匹配,无法显示结果</p>
+                                    <p class="text-muted small">请查看控制台获取详细信息</p>
+                                </div>
+                            `;
+                        }
                     } else {
+                        console.error('搜索失败: success=false');
                         resultsContainer.innerHTML = `
-                            <div class="text-center text-muted py-5">
-                                <i class="fas fa-search-minus fa-3x mb-3"></i>
-                                <p>未找到匹配的笔记</p>
+                            <div class="text-center text-danger py-5">
+                                <i class="fas fa-times-circle fa-3x mb-3"></i>
+                                <p>搜索失败</p>
+                                <p class="text-muted">${data.message || '未知错误'}</p>
                             </div>
                         `;
-                        triliumResults = [];
-                        const importStats = document.getElementById('importStats');
-                        if (importStats) {
-                            importStats.style.display = 'none';
-                        }
                     }
                 })
                 .catch(error => {
@@ -1957,6 +1970,49 @@
                     loadPage(1, searchValue);
                 }, 300); // 300ms 防抖
             });
+
+            // Trilium搜索功能
+            const triliumSearchBtn = document.getElementById('triliumSearchBtn');
+            const triliumSearchInput = document.getElementById('triliumSearchInput');
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+            // 防止重复绑定
+            if (!window.triliumSearchEventsBound) {
+                window.triliumSearchEventsBound = true;
+
+                if (triliumSearchBtn) {
+                    triliumSearchBtn.addEventListener('click', searchTriliumNotes);
+                }
+
+                if (triliumSearchInput) {
+                    triliumSearchInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            searchTriliumNotes();
+                        }
+                    });
+                }
+
+                if (clearSearchBtn) {
+                    clearSearchBtn.addEventListener('click', function() {
+                        document.getElementById('triliumSearchInput').value = '';
+                        document.getElementById('triliumResults').innerHTML = `
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-search fa-3x mb-3"></i>
+                                <p>输入关键词搜索Trilium笔记</p>
+                            </div>
+                        `;
+                        const importStats = document.getElementById('importStats');
+                        if (importStats) {
+                            importStats.style.display = 'none';
+                        }
+                        triliumResults = [];
+                        selectedTriliumNotes.clear();
+                        updateImportUI();
+                    });
+                }
+
+                console.log('=== Trilium搜索事件绑定完成 ===');
+            }
 
             // 刷新按钮
             document.getElementById('refreshBtn').addEventListener('click', function() {

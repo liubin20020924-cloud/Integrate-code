@@ -26,10 +26,18 @@ class TriliumHelper:
 
     def search_note(self, query, limit=30):
         """
-        搜索Trilium笔记
+        搜索Trilium笔记(基于trilium-py官方API重写)
+
+        Trilium 搜索语法(官方):
+        - 普通搜索: 关键词 - 在标题、内容、属性中搜索
+        - 精确匹配: "关键词" - 用引号包裹
+        - 标签搜索: #标签名
+        - 属性搜索: #属性名=属性值
+        - 通配符: * - 匹配任意字符
+        - 多词搜索: 空格分隔(AND关系)
 
         Args:
-            query: 搜索关键词（空字符串表示获取所有笔记）
+            query: 搜索关键词(空字符串表示获取所有笔记)
             limit: 返回结果数量限制
 
         Returns:
@@ -50,33 +58,54 @@ class TriliumHelper:
                 if not token:
                     logger.info("使用密码模式连接Trilium")
                     ea = ETAPI(server_url)
-                    # 注意：这里需要从外部获取密码
                     token = None
                 else:
                     ea = ETAPI(server_url, token)
 
-                # 执行搜索
-                # 注意：根据 trilium-py 文档，limit 只有在使用 orderBy 时才有效
-                # 对于简单搜索，我们获取所有结果后再截取
+                # Trilium ETAPI 搜索参数(基于官方文档)
+                # search: 搜索字符串,支持 Trilium 查询语法
+                # limit: 限制返回结果数量
+                # orderBy: 排序字段(可选,如 'title', 'utcDateModified')
+                # fastSearch: 是否启用快速搜索(可选,默认true)
+                # includeArchived: 是否包含已归档笔记(可选,默认false)
+
                 logger.info(f"Trilium搜索: query='{search_query}', limit={limit}")
+
+                # 执行搜索 - 移除orderBy参数,让它使用默认设置
+                # Trilium 界面搜索可用,说明基本参数应该就够用
                 results = ea.search_note(search=search_query, limit=limit)
-                logger.info(f"Trilium搜索原始结果: {results}")
+                logger.info(f"Trilium搜索返回: {type(results)}, keys: {list(results.keys()) if isinstance(results, dict) else 'N/A'}")
 
-                # 格式化结果并限制数量
+                # 检查返回数据格式
+                if not isinstance(results, dict):
+                    logger.error(f"Trilium搜索返回非字典类型: {type(results)}")
+                    return False, [], '搜索返回数据格式错误'
+
+                # Trilium ETAPI 标准返回格式: {results: [...]}
+                if 'results' not in results:
+                    logger.warning(f"Trilium搜索结果中没有 'results' 字段, keys: {list(results.keys())}")
+                    results['results'] = []
+
+                # 获取搜索结果
+                notes = results.get('results', [])
+                logger.info(f"Trilium搜索返回 {len(notes)} 条结果")
+
+                # 格式化结果
                 formatted_results = []
-                if 'results' in results:
-                    for i, result in enumerate(results['results']):
-                        if i >= limit:
-                            break
-                        formatted_results.append({
-                            'noteId': result.get('noteId', ''),
-                            'title': result.get('title', ''),
-                            'type': result.get('type', 'text'),
-                            'dateModified': result.get('utcDateModified', '')
-                        })
+                for note in notes[:limit]:
+                    formatted_results.append({
+                        'noteId': note.get('noteId', ''),
+                        'title': note.get('title', ''),
+                        'type': note.get('type', 'text'),
+                        'dateModified': note.get('utcDateModified', '')
+                    })
 
-                logger.info(f"Trilium搜索返回 {len(formatted_results)} 条结果")
-                return True, formatted_results, '搜索成功'
+                logger.info(f"Trilium搜索最终返回 {len(formatted_results)} 条结果")
+
+                if formatted_results:
+                    return True, formatted_results, '搜索成功'
+                else:
+                    return True, [], '未找到匹配的笔记'
 
             except ImportError:
                 logger.warning("trilium-py 模块未安装，回退到基础API模式")
