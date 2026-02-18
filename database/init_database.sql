@@ -2,7 +2,10 @@
 -- 云户科技网站数据库初始化脚本
 -- 适用于 MariaDB/MySQL
 -- 创建时间: 2026-02-08
+-- 最后更新: 2026-02-18 (合并 v2.1_to_v2.2 补丁)
+-- 版本: v2.2 (完整版)
 -- 说明：整合官网、知识库、工单三个系统的数据库
+--       本脚本已包含所有补丁内容，可直接用于全新安装
 -- =====================================================
 
 -- =====================================================
@@ -119,19 +122,26 @@ CREATE TABLE IF NOT EXISTS `tickets` (
     `id` INT AUTO_INCREMENT PRIMARY KEY COMMENT '自增ID',
     `ticket_id` VARCHAR(32) NOT NULL UNIQUE COMMENT '工单唯一标识ID',
     `customer_name` VARCHAR(100) NOT NULL COMMENT '客户名称',
+    `customer_contact_name` VARCHAR(100) NOT NULL DEFAULT '' COMMENT '客户联系人姓名(当前登录用户)',
     `customer_contact` VARCHAR(50) NOT NULL COMMENT '客户联系方式',
     `customer_email` VARCHAR(100) NOT NULL COMMENT '客户邮箱',
+    `submit_user` VARCHAR(100) NOT NULL DEFAULT '' COMMENT '提交工单的用户名(来自统一用户表)',
     `product` VARCHAR(50) NOT NULL COMMENT '涉及产品',
     `issue_type` VARCHAR(20) NOT NULL COMMENT '问题类型',
     `priority` VARCHAR(10) NOT NULL COMMENT '工单优先级',
     `title` VARCHAR(200) NOT NULL COMMENT '问题标题',
     `content` TEXT NOT NULL COMMENT '问题详情',
+    `resolution` TEXT NULL COMMENT '解决方案',
     `status` VARCHAR(10) DEFAULT 'pending' COMMENT '工单状态',
+    `assignee` VARCHAR(100) NULL COMMENT '处理人',
     `create_time` DATETIME NOT NULL COMMENT '创建时间',
     `update_time` DATETIME NOT NULL COMMENT '更新时间',
     INDEX idx_ticket_id (`ticket_id`),
     INDEX idx_customer_name (`customer_name`),
-    INDEX idx_status (`status`)
+    INDEX idx_customer_contact_name (`customer_contact_name`),
+    INDEX idx_submit_user (`submit_user`),
+    INDEX idx_status (`status`),
+    INDEX idx_assignee (`assignee`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='工单系统主表';
 
 -- 工单聊天消息表
