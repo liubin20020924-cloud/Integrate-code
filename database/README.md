@@ -12,8 +12,8 @@
 ```
 database/
 ├── README.md                      # 本文档
-├── init_database.sql              # 完整初始化脚本(新建环境)
-├── patches/                       # 补丁脚本目录
+├── init_database.sql              # 完整初始化脚本 v2.2 (新建环境,已包含所有补丁)
+├── patches/                       # 补丁脚本目录(用于旧版本升级)
 │   ├── v2.1_to_v2.2/             # 版本2.1升级到2.2
 │   │   ├── 001_add_missing_columns.sql
 │   │   ├── 002_extend_kb_name_length.sql
@@ -47,6 +47,7 @@ mysql> source /path/to/database/init_database.sql
 - 此脚本会创建三个新数据库
 - 包含完整的表结构和初始数据
 - 默认管理员账号: `admin` / `YHKB@2024`
+- **版本 v2.2 已包含所有补丁内容，无需额外执行补丁脚本**
 
 ### 场景2: 升级现有数据库(已部署环境)
 
@@ -55,8 +56,10 @@ mysql> source /path/to/database/init_database.sql
 **版本历史:**
 
 - **v2.0** (初始版本): 基础数据库结构
-- **v2.1** (当前版本): 包含统一用户管理和工单系统
-- **v2.2** (开发中): 字段长度扩展和性能优化
+- **v2.1** (旧版本): 包含统一用户管理和工单系统
+- **v2.2** (当前版本): 已合并所有补丁，包含完整字段和索引
+  - 工单表新增: assignee, resolution, submit_user, customer_contact_name
+  - 知识库名称字段长度: VARCHAR(500)
 
 **升级步骤:**
 
@@ -93,6 +96,10 @@ mysql -h localhost -u root -p YHKB < database/patches/v2.1_to_v2.2/002_extend_kb
 ## 补丁脚本说明
 
 ### v2.1_to_v2.2 升级包
+
+**⚠️ 重要提示**: `init_database.sql` 已升级到 v2.2 版本，包含本升级包的所有内容。
+- **全新安装**: 直接使用 `init_database.sql` 即可，无需执行补丁
+- **从 v2.1 升级**: 需要执行以下补丁脚本
 
 **包含补丁:**
 
